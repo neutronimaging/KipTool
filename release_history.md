@@ -1,7 +1,10 @@
-# Release 
+# Release history KipTool
 
-## Release summary 
+## Release note KipTool 2.7 - February 2019 
+This is the first offical release of KipTool, built from sources on github. 
 
-## Fixed issues
+### New features
 
-## Known problems
+### Fixed issues
+
+### Known problems
