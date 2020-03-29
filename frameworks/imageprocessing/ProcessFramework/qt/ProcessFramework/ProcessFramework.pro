@@ -10,9 +10,11 @@ TARGET = ProcessFramework
 TEMPLATE = lib
 CONFIG += c++11
 
-CONFIG(release, debug|release): DESTDIR = $$PWD/../../../../../../lib
-else:CONFIG(debug, debug|release): DESTDIR = $$PWD/../../../../../../lib/debug
+REPOS = $$PWD/../../../../../..
+CONFIG(release, debug|release): DESTDIR = $$REPOS/lib
+else:CONFIG(debug, debug|release): DESTDIR = $$REPOS/lib/debug
 
+message("ProcFramework DESTDIR $$DESTDIR")
 
 DEFINES += PROCESSFRAMEWORK_LIBRARY
 
@@ -87,14 +89,14 @@ unix:!mac {
 }
 
 unix:mac {
-exists($$PWD/../../../../../external/mac/lib/*NeXus*) {
+exists($$REPOS/imagingsuite/external/mac/lib/*NeXus*) {
 
     message("-lNeXus exists")
     DEFINES *= HAVE_NEXUS
 
-    INCLUDEPATH += $$PWD/../../../../../external/mac/include/ $$PWD/../../../../../external/mac/include/nexus $$PWD/../../../../../external/mac/include/hdf5
-    DEPENDPATH += $$PWD/../../../../../external/mac/include/ $$PWD/../../../../../external/mac/include/nexus $$PWD/../../../../../external/mac/include/hdf5
-    QMAKE_LIBDIR += $$PWD/../../../../../external/mac/lib/
+    INCLUDEPATH += $$REPOS/imagingsuite/external/mac/include/ $$REPOS/imagingsuite/external/mac/include/nexus $$REPOS/imagingsuite/external/mac/include/hdf5
+    DEPENDPATH += $$REPOS/imagingsuite/external/mac/include/ $$REPOS/imagingsuite/external/mac/include/nexus $$REPOS/imagingsuite/external/mac/include/hdf5
+    QMAKE_LIBDIR += $$REPOS/imagingsuite/external/mac/lib/
 
     LIBS += -lNeXus.1.0.0 -lNeXusCPP.1.0.0
 
@@ -104,45 +106,6 @@ else {
 message("-lNeXus does not exists $$HEADERS")
 }
 
-}
-
-
-symbian {
-    MMP_RULES += EXPORTUNFROZEN
-    TARGET.UID3 = 0xE2AB701B
-    TARGET.CAPABILITY = 
-    TARGET.EPOCALLOWDLLDATA = 1
-    addFiles.sources = ProcessFramework.dll
-    addFiles.path = !:/sys/bin
-    DEPLOYMENT += addFiles
-}
-
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
-}
-
-unix:mac {
-exists($$PWD/../../../../../../external/mac/lib/*NeXus*) {
-
-    message("-lNeXus exists")
-    DEFINES *= HAVE_NEXUS
-
-    INCLUDEPATH += $$PWD/../../../../../../external/mac/include/ $$PWD/../../../../../../external/mac/include/nexus $$PWD/../../../../../../external/mac/include/hdf5
-    DEPENDPATH += $$PWD/../../../../../../external/mac/include/ $$PWD/../../../../../../external/mac/include/nexus $$PWD/../../../../../../external/mac/include/hdf5
-    QMAKE_LIBDIR += $$PWD/../../../../../../external/mac/lib/
-
-    LIBS += -lNeXus.1.0.0 -lNeXusCPP.1.0.0
-
-
-}
-else {
-message("-lNeXus does not exists $$HEADERS")
-}
 }
 
 CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../../lib/
@@ -150,8 +113,8 @@ else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../lib/debug/
 
 LIBS+= -lkipl -lModuleConfig
 
-INCLUDEPATH += $$PWD/../../../../../core/kipl/kipl/include
-DEPENDPATH += $$PWD/../../../../../core/kipl/kipl/include
+INCLUDEPATH += $$REPOS/imagingsuite/core/kipl/kipl/include
+DEPENDPATH += $$REPOS/imagingsuite/core/kipl/kipl/include
 
-INCLUDEPATH += $$PWD/../../../../../core/modules/ModuleConfig/include
-DEPENDPATH += $$PWD/../../../../../core/modules/ModuleConfig/include
+INCLUDEPATH += $$REPOS/imagingsuite/core/modules/ModuleConfig/include
+DEPENDPATH += $$REPOS/imagingsuite/core/modules/ModuleConfig/include
