@@ -5,7 +5,7 @@ else
     SPECSTR="-spec macx-clang CONFIG+=x86_64"
 fi
 
-REPOSPATH=$WORKSPACE/imagingsuite
+REPOSPATH=$WORKSPACE/kiptool
 
 DEST=$WORKSPACE/builds
 
