@@ -12,7 +12,7 @@ DEST=$WORKSPACE/builds
 mkdir -p $DEST/build-ProcessFramework
 cd $DEST/build-ProcessFramework
 
-$QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../kiptool/frameworks/imageprocessingBundle/imageprocessingBundle.pro
+$QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../KipTool/frameworks/imageprocessingBundle/imageprocessingBundle.pro
 make -f Makefile clean
 make -f Makefile mocables all
 make -f Makefile
@@ -22,13 +22,27 @@ echo "Build modules"
 mkdir -p $DEST/build-ImgProcModules
 cd $DEST/build-ImgProcModules
 
-$QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../kiptool/frameworks/ImgProcModulesBundle/ImgProcModulesBundle.pro
+$QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../KipTool/frameworks/ImgProcModulesBundle/ImgProcModulesBundle.pro
 make -f Makefile clean
 make -f Makefile mocables all
 make -f Makefile
 
 
 echo "Modules built"
+
+
+echo "Build GUI modules"
+
+mkdir -p $DEST/build-ImgProcGUIModules
+cd $DEST/build-ImgProcGUIModules
+
+$QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../KipTool/frameworks/ImgProcModulesGUIBundle/ImgProcModulesGUIBundle.pro
+make -f Makefile clean
+make -f Makefile mocables all
+make -f Makefile
+
+
+echo "GUI Modules built"
 
 
 if [ -e "$REPOSPATH/frameworks/imageprocessing/UnitTests" ]
