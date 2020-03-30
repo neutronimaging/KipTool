@@ -19,7 +19,7 @@
 #include <base/KiplException.h>
 #include <utilities/nodelocker.h>
 
-#include "../../../kiptool/src/ImageIO.h"
+#include "../../kiptool/src/ImageIO.h"
 
 #include <iostream>
 #include <sstream>
@@ -57,7 +57,7 @@ int QtKipToolCLI::exec()
         logger(kipl::logging::Logger::LogMessage,"KipTool is running in CLI mode");
 //        std::string fname(args[2].toStdString());
 
-        KiplProcessConfig config;
+        KiplProcessConfig config(QCoreApplication::applicationDirPath().toStdString());
         KiplEngine *engine=nullptr;
         KiplFactory factory;
 

@@ -70,8 +70,8 @@ win32 {
     contains(QMAKE_HOST.arch, x86_64):{
         QMAKE_LFLAGS += /MACHINE:X64
     }
-    INCLUDEPATH += $$PWD/../../../../../external/src/linalg $$PWD/../../../../../external/include $$PWD/../../../../../external/include/cfitsio $$PWD/../../../../../external/include/libxml2
-    QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../../../external/lib64
+    INCLUDEPATH += $$REPOS/imagingsuite/external/src/linalg $$REPOS/imagingsuite/external/include $$REPOS/imagingsuite/external/include/cfitsio $$REPOS/imagingsuite/external/include/libxml2
+    QMAKE_LIBDIR += $$REPOS/imagingsuite/external/lib64
 
     LIBS += -llibxml2_dll -llibtiff -lcfitsio
     QMAKE_CXXFLAGS += /openmp /O2
@@ -108,8 +108,8 @@ message("-lNeXus does not exists $$HEADERS")
 
 }
 
-CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../../lib/
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../lib/debug/
+CONFIG(release, debug|release): LIBS += -L$$REPOS/lib/
+else:CONFIG(debug, debug|release): LIBS += -L$$REPOS/lib/debug/
 
 LIBS+= -lkipl -lModuleConfig
 

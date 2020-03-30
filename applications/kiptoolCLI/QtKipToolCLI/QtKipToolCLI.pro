@@ -12,13 +12,14 @@ TARGET = KipToolCLI
 #VERSION = 2.7.0
 #TEMPLATE = app
 
+REPOS = $$PWD/../../../..
 
 DEFINES += VERSION=\\\"$$VERSION\\\"
 DEFINES += QT_DEPRECATED_WARNINGS
 
 
-CONFIG(release, debug|release): DESTDIR = $$PWD/../../../../../Applications
-else:CONFIG(debug, debug|release): DESTDIR = $$PWD/../../../../../Applications/debug
+CONFIG(release, debug|release): DESTDIR = $$REPOS/Applications
+else:CONFIG(debug, debug|release): DESTDIR = $$REPOS/Applications/debug
 
 unix:!symbian {
     maemo5 {
@@ -49,10 +50,8 @@ win32 {
     contains(QMAKE_HOST.arch, x86_64):{
         QMAKE_LFLAGS += /MACHINE:X64
     }
-    INCLUDEPATH += $$PWD/../../../../external/src/linalg $$PWD/../../../../external/include $$PWD/../../../../external/include/cfitsio $$PWD/../../../../external/include/libxml2
-    QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../../external/lib64
-
-
+    INCLUDEPATH += $$REPOS/imagingsuite/external/src/linalg $$REPOS/imagingsuite/external/include $$REPOS/imagingsuite/external/include/cfitsio $$REPOS/imagingsuite/external/include/libxml2
+    LIBS += -L$$REPOS/imagingsuite/external/lib64
 
     LIBS += -llibxml2_dll -llibtiff -lcfitsio
     QMAKE_CXXFLAGS += /openmp /O2
@@ -66,9 +65,9 @@ exists($$PWD/../../../../external/mac/lib/*NeXus*) {
     message("-lNeXus exists")
     DEFINES *= HAVE_NEXUS
 
-    INCLUDEPATH += $$PWD/../../../../external/mac/include/ $$PWD/../../../../external/mac/include/nexus $$PWD/../../../../external/mac/include/hdf5
-    DEPENDPATH += $$PWD/../../../../external/mac/include/ $$PWD/../../../external/mac/include/nexus $$PWD/../../../../external/mac/include/hdf5
-    QMAKE_LIBDIR += $$PWD/../../../../external/mac/lib/
+    INCLUDEPATH += $$REPOS/imagingsuite/external/mac/include/ $$REPOS/imagingsuite/external/mac/include/nexus $$REPOS/imagingsuite/external/mac/include/hdf5
+    DEPENDPATH += $$REPOS/imagingsuite/external/mac/include/ $$REPOS/imagingsuite/mac/include/nexus $$$REPOS/imagingsuite/external/mac/include/hdf5
+    QMAKE_LIBDIR += $$REPOS/imagingsuite/external/mac/lib/
 
     LIBS += -lNeXus.1.0.0 -lNeXusCPP.1.0.0
 
@@ -85,8 +84,8 @@ message("-lNeXus does not exist $$HEADERS")
 
 SOURCES +=  main.cpp \
             qtkiptoolcli.cpp \
-            ../../../kiptool/src/ImageIO.cpp \
-            ../../../kiptool/src/stdafx.cpp
+            ../../kiptool/src/ImageIO.cpp \
+            ../../kiptool/src/stdafx.cpp
 #            ImageIO.cpp
 #            stdafx.cpp \
 #            ImagingToolConfig.cpp \
@@ -101,8 +100,8 @@ SOURCES +=  main.cpp \
 
 
 HEADERS  += qtkiptoolcli.h \
-            ../../../kiptool/src/ImageIO.h \
-            ../../../kiptool/src/stdafx.h
+            ../../kiptool/src/ImageIO.h \
+            ../../kiptool/src/stdafx.h
 #            ImageIO.h
 #            stdafx.h \
 #            targetver.h \
@@ -117,33 +116,24 @@ HEADERS  += qtkiptoolcli.h \
 #            Fits2Tif.h  \
 
 
+INCLUDEPATH += $$PWD/../../../frameworks/imageprocessing/ProcessFramework/include
+DEPENDPATH  += $$PWD/../../../frameworks/imageprocessing/ProcessFramework/include/
 
+INCLUDEPATH += $$REPOS/imagingsuite/GUI/qt/QtModuleConfigure
 
+INCLUDEPATH += $$REPOS/imagingsuite/core/modules/ModuleConfig/include
+DEPENDPATH  += $$REPOS/imagingsuite/core/modules/ModuleConfig/include
 
+INCLUDEPATH += $$REPOS/imagingsuite/core/modules/ReaderConfig
+DEPENDPATH  += $$REPOS/imagingsuite/core/modules/ReaderConfig
 
-INCLUDEPATH += $$PWD/../../../../frameworks/imageprocessing/ProcessFramework/include
-DEPENDPATH += $$PWD/../../../../frameworks/imageprocessing/ProcessFramework/include/
+INCLUDEPATH += $$REPOS/imagingsuite/core/kipl/kipl/include
+DEPENDPATH  += $$REPOS/imagingsuite/core/kipl/kipl/include
 
-#INCLUDEPATH += $$PWD/../../../../GUI/qt/QtAddons
-#DEPENDPATH += $$PWD/../../../../GUI/qt/QtAddons
+INCLUDEPATH += $$REPOS/imagingsuite/core/algorithms/ImagingAlgorithms/include
+DEPENDPATH  += $$REPOS/imagingsuite/core/algorithms/ImagingAlgorithms/src
 
-INCLUDEPATH += $$PWD/../../../../GUI/qt/QtModuleConfigure
-
-INCLUDEPATH += $$PWD/../../../../core/modules/ModuleConfig/include
-DEPENDPATH += $$PWD/../../../../core/modules/ModuleConfig/include
-
-INCLUDEPATH += $$PWD/../../../../core/modules/ReaderConfig
-DEPENDPATH += $$PWD/../../../../core/modules/ReaderConfig
-
-#INCLUDEPATH += $$PWD/../../../../core/modules/ReaderGUI
-#DEPENDPATH += $$PWD/../../../../core/modules/ReaderGUI
-
-INCLUDEPATH += $$PWD/../../../../core/kipl/kipl/include
-DEPENDPATH += $$PWD/../../../../core/kipl/kipl/include
-
-INCLUDEPATH += $$PWD/../../../../core/algorithms/ImagingAlgorithms/include
-DEPENDPATH += $$PWD/../../../../core/algorithms/ImagingAlgorithms/src
-
-LIBS += -L$$PWD/../../../../../lib/ -lkipl -lModuleConfig -lProcessFramework -lReaderConfig  -lImagingAlgorithms
+LIBS += -L$$REPOS/lib/
+LIBS += -lkipl -lModuleConfig -lProcessFramework -lReaderConfig  -lImagingAlgorithms
 
 
