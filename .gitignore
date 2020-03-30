@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# Qt stuff
+moc*.cpp
+moc*.h
+*.stash
+*.pro.user
+build-*
+ui_*.h
+Makefile
