@@ -12,28 +12,21 @@ DEST=$WORKSPACE/builds
 mkdir -p $DEST/build-ProcessFramework
 cd $DEST/build-ProcessFramework
 
-$QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../imagingsuite/frameworks/imageprocessing/ProcessFramework/qt/ProcessFramework/ProcessFramework.pro
+$QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../kiptool/frameworks/imageprocessingBundle/imageprocessingBundle.pro
 make -f Makefile clean
 make -f Makefile mocables all
 make -f Makefile
 
 echo "Build modules"
 
-for f in `ls $REPOSPATH/frameworks/imageprocessing/modules`
-do
-    echo "$REPOSPATH/frameworks/imageprocessing/modules/$f/qt/$f/$f.pro"
-    if [ -e "$REPOSPATH/frameworks/imageprocessing/modules/$f/qt/$f/$f.pro" ]
-    then
-        mkdir -p $DEST/build-$f
-        cd $DEST/build-$f
+mkdir -p $DEST/build-ImgProcModules
+cd $DEST/build-ImgProcModules
 
-        $QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../imagingsuite/frameworks/imageprocessing/modules/$f/qt/$f/$f.pro
-        make -f Makefile clean
-        make -f Makefile mocables all
-        make -f Makefile
-fi
+$QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../kiptool/frameworks/ImgProcModulesBundle/ImgProcModulesBundle.pro
+make -f Makefile clean
+make -f Makefile mocables all
+make -f Makefile
 
-done
 
 echo "Modules built"
 
