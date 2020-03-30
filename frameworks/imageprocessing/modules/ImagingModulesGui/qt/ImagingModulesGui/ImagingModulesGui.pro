@@ -8,12 +8,14 @@ QT       += core widgets charts
 
 #greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = ImagingModulesGUI
+TARGET   = ImagingModulesGUI
 TEMPLATE = lib
-CONFIG += c++11
+CONFIG  += c++11
 
-CONFIG(release, debug|release): DESTDIR = $$PWD/../../../../../../../lib
-else:CONFIG(debug, debug|release): DESTDIR = $$PWD/../../../../../../../lib/debug
+REPOS    = $$PWD/../../../../../../..
+
+CONFIG(release, debug|release): DESTDIR = $$REPOS/lib
+else:CONFIG(debug, debug|release): DESTDIR = $$REPOS/lib/debug
 
 DEFINES += IMAGINGMODULESGUI_LIBRARY
 
@@ -60,16 +62,6 @@ unix:macx {
 }
 
 
-#symbian {
-#    MMP_RULES += EXPORTUNFROZEN
-#    TARGET.UID3 = 0xE2A168C3
-#    TARGET.CAPABILITY =
-#    TARGET.EPOCALLOWDLLDATA = 1
-#    addFiles.sources = ImagingModules.dll
-#    addFiles.path = !:/sys/bin
-#    DEPLOYMENT += addFiles
-#}
-
 unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
@@ -84,51 +76,51 @@ win32 {
     contains(QMAKE_HOST.arch, x86_64):{
         QMAKE_LFLAGS += /MACHINE:X64
     }
-    INCLUDEPATH += $$PWD/../../../../../../external/src/linalg
-    INCLUDEPATH += $$PWD/../../../../../../external/include
-    INCLUDEPATH += $$PWD/../../../../../../external/include/cfitsio
-    INCLUDEPATH += $$PWD/../../../../../../external/include/libxml2
+    INCLUDEPATH += $$REPOS/imagingsuite/external/src/linalg
+    INCLUDEPATH += $$REPOS/imagingsuite/external/include
+    INCLUDEPATH += $$REPOS/imagingsuite/external/include/cfitsio
+    INCLUDEPATH += $$REPOS/imagingsuite/external/include/libxml2
 
-    QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../../../../external/lib64
+    QMAKE_LIBDIR += $$REPOS/imagingsuite/external/lib64
 
     LIBS += -llibxml2_dll -llibtiff -lcfitsio
     QMAKE_CXXFLAGS += /openmp /O2 /DNOMINMAX
 }
 
-CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../../../lib
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../../lib/debug/
+CONFIG(release, debug|release):    LIBS += -L$$REPOS/lib
+else:CONFIG(debug, debug|release): LIBS += -L$$REPOS/lib/debug/
 
 LIBS += -lkipl -lQtModuleConfigure -lImagingAlgorithms  -lQtAddons -lProcessFramework -lModuleConfig -lReaderConfig -lImagingModules
 
 
-INCLUDEPATH += $$PWD/../../../../../../GUI/qt/QtModuleConfigure
-DEPENDPATH += $$PWD/../../../../../../GUI/qt/QtModuleConfigure
+INCLUDEPATH += $$REPOS/imagingsuite/GUI/qt/QtModuleConfigure
+DEPENDPATH  += $$REPOS/imagingsuite/GUI/qt/QtModuleConfigure
 
-INCLUDEPATH += $$PWD/../../../../../../GUI/qt/QtAddons
-DEPENDPATH += $$PWD/../../../../../../GUI/qt/QtAddons
+INCLUDEPATH += $$REPOS/imagingsuite/GUI/qt/QtAddons
+DEPENDPATH  += $$REPOS/imagingsuite/GUI/qt/QtAddons
 
-INCLUDEPATH += $$PWD/../../../../../../core/algorithms/ImagingAlgorithms/include
-DEPENDPATH += $$PWD/../../../../../../core/algorithms/ImagingAlgorithms/include
+INCLUDEPATH += $$REPOS/imagingsuite/core/algorithms/ImagingAlgorithms/include
+DEPENDPATH  += $$REPOS/imagingsuite/core/algorithms/ImagingAlgorithms/include
 
 INCLUDEPATH += $$PWD/../../../../ProcessFramework/include
-DEPENDPATH += $$PWD/../../../../ProcessFramework/include
+DEPENDPATH  += $$PWD/../../../../ProcessFramework/include
 
 INCLUDEPATH += $$PWD/../../../ImagingModules/src
-DEPENDPATH += $$PWD/../../../ImagingModules/src
+DEPENDPATH  += $$PWD/../../../ImagingModules/src
 
-INCLUDEPATH += $$PWD/../../../../../../core/kipl/kipl/include
-DEPENDPATH += $$PWD/../../../../../../core/kipl/kipl/include
+INCLUDEPATH += $$REPOS/imagingsuite/core/kipl/kipl/include
+DEPENDPATH  += $$REPOS/imagingsuite/core/kipl/kipl/include
 
-INCLUDEPATH += $$PWD/../../../../../../core/modules/ModuleConfig/include
-DEPENDPATH += $$PWD/../../../../../../core/modules/ModuleConfig/include
+INCLUDEPATH += $$REPOS/imagingsuite/core/modules/ModuleConfig/include
+DEPENDPATH  += $$REPOS/imagingsuite/core/modules/ModuleConfig/include
 
-INCLUDEPATH += $$PWD/../../../../../../core/modules/ReaderConfig
-DEPENDPATH += $$PWD/../../../../../../core/modules/ReaderConfig
+INCLUDEPATH += $$REPOS/imagingsuite/core/modules/ReaderConfig
+DEPENDPATH  += $$PWD/../../../../../../core/modules/ReaderConfig
 
 macx: {
-INCLUDEPATH += $$PWD/../../../../../../external/mac/include $$PWD/../../../../../../external/mac/include/hdf5 $$PWD/../../../../../../../external/mac/include/nexus
-DEPENDPATH += $$PWD/../../../../../../external/mac/include $$PWD/../../../../../../external/mac/include/hdf5 $$PWD/../../../../../../../external/mac/include/nexus
-LIBS += -L$$PWD/../../../../../../external/mac/lib/ -lNeXus.1.0.0 -lNeXusCPP.1.0.0
+INCLUDEPATH += $$REPOS/imagingsuite/external/mac/include $$REPOS/imagingsuite/external/mac/include/hdf5 $$REPOS/imagingsuite/external/mac/include/nexus
+DEPENDPATH  += $$REPOS/imagingsuite/external/mac/include $$REPOS/imagingsuite/external/mac/include/hdf5 $$REPOS/imagingsuite/external/mac/include/nexus
+LIBS        += -L$$REPOS/imagingsuite/external/mac/lib/ -lNeXus.1.0.0 -lNeXusCPP.1.0.0
 }
 
 
