@@ -98,7 +98,7 @@ int IMAGINGMODULESSHARED_EXPORT StripeFilterModule::ProcessCore(kipl::base::TIma
     kipl::base::TImage<float,2> slice;
     slice=kipl::base::ExtractSlice(img,0,plane,nullptr);
 
-    m_StripeFilter = new ImagingAlgorithms::StripeFilter(slice.Dims(),m_sWaveletName,m_nLevels,m_fSigma);
+    m_StripeFilter = new ImagingAlgorithms::StripeFilter(slice.dims(),m_sWaveletName,m_nLevels,m_fSigma);
 
 //    #pragma omp for
     for (size_t i=0; (i<Nslices && (updateStatus(float(i)/Nslices,"Processing Stripe Filter")==false) ); i++) {

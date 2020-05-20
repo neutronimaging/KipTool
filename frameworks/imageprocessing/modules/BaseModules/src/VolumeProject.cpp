@@ -69,7 +69,7 @@ kipl::base::TImage<float,2> VolumeProject::MeanProject(kipl::base::TImage<float,
 
 	ptrdiff_t slices=static_cast<ptrdiff_t>(img.Size(2));
 
-	kipl::base::TImage<float,2> proj(img.Dims());
+    kipl::base::TImage<float,2> proj(img.dims());
 	float *pProj=proj.GetDataPtr();
 	proj=0.0f;
 
@@ -86,7 +86,7 @@ kipl::base::TImage<float,2> VolumeProject::MeanProject(kipl::base::TImage<float,
 
 kipl::base::TImage<float,2> VolumeProject::MedianProject(kipl::base::TImage<float,3> & img)
 {
-	kipl::base::TImage<float,2> proj(img.Dims());
+    kipl::base::TImage<float,2> proj(img.dims());
 
 	size_t N=img.Size(2);
 
@@ -111,7 +111,7 @@ kipl::base::TImage<float,2> VolumeProject::MinProject(kipl::base::TImage<float,3
 
 	ptrdiff_t slices=static_cast<ptrdiff_t>(img.Size(2));
 
-	kipl::base::TImage<float,2> proj(img.Dims());
+    kipl::base::TImage<float,2> proj(img.dims());
 	float *pProj=proj.GetDataPtr();
 
 	memcpy(pProj,pSlice,sizeof(float)*proj.Size());
@@ -132,7 +132,7 @@ kipl::base::TImage<float,2> VolumeProject::MaxProject(kipl::base::TImage<float,3
 
 	ptrdiff_t slices=static_cast<ptrdiff_t>(img.Size(2));
 
-	kipl::base::TImage<float,2> proj(img.Dims());
+    kipl::base::TImage<float,2> proj(img.dims());
 	float *pProj=proj.GetDataPtr();
 
 	memcpy(pProj,pSlice,sizeof(float)*proj.Size());

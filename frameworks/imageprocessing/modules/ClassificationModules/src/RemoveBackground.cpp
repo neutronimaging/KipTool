@@ -47,8 +47,8 @@ std::map<std::string, std::string> RemoveBackground::GetParameters()
 
 int RemoveBackground::ProcessCore(kipl::base::TImage<float,3> & img, std::map<std::string, std::string> & coeff)
 {
-	kipl::base::TImage<char,3>   mask(img.Dims());
-	kipl::base::TImage<float,3>  distance(img.Dims());
+    kipl::base::TImage<char,3>   mask(img.dims());
+    kipl::base::TImage<float,3>  distance(img.dims());
 
 	size_t N=img.Size();
 

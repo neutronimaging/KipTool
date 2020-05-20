@@ -645,7 +645,7 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
 
     bb = BBLoader(blackbodyname,nBBFirstIndex,nBBCount,1.0f,fdarkBBdose, fBlackDose); // this is for mask computation and dose correction (small roi)
 
-    kipl::base::TImage<float,2> obmask(bb.Dims());
+    kipl::base::TImage<float,2> obmask(bb.dims());
 
     std::stringstream msg;
 
@@ -762,7 +762,7 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
                              }
                              else {
                                  sample = BBLoader(m_Config.mImageInformation.sSourceFileMask, m_Config.mImageInformation.nFirstFileIndex+index, 1, 1.0f,fdarkBBdose, dosesample);
-                                 kipl::base::TImage<float,2> mask(sample.Dims());
+                                 kipl::base::TImage<float,2> mask(sample.dims());
                                  mask = 0.0f;
                                  temp_parameters = m_corrector.PrepareBlackBodyImage(sample,dark,samplebb, mask);
                                  mMaskBB = mask; // or memcpy
@@ -868,7 +868,7 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
                      if (bSameMask){
                         mMaskBB = obmask;}
                      else {
-                          kipl::base::TImage<float,2> mask(sample.Dims());
+                          kipl::base::TImage<float,2> mask(sample.dims());
                           mask = 0.0f;
                           mask_parameters= m_corrector.PrepareBlackBodyImage(sample,dark,samplebb_temp, mask); // this is just to compute the mask
                           mMaskBB = mask; // or memcpy
@@ -933,7 +933,7 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
                            temp_parameters = m_corrector.PrepareBlackBodyImagewithMask(dark, samplebb, mMaskBB);
                         }
                         else {
-                             kipl::base::TImage<float,2> mask(sample.Dims());
+                             kipl::base::TImage<float,2> mask(sample.dims());
                              mask = 0.0f;
                              temp_parameters= m_corrector.PrepareBlackBodyImage(sample,dark,samplebb, mask); // this is just to compute the mask
                              mMaskBB = mask; // or memcpy
@@ -1031,7 +1031,7 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
     flat = BBLoader(flatmask,nOBFirstIndex,nOBCount,1.0f,0.0f,fFlatBBdose); //
     bb = BBLoader(blackbodyname,nBBFirstIndex,nBBCount,1.0f,fdarkBBdose,fBlackDose);
 
-    kipl::base::TImage<float,2> obmask(bb.Dims());
+    kipl::base::TImage<float,2> obmask(bb.dims());
 
     float *bb_ob_param = new float[100]; // now they are not 6.. attention
     float *bb_sample_parameters;
@@ -1154,7 +1154,7 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
                                   else {
                                       sample = BBLoader(m_Config.mImageInformation.sSourceFileMask, m_Config.mImageInformation.nFirstFileIndex+index,
                                                             1, 1.0f,fdarkBBdose, dosesample);
-                                      kipl::base::TImage<float,2> mask(sample.Dims());
+                                      kipl::base::TImage<float,2> mask(sample.dims());
                                       mask = 0.0f;
                                       temp_parameters = m_corrector.PrepareBlackBodyImagewithSplines(sample,dark,samplebb,mask,values_bb);
                                       m_corrector.SetSplineSampleValues(values_bb);
@@ -1261,7 +1261,7 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
 //
                           }
                           else {
-                               kipl::base::TImage<float,2> mask(sample.Dims());
+                               kipl::base::TImage<float,2> mask(sample.dims());
                                mask = 0.0f;
                                mask_parameters = m_corrector.PrepareBlackBodyImagewithSplines(sample,dark, samplebb_temp, mask,values_bb);
 //                               mask_parameters= m_corrector.PrepareBlackBodyImage(sample,dark,samplebb_temp, mask); // this is just to compute the mask
@@ -1333,7 +1333,7 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
                                 m_corrector.SetSplineSampleValues(values_bb);
                              }
                              else {
-                                  kipl::base::TImage<float,2> mask(sample.Dims());
+                                  kipl::base::TImage<float,2> mask(sample.dims());
                                   mask = 0.0f;
                                   temp_parameters = m_corrector.PrepareBlackBodyImagewithSplines(sample,dark,samplebb,mask,values_bb);
 //                                  temp_parameters= m_corrector.PrepareBlackBodyImage(sample,dark,samplebb, mask); // this is just to compute the mask
@@ -1509,7 +1509,7 @@ float BBLogNorm::GetInterpolationError(kipl::base::TImage<float,2> &mask){
     logger(kipl::logging::Logger::LogDebug,msg.str());
 
     float error;
-    kipl::base::TImage<float,2> obmask(bb.Dims());
+    kipl::base::TImage<float,2> obmask(bb.dims());
     try {
         bb_ob_param = m_corrector.PrepareBlackBodyImage(flat,dark,bb, obmask, error);
     }
@@ -1717,7 +1717,9 @@ kipl::base::TImage<float,2> BBLogNorm::ReferenceLoader(std::string fname,
         dose      = tmpdose;
 
 
-        size_t obdims[]={img.Size(0), img.Size(1),static_cast<size_t>(N)};
+        std::vector<size_t> obdims = { img.Size(0),
+                                       img.Size(1),
+                                       static_cast<size_t>(N)};
 
         kipl::base::TImage<float,3> img3D(obdims);
         memcpy(img3D.GetLinePtr(0,0),img.GetDataPtr(),img.Size()*sizeof(float));
@@ -1766,7 +1768,7 @@ kipl::base::TImage<float,2> BBLogNorm::ReferenceLoader(std::string fname,
         logger(logger.LogDebug,msg.str());
 
         float *tempdata=new float[N];
-        refimg.Resize(img.Dims());
+        refimg.resize(img.dims());
 
         ImagingAlgorithms::AverageImage avg;
 
@@ -1853,7 +1855,9 @@ kipl::base::TImage<float,2> BBLogNorm::BBLoader(std::string fname,
         dose      = tmpdose;
 
 
-        size_t obdims[]={img.Size(0), img.Size(1),static_cast<size_t>(N)};
+        std::vector<size_t> obdims = { img.Size(0),
+                                       img.Size(1),
+                                       static_cast<size_t>(N)};
 
         kipl::base::TImage<float,3> img3D(obdims);
         memcpy(img3D.GetLinePtr(0,0),img.GetDataPtr(),img.Size()*sizeof(float));
@@ -1900,7 +1904,7 @@ kipl::base::TImage<float,2> BBLogNorm::BBLoader(std::string fname,
         msg.str(""); msg<<"Dose="<<dose;
         logger(logger.LogDebug,msg.str());
 
-        refimg.Resize(img.Dims());
+        refimg.resize(img.dims());
 
         ImagingAlgorithms::AverageImage avg;
 
@@ -2025,8 +2029,10 @@ kipl::base::TImage <float,3> BBLogNorm::BBExternalLoader(std::string fname, int 
                     roi);
 
             if (i==0){
-                size_t dims[]={tempimg.Size(0), tempimg.Size(1),static_cast<size_t>(N)};
-                img.Resize(dims);
+                std::vector<size_t> dims = { tempimg.Size(0),
+                                             tempimg.Size(1),
+                                             static_cast<size_t>(N)};
+                img.resize(dims);
             }
 
 
