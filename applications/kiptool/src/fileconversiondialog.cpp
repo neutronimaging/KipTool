@@ -243,7 +243,7 @@ int FileConversionDialog::ConvertImages()
     const bool bCollate = ui->groupBox_combineImages->isChecked();
     const int nCollate   = bCollate ? ui->spinCollationSize->value() : 1;
 
-    size_t dims[3];
+    std::vector<size_t> dims(2);
 
     if (crop)
     {
@@ -252,12 +252,12 @@ int FileConversionDialog::ConvertImages()
     }
     else
     {
-        imgreader.GetImageSize(flist.front(),1.0f,dims);
+        dims=imgreader.GetImageSize(flist.front(),1.0f);
     }
-    dims[2]=nCollate;
+    dims.push_back(nCollate);
 
     if (bCollate==true)
-        img3d.Resize(dims);
+        img3d.resize(dims);
 
     ImagingAlgorithms::AverageImage avgimg;
     errmsg.str("");

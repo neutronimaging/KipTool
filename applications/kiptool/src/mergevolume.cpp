@@ -317,7 +317,8 @@ void MergeVolume::LoadVerticalSlice(std::string filemask,
 
     kipl::io::ReadTIFF(slice,fname.c_str());
     size_t line=slice.Size(1)/2;
-    size_t dims[2]={slice.Size(0),static_cast<size_t>(last-first+1)};
+    std::vector<size_t> dims = { slice.Size(0),
+                                static_cast<size_t>(last-first+1)};
     size_t total_offset=0;
 
     if (m_bCropSlices) {
@@ -325,7 +326,7 @@ void MergeVolume::LoadVerticalSlice(std::string filemask,
         total_offset=m_nCrop[0];
     }
 
-    img->Resize(dims);
+    img->resize(dims);
 
     // here I check the image type
     unsigned short BitPerSample = slice.info.nBitsPerSample;
