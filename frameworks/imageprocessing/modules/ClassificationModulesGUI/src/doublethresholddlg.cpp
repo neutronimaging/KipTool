@@ -53,7 +53,7 @@ void DoubleThresholdDlg::ApplyParameters()
 {
     UpdateParameters();
 
-    kipl::base::TImage<char,3> res(pOriginal->Dims());
+    kipl::base::TImage<char,3> res(pOriginal->dims());
     kipl::segmentation::DoubleThreshold(*pOriginal,res,
             m_fLowThreshold,m_fHighThreshold,
             m_compare,
@@ -89,7 +89,7 @@ int DoubleThresholdDlg::exec(ConfigBase *config, std::map<string, string> &param
 
     string2enum(GetStringParameter(parameters,"compare"),m_compare);
     pOriginal = &img;
-    bilevelImg.Resize(img.Dims());
+    bilevelImg.resize(img.dims());
 
     const size_t N=512;
     size_t bins[N];

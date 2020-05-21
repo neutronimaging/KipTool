@@ -505,7 +505,7 @@ void BBLogNormDlg::on_buttonPreviewOBBB_clicked()
                 lo=axis[nLo];
                 hi=axis[nHi];
 
-                ui->ob_bb_Viewer->set_image(m_Preview_OBBB.GetDataPtr(), m_Preview_OBBB.Dims(), lo,hi);
+                ui->ob_bb_Viewer->set_image(m_Preview_OBBB.GetDataPtr(), m_Preview_OBBB.dims(), lo,hi);
     }
 
 
@@ -687,7 +687,7 @@ void BBLogNormDlg::on_buttonPreviewsampleBB_clicked()
             lo=axis[nLo];
             hi=axis[nHi];
 
-            ui->sample_bb_Viewer->set_image(m_Preview_sampleBB.GetDataPtr(), m_Preview_sampleBB.Dims(), lo,hi);
+            ui->sample_bb_Viewer->set_image(m_Preview_sampleBB.GetDataPtr(), m_Preview_sampleBB.dims(), lo,hi);
 
     }
 
@@ -801,7 +801,7 @@ void BBLogNormDlg::on_errorButton_clicked()
         kipl::base::FindLimits(hist, NHist, 99.0f, &nLo, &nHi);
         lo=axis[nLo];
         hi=axis[nHi];
-        ui->mask_Viewer->set_image(mymask.GetDataPtr(), mymask.Dims(), lo,hi);
+        ui->mask_Viewer->set_image(mymask.GetDataPtr(), mymask.dims(), lo,hi);
     }
 
 }
