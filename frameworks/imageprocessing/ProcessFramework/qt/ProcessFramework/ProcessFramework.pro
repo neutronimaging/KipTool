@@ -57,6 +57,7 @@ unix:!symbian {
  #       ICON = muhrec3.icns
     }
     else {
+        INCLUDEPATH += /usr/include/cfitsio
         QMAKE_CXXFLAGS += -fPIC -fopenmp -O2
         QMAKE_LFLAGS += -lgomp
         LIBS += -lgomp
