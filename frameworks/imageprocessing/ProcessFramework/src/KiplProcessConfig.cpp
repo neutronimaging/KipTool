@@ -184,6 +184,7 @@ KiplProcessConfig::cImageInformation::cImageInformation() :
 		sSourcePath("./"),
 		sSourceFileMask("slice_####.tif"),
 		bUseROI(false),
+        nROI({0,0,100,100}),
 		nFirstFileIndex(1),
         nLastFileIndex(100),
         nStepFileIndex(1),
@@ -192,14 +193,13 @@ KiplProcessConfig::cImageInformation::cImageInformation() :
         eFlip(kipl::base::ImageFlipNone),
         eRotate(kipl::base::ImageRotateNone)
 {
-	nROI[0]=nROI[1]=0;
-	nROI[2]=nROI[3]=100;
 }
 
 KiplProcessConfig::cImageInformation::cImageInformation(const cImageInformation &a) :
 	sSourcePath(a.sSourcePath),
 	sSourceFileMask(a.sSourceFileMask),
 	bUseROI(a.bUseROI),
+    nROI(a.nROI),
 	nFirstFileIndex(a.nFirstFileIndex),
     nLastFileIndex(a.nLastFileIndex),
     nStepFileIndex(a.nStepFileIndex),
@@ -208,10 +208,6 @@ KiplProcessConfig::cImageInformation::cImageInformation(const cImageInformation 
     eFlip(a.eFlip),
     eRotate(a.eRotate)
 {
-	nROI[0]=a.nROI[0];
-	nROI[1]=a.nROI[1];
-	nROI[2]=a.nROI[2];
-	nROI[3]=a.nROI[3];
 }
 
 KiplProcessConfig::cImageInformation & KiplProcessConfig::cImageInformation::operator=(const cImageInformation &a) 
@@ -219,17 +215,13 @@ KiplProcessConfig::cImageInformation & KiplProcessConfig::cImageInformation::ope
 	sSourcePath          = a.sSourcePath;
 	sSourceFileMask      = a.sSourceFileMask;
 	bUseROI              = a.bUseROI;
+    nROI                 = a.nROI;
 	nFirstFileIndex      = a.nFirstFileIndex;
 	nLastFileIndex       = a.nLastFileIndex;
     nStride              = a.nStride;
     nRepeat              = a.nRepeat;
     eFlip                = a.eFlip;
     eRotate              = a.eRotate;
-
-	nROI[0]=a.nROI[0];
-	nROI[1]=a.nROI[1];
-	nROI[2]=a.nROI[2];
-	nROI[3]=a.nROI[3];
 
 	return *this;
 }

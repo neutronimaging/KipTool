@@ -4,6 +4,8 @@
 #define BBLOGNORMDLG_H
 #include "imagingmodulesgui_global.h"
 
+#include <string>
+#include <vector>
 #include <QDialog>
 
 #include <ConfiguratorDialogBase.h>
@@ -11,6 +13,7 @@
 #include <KiplProcessConfig.h>
 #include <imageviewerwidget.h>
 #include <plotter.h>
+#include <base/timage.h>
 
 #include <bblognorm.h>
 
@@ -96,16 +99,17 @@ private:
     size_t nBBSampleCount; /// number of sample images with BB
     size_t nBBSampleFirstIndex; /// first index in filename for sample images with BB
     std::string blackbodysamplename;
-    size_t BBroi[4];
-    size_t doseBBroi[4];
+    std::vector<size_t> BBroi;
+    std::vector<size_t> doseBBroi;
+    std::vector<size_t> dose_roi;
     size_t radius;
     size_t min_area;
 
     float ffirstAngle;
     float flastAngle;
-    float fScanArc[2]; /// first and last angle of projections (to be used for tomo)
+    std::vector<float> fScanArc; /// first and last angle of projections (to be used for tomo)
 
-    size_t dose_roi[4];
+
 
 
     std::string blackbodyexternalname;

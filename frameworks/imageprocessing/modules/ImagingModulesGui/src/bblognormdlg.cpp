@@ -33,6 +33,9 @@ BBLogNormDlg::BBLogNormDlg(QWidget *parent) :
     nBBFirstIndex(1),
     nBBSampleCount(0),
     nBBSampleFirstIndex(1),
+    BBroi(4,0UL),
+    doseBBroi(4,0UL),
+    dose_roi(4,0UL),
     radius(2),
 //    bUseNormROI(true),
 //    bUseNormROIBB(false),
@@ -46,6 +49,7 @@ BBLogNormDlg::BBLogNormDlg(QWidget *parent) :
     min_area(20),
     ffirstAngle(0.0f),
     flastAngle(360.0f),
+    fScanArc(2,0.0f),
     nBBextCount(1),
     nBBextFirstIndex(0),
     thresh(0),
@@ -61,8 +65,6 @@ BBLogNormDlg::BBLogNormDlg(QWidget *parent) :
     blackbodysamplename = "somename";
     flatname="./";
     darkname="./";
-    doseBBroi[0] = doseBBroi[1] = doseBBroi[2] = doseBBroi[3] = 0;
-    BBroi[0] = BBroi[1] = BBroi[2] = BBroi[3] = 0;
 
     blackbodyexternalname = "./";
     blackbodysampleexternalname = "./";
@@ -483,7 +485,7 @@ void BBLogNormDlg::on_buttonPreviewOBBB_clicked()
                                              m_Config->mImageInformation.eFlip,
                                              m_Config->mImageInformation.eRotate,
                                              1.0f,
-                                             NULL);
+                                             {});
 //            }
 //            else {
 //                 m_Preview_OBBB = reader.ReadNexus(blackbodyname, 0,
@@ -671,8 +673,8 @@ void BBLogNormDlg::on_buttonPreviewsampleBB_clicked()
         m_Preview_sampleBB = reader.Read(filename,
                                          m_Config->mImageInformation.eFlip,
                                          m_Config->mImageInformation.eRotate,
-                                     1.0f,
-                                     NULL);
+                                         1.0f,
+                                         {});
 
 
         float lo,hi;
