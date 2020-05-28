@@ -8,6 +8,7 @@
 #include <libxml/xmlreader.h>
 #include <base/kiplenums.h>
 #include <set>
+#include <vector>
 
 #include <logging/logger.h>
 
@@ -92,7 +93,7 @@ public:
 
 		std::set<size_t> skip_list;
 		bool bCrop;
-		size_t nCrop[4];
+        std::vector<size_t> nCrop;
 		kipl::base::eImageFlip flip;
 		kipl::base::eImageRotate rotate;
 		bool bReplaceZeros;

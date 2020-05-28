@@ -232,8 +232,8 @@ int FileConversionDialog::ConvertImages()
     QMessageBox dlg;
     std::ostringstream msg,errmsg;
 
-    size_t roi[4]={0,0,1,1};
-    size_t *crop=nullptr;
+    std::vector<size_t> roi={0,0,1,1};
+    std::vector<size_t> crop;
     if (ui->widgetROI->isChecked() == true) {
         logger.message("using ROI");
         ui->widgetROI->getROI(roi);
@@ -245,7 +245,7 @@ int FileConversionDialog::ConvertImages()
 
     std::vector<size_t> dims(2);
 
-    if (crop)
+    if (!crop.empty())
     {
         dims[0]=crop[2]-crop[0];
         dims[1]=crop[3]-crop[1];

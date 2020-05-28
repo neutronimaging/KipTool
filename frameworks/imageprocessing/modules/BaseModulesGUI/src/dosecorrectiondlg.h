@@ -3,6 +3,7 @@
 #define DOSECORRECTIONDLG_H
 
 #include <ConfiguratorDialogBase.h>
+#include <vector>
 
 namespace Ui {
 class DoseCorrectionDlg;
@@ -30,7 +31,7 @@ private:
     double m_fSlope;
     double m_fIntercept;
 
-    size_t m_nROI[4];
+    std::vector<size_t> m_nROI;
 };
 
 #endif // DOSECORRECTIONDLG_H

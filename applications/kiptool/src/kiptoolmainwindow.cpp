@@ -142,7 +142,7 @@ void KipToolMainWindow::UpdateDialog()
     loadInfo.m_nRepeat   = m_config.mImageInformation.nRepeat;
     loadInfo.m_nStride   = m_config.mImageInformation.nStride;
 
-    std::copy_n(m_config.mImageInformation.nROI, 4, loadInfo.m_ROI);
+    m_config.mImageInformation.nROI = loadInfo.m_ROI;
     ui->widget_loadForm->setReaderConfig(loadInfo);
 
     ui->edit_destinationpath->setText(QString::fromStdString(m_config.mOutImageInformation.sDestinationPath));
@@ -188,7 +188,7 @@ void KipToolMainWindow::UpdateConfig()
     m_config.mImageInformation.eRotate         = readerInfo.m_Rotate;
 
     m_config.mImageInformation.bUseROI = readerInfo.m_bUseROI;
-    std::copy_n(readerInfo.m_ROI,4,m_config.mImageInformation.nROI);
+    readerInfo.m_ROI = m_config.mImageInformation.nROI;
 
     m_config.modules = ui->widget_moduleconfigurator->GetModules();
     switch (ui->combo_FileType->currentIndex())

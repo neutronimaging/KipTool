@@ -72,21 +72,24 @@ int Fits2Tif::GetImage(std::list<kipl::base::TImage<float,2> > &imglist, std::st
     kipl::io::eExtensionTypes exttype=kipl::io::GetFileExtensionType(fm);
     kipl::base::TImage<unsigned short> simg;
     kipl::base::TRotate<float> rotate;
-    size_t *crop=config.bCrop ? config.nCrop : NULL;
+
+    std::vector<size_t> crop;
+    if (config.bCrop)
+        crop = config.nCrop;
 
     try {
         switch (exttype) {
         case kipl::io::ExtensionDMP :
         case kipl::io::ExtensionDAT :
 
-        case kipl::io::ExtensionRAW : kipl::io::ReadGeneric(simglist,fname.c_str(),
+        case kipl::io::ExtensionRAW : kipl::io::ReadGeneric(simglist,fname,
                                                                 config.nImgSizeX,config.nImgSizeY,
                                                                 config.nReadOffset,config.nStride,
                                                                 config.nImagesPerFile,
                                                                 config.datatype,config.endian,crop);
                 break;
-        case kipl::io::ExtensionFITS: kipl::io::ReadFITS(simg,fname.c_str(),crop); simglist.push_back(simg); break;
-        case kipl::io::ExtensionTIFF: kipl::io::ReadTIFF(simg,fname.c_str(),crop); simglist.push_back(simg); break;
+        case kipl::io::ExtensionFITS: kipl::io::ReadFITS(simg,fname,crop,0); simglist.push_back(simg); break;
+        case kipl::io::ExtensionTIFF: kipl::io::ReadTIFF(simg,fname,crop,0); simglist.push_back(simg); break;
         case kipl::io::ExtensionTXT :
         case kipl::io::ExtensionXML :
         case kipl::io::ExtensionPNG :
