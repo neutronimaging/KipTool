@@ -142,7 +142,7 @@ void KipToolMainWindow::UpdateDialog()
     loadInfo.m_nRepeat   = m_config.mImageInformation.nRepeat;
     loadInfo.m_nStride   = m_config.mImageInformation.nStride;
 
-    std::copy_n(m_config.mImageInformation.nROI, 4, loadInfo.m_ROI);
+    m_config.mImageInformation.nROI = loadInfo.m_ROI;
     ui->widget_loadForm->setReaderConfig(loadInfo);
 
     ui->edit_destinationpath->setText(QString::fromStdString(m_config.mOutImageInformation.sDestinationPath));
@@ -188,7 +188,7 @@ void KipToolMainWindow::UpdateConfig()
     m_config.mImageInformation.eRotate         = readerInfo.m_Rotate;
 
     m_config.mImageInformation.bUseROI = readerInfo.m_bUseROI;
-    std::copy_n(readerInfo.m_ROI,4,m_config.mImageInformation.nROI);
+    readerInfo.m_ROI = m_config.mImageInformation.nROI;
 
     m_config.modules = ui->widget_moduleconfigurator->GetModules();
     switch (ui->combo_FileType->currentIndex())
@@ -388,7 +388,7 @@ void KipToolMainWindow::on_slider_images_sliderMoved(int position)
 
         m_SliceOriginal=kipl::base::ExtractSlice(m_OriginalImage,static_cast<size_t>(position),m_eSlicePlane);
 
-        ui->imageviewer_original->set_image(m_SliceOriginal.GetDataPtr(),m_SliceOriginal.Dims(),lo,hi);
+        ui->imageviewer_original->set_image(m_SliceOriginal.GetDataPtr(),m_SliceOriginal.dims(),lo,hi);
         if (m_Engine!=nullptr) {
             kipl::base::TImage<float,3> &result=m_Engine->GetResultImage();
 
@@ -398,15 +398,15 @@ void KipToolMainWindow::on_slider_images_sliderMoved(int position)
             {
                 m_SliceResult = kipl::base::ExtractSlice(result,position,m_eSlicePlane);
                 if (m_bRescaleViewers) {
-                    ui->imageviewer_processed->set_image(m_SliceResult.GetDataPtr(), m_SliceResult.Dims());
+                    ui->imageviewer_processed->set_image(m_SliceResult.GetDataPtr(), m_SliceResult.dims());
                     m_bRescaleViewers=false;
                 }
                 else {
                     ui->imageviewer_processed->get_levels(&lo,&hi);
-                    ui->imageviewer_processed->set_image(m_SliceResult.GetDataPtr(), m_SliceResult.Dims(),lo,hi);
+                    ui->imageviewer_processed->set_image(m_SliceResult.GetDataPtr(), m_SliceResult.dims(),lo,hi);
                 }
 
-                kipl::base::TImage<float,2> diff(m_SliceOriginal.Dims());
+                kipl::base::TImage<float,2> diff(m_SliceOriginal.dims());
                 float *pDiff=diff.GetDataPtr();
                 float *pRes=m_SliceResult.GetDataPtr();
                 float *pImg=m_SliceOriginal.GetDataPtr();
@@ -414,7 +414,7 @@ void KipToolMainWindow::on_slider_images_sliderMoved(int position)
                 for (size_t i=0; i<diff.Size(); i++) {
                         pDiff[i]=pRes[i]-pImg[i];
                 }
-                ui->imageviewer_difference->set_image(pDiff,diff.Dims());
+                ui->imageviewer_difference->set_image(pDiff,diff.dims());
             }
         }
         else {
@@ -689,7 +689,7 @@ void KipToolMainWindow::on_actionStart_processing_triggered()
 
     //  post processing admin
         kipl::base::TImage<float,3> &result=m_Engine->GetResultImage();
-        kipl::base::TImage<float,2> img(result.Dims());
+        kipl::base::TImage<float,2> img(result.dims());
 
         m_config.UserInformation.sDate = kipl::utilities::TimeStamp();
         memcpy(img.GetDataPtr(),result.GetLinePtr(0,result.Size(2)/2),img.Size()*sizeof(float));

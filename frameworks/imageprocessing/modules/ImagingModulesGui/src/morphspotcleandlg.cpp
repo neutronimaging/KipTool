@@ -82,7 +82,7 @@ void MorphSpotCleanDlg::ApplyParameters()
 
     m_Cleaner.Configure(*config, parameters);
 
-    kipl::base::TImage<float,2> originalSlice(m_OriginalImage.Dims());
+    kipl::base::TImage<float,2> originalSlice(m_OriginalImage.dims());
 
     std::copy_n(m_OriginalImage.GetLinePtr(0,m_OriginalImage.Size(2)/2),originalSlice.Size(),originalSlice.GetDataPtr());
 
@@ -102,8 +102,11 @@ void MorphSpotCleanDlg::ApplyParameters()
         prepareDetectionPlot(m_DetectionImagePeaks,1,N,"Detection Peaks","Threshold Peaks");
 
     std::map<std::string,std::string> pars;
-    size_t dims[3]={m_OriginalImage.Size(0),m_OriginalImage.Size(1),1};
-    m_ProcessedImage.Resize(dims);
+    std::vector<size_t> dims = {m_OriginalImage.Size(0),
+                                m_OriginalImage.Size(1),
+                                1};
+
+    m_ProcessedImage.resize(dims);
     std::copy_n(m_OriginalImage.GetDataPtr(),m_ProcessedImage.Size(),m_ProcessedImage.GetDataPtr());
 
     m_Cleaner.Process(m_ProcessedImage, pars);
@@ -116,17 +119,17 @@ void MorphSpotCleanDlg::ApplyParameters()
     memset(axis,0,N*sizeof(float));
     kipl::base::Histogram(m_ProcessedImage.GetDataPtr(), m_ProcessedImage.Size(), hist, N, 0.0f, 0.0f, axis);
     kipl::base::FindLimits(hist, N, 97.5, &nLo, &nHi);
-    ui->viewer_original->set_image(m_OriginalImage.GetDataPtr(),m_OriginalImage.Dims());
-    ui->viewer_processed->set_image(m_ProcessedImage.GetDataPtr(),m_ProcessedImage.Dims());
+    ui->viewer_original->set_image(m_OriginalImage.GetDataPtr(),m_OriginalImage.dims());
+    ui->viewer_processed->set_image(m_ProcessedImage.GetDataPtr(),m_ProcessedImage.dims());
 
-    kipl::base::TImage<float,2> diffimg(m_ProcessedImage.Dims());
+    kipl::base::TImage<float,2> diffimg(m_ProcessedImage.dims());
     for (size_t i=0; i<m_ProcessedImage.Size(); ++i)
         diffimg[i]=m_OriginalImage[i]-m_ProcessedImage[i];
 
     kipl::base::Histogram(diffimg.GetDataPtr(), diffimg.Size(), hist, N, 0.0f, 0.0f, axis);
     kipl::base::FindLimits(hist, N, 99.0f, &nLo, &nHi);
 
-    ui->viewer_difference->set_image(diffimg.GetDataPtr(),diffimg.Dims(),axis[nLo],axis[nHi]);
+    ui->viewer_difference->set_image(diffimg.GetDataPtr(),diffimg.dims(),axis[nLo],axis[nHi]);
 }
 
 void MorphSpotCleanDlg::prepareDetectionPlot(kipl::base::TImage<float,2> &img,int det,size_t N,std::string curvelabel, std::string threslabel)
@@ -188,7 +191,7 @@ int MorphSpotCleanDlg::exec(ConfigBase *_config, std::map<std::string, std::stri
 
     m_Projections=img;
 
-    ui->viewer_original->set_image(m_Projections.GetDataPtr(),m_Projections.Dims());
+    ui->viewer_original->set_image(m_Projections.GetDataPtr(),m_Projections.dims());
 
     config=dynamic_cast<KiplProcessConfig *>(_config);
 

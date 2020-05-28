@@ -36,7 +36,7 @@ kipl::base::TImage<float,3> LoadVolumeImage(KiplProcessConfig & config, kipl::in
                     config.mImageInformation.eFlip,
                     config.mImageInformation.eRotate,
                     1.0f,
-                    nullptr);
+                    {});
             }
 
 	}

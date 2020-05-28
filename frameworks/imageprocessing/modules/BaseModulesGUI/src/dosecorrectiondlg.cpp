@@ -11,7 +11,8 @@
 
 DoseCorrectionDlg::DoseCorrectionDlg(QWidget *parent) :
     ConfiguratorDialogBase("ClampData", true, false, true,parent),
-    ui(new Ui::DoseCorrectionDlg)
+    ui(new Ui::DoseCorrectionDlg),
+    m_nROI(4,0UL)
 {
     ui->setupUi(this);
     ui->roi_widget->registerViewer(ui->imageviewer);
@@ -86,6 +87,5 @@ void DoseCorrectionDlg::updateImage(kipl::base::TImage<float, 3> &img)
 {
     kipl::base::TImage<float,2> proj=kipl::math::BasicProjector<float>::project(img,kipl::base::ImagePlaneXY);
 
-    ui->imageviewer->set_image(proj.GetDataPtr(),proj.Dims());
-
+    ui->imageviewer->set_image(proj.GetDataPtr(),proj.dims());
 }

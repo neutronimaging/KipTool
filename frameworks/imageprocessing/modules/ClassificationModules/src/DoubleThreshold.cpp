@@ -45,7 +45,7 @@ std::map<std::string, std::string> DoubleThreshold::GetParameters()
 
 int DoubleThreshold::ProcessCore(kipl::base::TImage<float,3> & img, std::map<std::string, std::string> & coeff)
 {
-	kipl::base::TImage<char,3> mask(img.Dims());
+    kipl::base::TImage<char,3> mask(img.dims());
 
 	kipl::segmentation::DoubleThreshold(img,mask,
 			m_fLowThreshold,m_fHighThreshold,

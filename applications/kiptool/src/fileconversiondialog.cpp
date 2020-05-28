@@ -232,8 +232,8 @@ int FileConversionDialog::ConvertImages()
     QMessageBox dlg;
     std::ostringstream msg,errmsg;
 
-    size_t roi[4]={0,0,1,1};
-    size_t *crop=nullptr;
+    std::vector<size_t> roi={0,0,1,1};
+    std::vector<size_t> crop;
     if (ui->widgetROI->isChecked() == true) {
         logger.message("using ROI");
         ui->widgetROI->getROI(roi);
@@ -243,21 +243,21 @@ int FileConversionDialog::ConvertImages()
     const bool bCollate = ui->groupBox_combineImages->isChecked();
     const int nCollate   = bCollate ? ui->spinCollationSize->value() : 1;
 
-    size_t dims[3];
+    std::vector<size_t> dims(2);
 
-    if (crop)
+    if (!crop.empty())
     {
         dims[0]=crop[2]-crop[0];
         dims[1]=crop[3]-crop[1];
     }
     else
     {
-        imgreader.GetImageSize(flist.front(),1.0f,dims);
+        dims=imgreader.GetImageSize(flist.front(),1.0f);
     }
-    dims[2]=nCollate;
+    dims.push_back(nCollate);
 
     if (bCollate==true)
-        img3d.Resize(dims);
+        img3d.resize(dims);
 
     ImagingAlgorithms::AverageImage avgimg;
     errmsg.str("");

@@ -4,8 +4,10 @@
 #define MERGEVOLUME_H
 
 #include <string>
+#include <vector>
 
 #include <logging/logger.h>
+#include <base/timage.h>
 #include <tiffio.h>
 
 
@@ -42,8 +44,8 @@ public:
     int m_nMergeOrder;
 
     bool m_bCropSlices;
-    int m_nCropOffset[2];
-    int m_nCrop[4];
+    std::vector<int> m_nCropOffset;
+    std::vector<int> m_nCrop;
 protected:
     void CopyMerge();
     void CropMerge();

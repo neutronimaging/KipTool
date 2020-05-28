@@ -64,7 +64,7 @@ void BasicThresholdDlg::UpdateParameterList(std::map<std::string, std::string> &
 int BasicThresholdDlg::exec(ConfigBase *config, std::map<string, string> &parameters, kipl::base::TImage<float, 3> &img)
 {
     pOriginal = &img;
-    bilevelImg.Resize(img.Dims());
+    bilevelImg.resize(img.dims());
 
     const size_t N=512;
     size_t bins[N];

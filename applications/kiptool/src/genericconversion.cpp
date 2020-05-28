@@ -128,13 +128,13 @@ void GenericConversion::on_pushButton_Preview_clicked()
     try {
         std::string fname, ext;
         kipl::strings::filenames::MakeFileName(m_fname,m_firstImg,fname,ext,'#','0',false);
-        kipl::io::ReadGeneric(imgs ,fname.c_str(),
+        kipl::io::ReadGeneric(imgs ,fname,
                          m_sizeX,m_sizeY,
                          m_offset,m_stride,
                          1,
                          static_cast<kipl::base::eDataType>(m_type),
                          kipl::base::BigEndian,
-                         nullptr);
+                        {});
     }
     catch (kipl::base::KiplException &e) {
         std::ostringstream errmsg;
@@ -159,9 +159,9 @@ void GenericConversion::on_pushButton_Preview_clicked()
     }
 
     if (m_customLevels)
-        ui->viewer_preview->set_image(img.GetDataPtr(),img.Dims(),m_levelLo,m_levelHi);
+        ui->viewer_preview->set_image(img.GetDataPtr(),img.dims(),m_levelLo,m_levelHi);
     else
-        ui->viewer_preview->set_image(img.GetDataPtr(),img.Dims());
+        ui->viewer_preview->set_image(img.GetDataPtr(),img.dims());
 
     std::ostringstream text;
 

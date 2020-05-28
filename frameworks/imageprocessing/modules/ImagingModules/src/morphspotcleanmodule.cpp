@@ -120,7 +120,7 @@ int IMAGINGMODULESSHARED_EXPORT MorphSpotCleanModule::ProcessCore(kipl::base::TI
     for (size_t i=0; (i<Nslices && (updateStatus(float(i)/Nslices,"Processing MorphSpot cleaning")==false) ); i++)
     {
 
-        slice=kipl::base::ExtractSlice(img,i,kipl::base::ImagePlaneXY,nullptr);
+        slice=kipl::base::ExtractSlice(img,i,kipl::base::ImagePlaneXY,{});
 
             try {
                 cleaner.process(slice,m_fThreshold, m_fSigma);

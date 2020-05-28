@@ -341,6 +341,7 @@ ImagingToolConfig::FileConversionConfig::FileConversionConfig() :
     nImgSizeY(100),
     datatype(kipl::base::UInt16),
     bCrop(false),
+    nCrop({0,0,100,100}),
     flip(kipl::base::ImageFlipNone),
     rotate(kipl::base::ImageRotateNone),
     bReplaceZeros(false),
@@ -351,10 +352,6 @@ ImagingToolConfig::FileConversionConfig::FileConversionConfig() :
     nGoldenScanArc(0),
     nGoldenFirstIdx(1)
 {
-	nCrop[0]=0;
-	nCrop[1]=0;
-	nCrop[2]=100;
-	nCrop[3]=100;
 }
 
 void ImagingToolConfig::FileConversionConfig::ParseXML(xmlTextReaderPtr reader)
@@ -370,10 +367,10 @@ void ImagingToolConfig::FileConversionConfig::ParseXML(xmlTextReaderPtr reader)
 	        ret=xmlTextReaderRead(reader);
 
 	        value = xmlTextReaderConstValue(reader);
-	        if (name==NULL) {
+            if (name == nullptr) {
 				throw kipl::base::KiplException("Unexpected contents in parameter file",__FILE__,__LINE__);
 	        }
-	        if (value!=NULL)
+            if (value != nullptr)
 	        	sValue=reinterpret_cast<const char *>(value);
 	        else
 	        	sValue="Empty";
