@@ -5,14 +5,14 @@ else
     SPECSTR="-spec macx-clang CONFIG+=x86_64"
 fi
 
-REPOSPATH=$WORKSPACE/imagingsuite
+REPOSPATH=$WORKSPACE/kiptool
 
 DEST=$WORKSPACE/builds
 
 mkdir -p $DEST/build-kiptool
 cd $DEST/build-kiptool
 
-$QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../imagingsuite/applications/kiptool/qt/QtKipTool/QtKipTool.pro
+$QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../applications/kiptool/qt/QtKipTool/QtKipTool.pro
 make -f Makefile clean
 make -f Makefile mocables all
 make -f Makefile
@@ -29,7 +29,7 @@ then
             mkdir -p $DEST/build-$f
             cd $DEST/build-$f
 
-            $QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../imagingsuite/applications/kiptool/UnitTests/$f/$f.pro
+            $QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../applications/kiptool/UnitTests/$f/$f.pro
             make -f Makefile clean
             make -f Makefile mocables all
             make -f Makefile
