@@ -93,7 +93,6 @@ int Fits2Tif::GetImage(std::list<kipl::base::TImage<float,2> > &imglist, std::st
         case kipl::io::ExtensionTXT :
         case kipl::io::ExtensionXML :
         case kipl::io::ExtensionPNG :
-        case kipl::io::ExtensionMAT :
         case kipl::io::ExtensionHDF :
         default : throw kipl::base::KiplException("The chosen file type is not implemented",__FILE__,__LINE__);
         }
