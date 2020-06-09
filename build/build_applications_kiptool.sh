@@ -12,7 +12,7 @@ DEST=$WORKSPACE/builds
 mkdir -p $DEST/build-kiptool
 cd $DEST/build-kiptool
 
-$QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../kiptool/applications/kiptool/qt/QtKipTool/QtKipTool.pro
+$QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile $REPOSPATH/applications/kiptool/qt/QtKipTool/QtKipTool.pro
 make -f Makefile clean
 make -f Makefile mocables all
 make -f Makefile
@@ -29,7 +29,7 @@ then
             mkdir -p $DEST/build-$f
             cd $DEST/build-$f
 
-            $QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile ../../kiptool/applications/kiptool/UnitTests/$f/$f.pro
+            $QTBINPATH/qmake -makefile -r $SPECSTR -o Makefile $REPOSPATH/applications/kiptool/UnitTests/$f/$f.pro
             make -f Makefile clean
             make -f Makefile mocables all
             make -f Makefile
