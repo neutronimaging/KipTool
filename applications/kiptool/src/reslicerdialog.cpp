@@ -163,20 +163,23 @@ void ReslicerDialog::on_pushButton_preview_clicked()
 
             std::ostringstream msg;
             msg.str("");
-            try {
+            try
+            {
                 kipl::io::ReadTIFF(img,fname.c_str()); // the exception thrown from here makes the program crash.
             }
-            catch (kipl::base::KiplException &e) {
+            catch (ImagingException &e)
+            {
+                msg<<"Failed to load preview image: "<<fname<<std::endl<<e.what();
+                logger(logger.LogError, msg.str());
+                throw ImagingException(msg.str(),__FILE__,__LINE__);
+
+            }
+            catch (kipl::base::KiplException &e)
+            {
 
                 msg<<"Failed to load preview image: "<<fname<<std::endl<<e.what();
                 logger(logger.LogError, msg.str());
                 throw kipl::base::KiplException(msg.str(),__FILE__,__LINE__);
-
-            }
-            catch (ImagingException &e) {
-                msg<<"Failed to load preview image: "<<fname<<std::endl<<e.what();
-                logger(logger.LogError, msg.str());
-                throw ImagingException(msg.str(),__FILE__,__LINE__);
 
             }
             catch(...)
