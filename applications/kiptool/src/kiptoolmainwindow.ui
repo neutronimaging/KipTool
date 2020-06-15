@@ -182,6 +182,11 @@
                   <string>16bit multi-frame TIFF</string>
                  </property>
                 </item>
+                <item>
+                 <property name="text">
+                  <string>float multi-frame TIFF</string>
+                 </property>
+                </item>
                </widget>
               </item>
              </layout>
