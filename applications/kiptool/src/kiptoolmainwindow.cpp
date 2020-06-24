@@ -211,8 +211,9 @@ void KipToolMainWindow::UpdateConfig()
         case 1: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF8bits; break;
         case 2: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF16bits; break;
         case 3: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFFfloat; break;
-        case 4: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF16bitsMultiFrame; break;
-        case 5: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFFfloatMultiFrame; break;
+        case 4: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF8bitsMultiFrame; break;
+        case 5: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF16bitsMultiFrame; break;
+        case 6: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFFfloatMultiFrame; break;
     }
 
     m_config.UserInformation.sComment       = ui->text_description->toPlainText().toStdString();
