@@ -136,10 +136,12 @@ void MergeVolume::CopyMerge()
             }
 
             kipl::strings::filenames::MakeFileName(dst_mask,cnt,dst_fname,ext,'#','0');
+            if (BitPerSample==8)
+                kipl::io::WriteTIFF(a,dst_fname,0.0f, 65535.0f,kipl::base::UInt8);
             if (BitPerSample==16)
-                kipl::io::WriteTIFF(a,dst_fname.c_str(),0.0f, 65535.0f);
+                kipl::io::WriteTIFF(a,dst_fname,0.0f, 65535.0f,kipl::base::UInt16);
             if (BitPerSample==32)
-                kipl::io::WriteTIFF32(a, dst_fname.c_str());
+                kipl::io::WriteTIFF(a, dst_fname, 0.0f,0.0f, kipl::base::Float32);
         }
     }
     catch (kipl::base::KiplException &e) {
@@ -219,9 +221,9 @@ void MergeVolume::CropMerge() {
 
         bps=kipl::io::ReadTIFF(a,src_fname,cropA,0);
         switch (bps) {
-        case 8:
-        case 16: kipl::io::WriteTIFF(a,dst_fname.c_str(),0.0f,65535.0f); break;
-        case 32: kipl::io::WriteTIFF32(a,dst_fname.c_str()); break;
+        case 8:  kipl::io::WriteTIFF(a,dst_fname,0.0f,255.0f,kipl::base::UInt8); break;
+        case 16: kipl::io::WriteTIFF(a,dst_fname,0.0f,65535.0f, kipl::base::UInt16); break;
+        case 32: kipl::io::WriteTIFF(a,dst_fname,0.0f,0.0f,kipl::base::Float32); break;
         default: throw kipl::base::KiplException("Unhandled number of bits",__FILE__,__LINE__);
         }
     }
@@ -248,9 +250,9 @@ void MergeVolume::CropMerge() {
 
             kipl::strings::filenames::MakeFileName(dst_mask,cnt,dst_fname,ext,'#','0');
             switch (bps) {
-            case 8:
-            case 16: kipl::io::WriteTIFF(a,dst_fname.c_str(),0.0f,65535.0f); break;
-            case 32: kipl::io::WriteTIFF32(a,dst_fname.c_str()); break;
+            case 8:  kipl::io::WriteTIFF(a,dst_fname,0.0f,255.0f, kipl::base::UInt8); break;
+            case 16: kipl::io::WriteTIFF(a,dst_fname,0.0f,65535.0f, kipl::base::UInt16); break;
+            case 32: kipl::io::WriteTIFF(a,dst_fname,0.0f,0.0f,kipl::base::Float32); break;
             default: throw kipl::base::KiplException("Unhandled number of bits",__FILE__,__LINE__);
             }
         }
@@ -285,9 +287,9 @@ void MergeVolume::CropMerge() {
         kipl::strings::filenames::MakeFileName(dst_mask,cnt,dst_fname,ext,'#','0');
         bps=kipl::io::ReadTIFF(a,src_fname,cropB,0);
         switch (bps) {
-        case 8:
-        case 16: kipl::io::WriteTIFF(a,dst_fname.c_str(),0.0f,65535.0f); break;
-        case 32: kipl::io::WriteTIFF32(a,dst_fname.c_str()); break;
+        case 8:  kipl::io::WriteTIFF(a,dst_fname,0.0f,255.0f, kipl::base::UInt8); break;
+        case 16: kipl::io::WriteTIFF(a,dst_fname,0.0f,65535.0f, kipl::base::UInt16); break;
+        case 32: kipl::io::WriteTIFF(a,dst_fname,0.0f, 0.0f, kipl::base::Float32); break;
         default: throw kipl::base::KiplException("Unhandled number of bits",__FILE__,__LINE__);
         }
     }

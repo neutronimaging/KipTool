@@ -150,10 +150,11 @@ bool KiplEngine::SaveImage(KiplProcessConfig::cOutImageInformation * info)
 		float minval=0.0f;
         switch (config->eResultImageType)
         {
-            case kipl::io::TIFF8bits  : maxval=255.0f;   minval=0.0f; break;
-			case kipl::io::TIFF16bits : maxval=65535.0f; minval=0.0f; break;
-            case kipl::io::TIFFfloat  : maxval=65535.0f; minval=0.0f; break;
+            case kipl::io::TIFF8bits            : maxval=255.0f;   minval=0.0f; break;
+            case kipl::io::TIFF16bits           : maxval=65535.0f; minval=0.0f; break;
+            case kipl::io::TIFFfloat            : maxval=65535.0f; minval=0.0f; break;
             case kipl::io::TIFF16bitsMultiFrame : maxval=65535.0f; minval=0.0f; break;
+            case kipl::io::TIFFfloatMultiFrame  : maxval=0.0f;     minval=0.0f; break;
 			default : throw KiplFrameworkException("Trying to save unsupported file type",__FILE__,__LINE__);
 		}
 

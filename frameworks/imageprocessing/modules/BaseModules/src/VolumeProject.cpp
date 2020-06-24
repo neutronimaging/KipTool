@@ -57,7 +57,7 @@ int VolumeProject::ProcessCore(kipl::base::TImage<float,3> & img, std::map<std::
 	case ProjectMax: 	 proj=MaxProject(img); break;
 	}
 
-	kipl::io::WriteTIFF32(proj,m_sFileName.c_str());
+    kipl::io::WriteTIFF(proj,m_sFileName,kipl::base::Float32);
 
 	return 0;
 }

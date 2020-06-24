@@ -149,10 +149,14 @@ void KipToolMainWindow::UpdateDialog()
     ui->edit_destinationmask->setText(QString::fromStdString(m_config.mOutImageInformation.sDestinationFileMask));
 
     int idx=0;
-    switch (m_config.mOutImageInformation.eResultImageType) {
-        case kipl::io::TIFF8bits  : idx=1; break;
-        case kipl::io::TIFF16bits : idx=2; break;
-        case kipl::io::TIFFfloat  : idx=3; break;
+    switch (m_config.mOutImageInformation.eResultImageType)
+    {
+        case kipl::io::TIFF8bits            : idx=1; break;
+        case kipl::io::TIFF16bits           : idx=2; break;
+        case kipl::io::TIFFfloat            : idx=3; break;
+        case kipl::io::TIFF16bitsMultiFrame : idx=4; break;
+        case kipl::io::TIFFfloatMultiFrame  : idx=5; break;
+
         default: idx=0;
     }
 
@@ -207,7 +211,9 @@ void KipToolMainWindow::UpdateConfig()
         case 1: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF8bits; break;
         case 2: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF16bits; break;
         case 3: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFFfloat; break;
-        case 4: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF16bitsMultiFrame; break;
+        case 4: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF8bitsMultiFrame; break;
+        case 5: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF16bitsMultiFrame; break;
+        case 6: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFFfloatMultiFrame; break;
     }
 
     m_config.UserInformation.sComment       = ui->text_description->toPlainText().toStdString();
