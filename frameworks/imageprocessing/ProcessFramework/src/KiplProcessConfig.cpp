@@ -12,6 +12,7 @@
 
 #include "../include/KiplProcessConfig.h"
 #include "../include/KiplFrameworkException.h"
+#include <ModuleException.h>
 
 #include <io/analyzefileext.h>
 
@@ -53,7 +54,62 @@ std::string KiplProcessConfig::WriteXML()
 
 		str<<"</kiplprocessing>"<<std::endl;
 
-		return str.str();
+        return str.str();
+}
+
+void KiplProcessConfig::ParseArgv(std::vector<std::string> &args)
+{
+    std::ostringstream msg;
+    logger(kipl::logging::Logger::LogMessage,"KiplProcessingConfig argv parse");
+
+    std::string group;
+    std::string var;
+    std::string value;
+
+    std::vector<std::string>::iterator it;
+    for (it=args.begin()+3 ; it!=args.end(); ++it)
+    {
+        try
+        {
+            EvalArg(*it,group,var,value);
+        }
+        catch (ModuleException &e)
+        {
+            msg<<"Failed to parse argument "<<e.what();
+            logger(kipl::logging::Logger::LogWarning,msg.str());
+        }
+
+        if (group=="system")
+        {
+            if (var=="memory")      mSystemInformation.nMemory     = std::stoul(value);
+            if (var=="loglevel")    string2enum(value,mSystemInformation.eLogLevel);
+        }
+
+        if (group=="image")
+        {
+            if (var=="srcpath")        mImageInformation.sSourcePath     = value;
+            if (var=="srcfilemask")    mImageInformation.sSourceFileMask = value;
+            if (var=="useroi")         mImageInformation.bUseROI         = kipl::strings::string2bool(value);
+            //if (var=="roi")         kipl::strings::string2vector(value, mImageInformation.nROI);
+            if (var=="firstfileindex") mImageInformation.nFirstFileIndex = std::stoul(value);
+            if (var=="lastfileindex")  mImageInformation.nLastFileIndex  = std::stoul(value);
+            if (var=="step")           mImageInformation.nStepFileIndex  = std::stoul(value);
+            if (var=="stride")         mImageInformation.nStride         = std::stoul(value);
+            if (var=="repeat")         mImageInformation.nRepeat         = std::stoul(value);
+
+            if (var=="flip")           string2enum(value,mImageInformation.eFlip);
+            if (var=="rotate")         string2enum(value,mImageInformation.eRotate);
+        }
+
+        if (group == "outimage")
+        {
+            if (var=="rescaleresult")   mOutImageInformation.bRescaleResult       = kipl::strings::string2bool(value);
+            if (var=="dstpath")         mOutImageInformation.sDestinationPath     = value;
+            if (var=="dstfilemask")     mOutImageInformation.sDestinationFileMask = value;
+            if (var=="imagetype")       string2enum(value,mOutImageInformation.eResultImageType);
+        }
+
+    }
 }
 
 void KiplProcessConfig::ParseConfig(xmlTextReaderPtr reader, std::string sName)
@@ -236,11 +292,12 @@ std::string KiplProcessConfig::cImageInformation::WriteXML(int indent)
 	str<<setw(indent+4)<<"  "<<"<srcfilemask>"<<sSourceFileMask<<"</srcfilemask>"<<std::endl;
 	str<<setw(indent+4)<<"  "<<"<firstfileindex>"<<nFirstFileIndex<<"</firstfileindex>"<<std::endl;
 	str<<setw(indent+4)<<"  "<<"<lastfileindex>"<<nLastFileIndex<<"</lastfileindex>"<<std::endl;
-    str<<kipl::strings::xmlString("useroi", bUseROI,              indent+4);
-    str<<kipl::strings::xmlString("stride", nStride,              indent+4);
-    str<<kipl::strings::xmlString("repeat", nRepeat,              indent+4);
-    str<<kipl::strings::xmlString("flip",   enum2string(eFlip),   indent+4);
-    str<<kipl::strings::xmlString("rotate", enum2string(eRotate), indent+4);
+    str<<kipl::strings::xmlString("stepfileindex", nStepFileIndex,       indent+4);
+    str<<kipl::strings::xmlString("useroi",        bUseROI,              indent+4);
+    str<<kipl::strings::xmlString("stride",        nStride,              indent+4);
+    str<<kipl::strings::xmlString("repeat",        nRepeat,              indent+4);
+    str<<kipl::strings::xmlString("flip",          enum2string(eFlip),   indent+4);
+    str<<kipl::strings::xmlString("rotate",        enum2string(eRotate), indent+4);
 
 	str<<setw(indent+4)<<"  "<<"<roi>"<<nROI[0]<<" "<<nROI[1]<<" "<<nROI[2]<<" "<<nROI[3]<<"</roi>"<<std::endl;
 	str<<setw(indent)  <<"  "<<"</image>"<<std::endl;
@@ -255,13 +312,16 @@ void KiplProcessConfig::cImageInformation::ParseXML(xmlTextReaderPtr reader)
     std::string sName, sValue;
     int depth=xmlTextReaderDepth(reader);
 
-    while (ret == 1) {
-    	if (xmlTextReaderNodeType(reader)==1) {
+    while (ret == 1)
+    {
+        if (xmlTextReaderNodeType(reader)==1)
+        {
 	        name = xmlTextReaderConstName(reader);
 	        ret=xmlTextReaderRead(reader);
 	        
 	        value = xmlTextReaderConstValue(reader);
-            if (name==nullptr) {
+            if (name==nullptr)
+            {
 	            throw KiplFrameworkException("Unexpected contents in parameter file",__FILE__,__LINE__);
 	        }
             if (value!=nullptr)
@@ -270,30 +330,41 @@ void KiplProcessConfig::cImageInformation::ParseXML(xmlTextReaderPtr reader)
 	        	sValue="Empty";
 	        sName=reinterpret_cast<const char *>(name);
 
-	        if (sName=="srcpath") {
+            if (sName=="srcpath")
+            {
 				sSourcePath=sValue;
 	        }
 
-			if (sName=="srcfilemask") {
+            if (sName=="srcfilemask")
+            {
 				sSourceFileMask=sValue;
 	        }
 
 
-			if (sName=="useroi") {
+            if (sName=="useroi")
+            {
 				bUseROI=kipl::strings::string2bool(sValue);
 			}
 
-			if (sName=="roi") {
+            if (sName=="roi")
+            {
 				kipl::strings::String2Array(sValue,nROI,4);
 			}
 
-			if (sName=="firstfileindex") {
+            if (sName=="firstfileindex")
+            {
 				nFirstFileIndex=atoi(sValue.c_str());
 			}
 
-			if (sName=="lastfileindex") {
+            if (sName=="lastfileindex")
+            {
 				nLastFileIndex=atoi(sValue.c_str());
 			}
+
+            if (sName=="stepfileindex")
+            {
+                nStepFileIndex=atoi(sValue.c_str());
+            }
 
             if (sName=="stride")
             {

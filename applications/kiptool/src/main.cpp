@@ -72,12 +72,17 @@ int RunOffline(QApplication * a)
 {
     std::ostringstream msg;
     kipl::logging::Logger logger("QtKipTool::RunOffline");
-    QVector<QString> args=a->arguments().toVector();
+    QVector<QString> qargs=a->arguments().toVector();
 
+    std::vector<std::string> args;
+
+    for (int i=0; i<qargs.size(); i++) {
+        args.push_back(qargs[i].toStdString());
+    }
 
     // Command line mode
     if ((2<args.size()) && (args[1]=="-f")) {
-        std::string fname(args[2].toStdString());
+        std::string fname(args[2]);
 
         KiplProcessConfig config(QCoreApplication::applicationDirPath().toStdString());
         KiplEngine *engine=nullptr;
@@ -85,6 +90,7 @@ int RunOffline(QApplication * a)
 
         try {
             config.LoadConfigFile(fname,"kiplprocessing");
+            config.GetCommandLinePars(args);
             engine=factory.BuildEngine(config);
         }
         catch (ModuleException & e) {
