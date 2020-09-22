@@ -56,9 +56,9 @@ void FileConversionDialog::on_pushButton_GetSkipList_clicked()
 {
     FindSkipListDialog dlg;
 
-    std::list<FileSet> loaderlist=ui->ImageLoaderConfig->GetList();
+    auto loaderlist=ui->ImageLoaderConfig->getList();
 
-    std::list<std::string> filelist=BuildFileList(loaderlist);
+    auto filelist=BuildFileList(loaderlist);
 
     int res=dlg.exec(filelist);
 
@@ -101,7 +101,7 @@ void FileConversionDialog::on_pushButton_StartConversion_clicked()
     filecnt=0;
     flist.clear();
 
-    std::list<FileSet> ll=ui->ImageLoaderConfig->GetList();
+    auto ll=ui->ImageLoaderConfig->getList();
 
     if (ll.empty()==true)
     {
@@ -124,9 +124,9 @@ void FileConversionDialog::on_pushButton_StartConversion_clicked()
     }
 
     std::string skipstring=ui->lineEdit_SkipList->text().toStdString();
-    std::list<int> skiplist;
+    std::vector<int> skiplist;
 
-    kipl::strings::String2List(skipstring,skiplist);
+    kipl::strings::string2vector(skipstring,skiplist);
 
     std::map<float,std::string> plist=BuildProjectionFileList(ll,skiplist,
                                                               ui->comboBox_ScanOrder->currentIndex(),
@@ -252,7 +252,7 @@ int FileConversionDialog::ConvertImages()
     }
     else
     {
-        dims=imgreader.GetImageSize(flist.front(),1.0f);
+        dims=imgreader.imageSize(flist.front(),1.0f);
     }
     dims.push_back(nCollate);
 
@@ -387,7 +387,7 @@ void FileConversionDialog::on_spinCollationSize_valueChanged(int arg1)
 {
    std::ostringstream msg;
 
-   std::list<FileSet> ll=ui->ImageLoaderConfig->GetList();
+   auto ll=ui->ImageLoaderConfig->getList();
 
    if (ll.empty()==true) {
        logger(logger.LogWarning,"Empty image loader.");
@@ -395,9 +395,9 @@ void FileConversionDialog::on_spinCollationSize_valueChanged(int arg1)
    }
 
    std::string skipstring=ui->lineEdit_SkipList->text().toStdString();
-   std::list<int> skiplist;
+   std::vector<int> skiplist;
 
-   kipl::strings::String2List(skipstring,skiplist);
+   kipl::strings::string2vector(skipstring,skiplist);
 
    std::map<float,std::string> plist=BuildProjectionFileList(ll,
                                                              skiplist,
@@ -434,7 +434,7 @@ void FileConversionDialog::on_ImageLoaderConfig_readerListModified()
 {
     std::ostringstream msg;
 
-    std::list<FileSet> ll=ui->ImageLoaderConfig->GetList();
+    auto ll=ui->ImageLoaderConfig->getList();
     kipl::base::TImage<float,2> img;
     if (ll.empty()==true) {
         logger(logger.LogWarning,"Empty image loader.");
