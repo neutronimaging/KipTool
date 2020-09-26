@@ -65,19 +65,20 @@ public:
 
     KiplProcessConfig(const std::string &appPath);
 	~KiplProcessConfig(void);
-	std::string WriteXML();
+    std::string WriteXML() override;
 
 	cSystemInformation    mSystemInformation;
 	cImageInformation     mImageInformation;
 	cOutImageInformation  mOutImageInformation;
 
 private:
-    virtual void ParseConfig(xmlTextReaderPtr reader, std::string sName);
-    virtual void ParseProcessChain(xmlTextReaderPtr reader);
+    virtual void ParseArgv(std::vector<std::string> &args) override;
+    virtual void ParseConfig(xmlTextReaderPtr reader, std::string sName) override;
+    virtual void ParseProcessChain(xmlTextReaderPtr reader) override;
     /// Sanity check on the number of slices to be reconstruct during Config
-    virtual std::string SanitySlicesCheck() {return "";}
+    virtual std::string SanitySlicesCheck() override {return "";}
     /// Sanity message that warns about the number of slices that are being configured
-    virtual std::string SanityMessage(bool mess) {return "";}
+    virtual std::string SanityMessage(bool mess) override {return "";}
 };
 
 #endif

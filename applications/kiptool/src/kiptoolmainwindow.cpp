@@ -14,7 +14,7 @@
 #include <base/thistogram.h>
 #include <base/textractor.h>
 #include <io/DirAnalyzer.h>
-#include <datasetbase.h>
+#include <fileset.h>
 #include <strings/filenames.h>
 #include <stltools/stlvecmath.h>
 

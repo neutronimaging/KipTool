@@ -16,29 +16,20 @@ kipl::base::TImage<float,3> LoadVolumeImage(KiplProcessConfig & config, kipl::in
     std::string fname=config.mImageInformation.sSourceFileMask;
 
 	kipl::base::TImage<float,3> img;
+    std::vector<size_t> roi;
+    if (config.mImageInformation.bUseROI==true)
+        roi = config.mImageInformation.nROI;
+
     ImageReader reader(interactor);
 	try {	
-           if (config.mImageInformation.bUseROI==true) {
-                img=reader.Read(fname,
-                    config.mImageInformation.nFirstFileIndex,
-                    config.mImageInformation.nLastFileIndex,
-                    config.mImageInformation.nStepFileIndex,
-                    config.mImageInformation.eFlip,
-                    config.mImageInformation.eRotate,
-                    1.0f,
-                    config.mImageInformation.nROI);
-            }
-            else {
-                img=reader.Read(fname,
-                    config.mImageInformation.nFirstFileIndex,
-                    config.mImageInformation.nLastFileIndex,
-                    config.mImageInformation.nStepFileIndex,
-                    config.mImageInformation.eFlip,
-                    config.mImageInformation.eRotate,
-                    1.0f,
-                    {});
-            }
-
+        img=reader.Read(fname,
+            config.mImageInformation.nFirstFileIndex,
+            config.mImageInformation.nLastFileIndex,
+            config.mImageInformation.nStepFileIndex,
+            config.mImageInformation.eFlip,
+            config.mImageInformation.eRotate,
+            1.0f,
+            roi);
 	}
 	catch (kipl::base::KiplException &e) {
 		msg<<"KiplException with message: "<<e.what();
