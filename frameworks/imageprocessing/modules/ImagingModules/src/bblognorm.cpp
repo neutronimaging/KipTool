@@ -132,7 +132,7 @@ int IMAGINGMODULESSHARED_EXPORT BBLogNorm::Configure(KiplProcessConfig config, s
 
     m_Config    = config;
 
-    m_corrector.SetInteractor(m_Interactor); // outside the constructor.. to check if still OK.
+//    m_corrector.SetInteractor(m_Interactor); // outside the constructor.. to check if still OK.
     path = GetStringParameter(parameters,"path"); // not sure it is used
     flatname = GetStringParameter(parameters, "OB_PATH");
     darkname = GetStringParameter(parameters, "DC_PATH");
