@@ -132,7 +132,7 @@ int IMAGINGMODULESSHARED_EXPORT BBLogNorm::Configure(KiplProcessConfig config, s
 
     m_Config    = config;
 
-    m_corrector.SetInteractor(m_Interactor); // outside the constructor.. to check if still OK.
+//    m_corrector.SetInteractor(m_Interactor); // outside the constructor.. to check if still OK.
     path = GetStringParameter(parameters,"path"); // not sure it is used
     flatname = GetStringParameter(parameters, "OB_PATH");
     darkname = GetStringParameter(parameters, "DC_PATH");
@@ -1599,11 +1599,10 @@ int BBLogNorm::ProcessCore(kipl::base::TImage<float,3> & img, std::map<std::stri
             msg.str(""); msg<<"Reading dose for: " << filename;
             logger(kipl::logging::Logger::LogDebug,msg.str());
 
-            float dose = reader.GetProjectionDose(filename,
+            float dose = reader.projectionDose(  filename,dose_roi,
                                                   m_Config.mImageInformation.eFlip,
                                                   m_Config.mImageInformation.eRotate,
-                                                  1.0f,
-                                                  dose_roi);
+                                                  1.0f);
             doselist[i] = dose-fDarkDose;
         }
     }
@@ -1678,11 +1677,11 @@ kipl::base::TImage<float,2> BBLogNorm::ReferenceLoader(std::string fname,
 
             msg.str(""); msg<<"Reading dose";
             logger(kipl::logging::Logger::LogDebug,msg.str());
-            tmpdose=bUseNormROI ? reader.GetProjectionDose(filename,
+            tmpdose=bUseNormROI ? reader.projectionDose(filename,
+                                                           nOriginalNormRegion,
                                                            m_Config.mImageInformation.eFlip,
                                                            m_Config.mImageInformation.eRotate,
-                                                          1.0f,
-                                                          nOriginalNormRegion) : initialDose;
+                                                          1.0f) : initialDose;
 //         }
 //        else {
 //            img = reader.ReadNexus(fmask, firstIndex,
@@ -1723,11 +1722,11 @@ kipl::base::TImage<float,2> BBLogNorm::ReferenceLoader(std::string fname,
                         roi);
                 memcpy(img3D.GetLinePtr(0,i),img.GetDataPtr(),img.Size()*sizeof(float));
 
-                tmpdose = bUseNormROI ? reader.GetProjectionDose(filename,
+                tmpdose = bUseNormROI ? reader.projectionDose(filename,
+                                                              nOriginalNormRegion,
                                                                  m_Config.mImageInformation.eFlip,
                                                                  m_Config.mImageInformation.eRotate,
-                                                                1.0f,
-                            nOriginalNormRegion) : initialDose;
+                                                                1.0f) : initialDose;
 //            }
 //            else{
 //                    img=reader.ReadNexus(fmask,i+firstIndex,
@@ -1818,11 +1817,11 @@ kipl::base::TImage<float,2> BBLogNorm::BBLoader(std::string fname,
                              1.0f,
                     BBroi);
 
-            tmpdose=bUseNormROIBB ? reader.GetProjectionDose(filename,
+            tmpdose=bUseNormROIBB ? reader.projectionDose(filename,
+                                                          doseBBroi,
                                                              m_Config.mImageInformation.eFlip,
                                                              m_Config.mImageInformation.eRotate,
-                                                            1.0f,
-                        doseBBroi) : initialDose;
+                                                            1.0f) : initialDose;
 //        }
 //        else{
 //                img=reader.ReadNexus(fmask,firstIndex,
@@ -1861,11 +1860,11 @@ kipl::base::TImage<float,2> BBLogNorm::BBLoader(std::string fname,
                         BBroi);
                 memcpy(img3D.GetLinePtr(0,i),img.GetDataPtr(),img.Size()*sizeof(float));
 
-                tmpdose = bUseNormROIBB ? reader.GetProjectionDose(filename,
+                tmpdose = bUseNormROIBB ? reader.projectionDose(filename,
+                                                                doseBBroi,
                                                                    m_Config.mImageInformation.eFlip,
                                                                    m_Config.mImageInformation.eRotate,
-                                                                  1.0f,
-                            doseBBroi) : initialDose;
+                                                                  1.0f) : initialDose;
 //            }
 //            else{
 //                        img=reader.ReadNexus(fmask,i+firstIndex,
@@ -1942,11 +1941,11 @@ float BBLogNorm::DoseBBLoader(std::string fname,
 //    else
 //    {
         kipl::strings::filenames::MakeFileName(fmask,firstIndex,filename,ext,'#','0');
-        tmpdose=bUseNormROIBB ? reader.GetProjectionDose(filename,
+        tmpdose=bUseNormROIBB ? reader.projectionDose(filename,
+                                                      doseBBroi,
                                                          m_Config.mImageInformation.eFlip,
                                                          m_Config.mImageInformation.eRotate,
-                                                        1.0f,
-                                                        doseBBroi) : initialDose;
+                                                        1.0f) : initialDose;
 //    }
 
     tmpdose   = tmpdose - doseBias;
@@ -1975,11 +1974,11 @@ kipl::base::TImage <float,2> BBLogNorm::BBExternalLoader(std::string fname,
                          1.0f,
                          roi);
 
-        dose = bUseNormROI ? reader.GetProjectionDose(fname,
+        dose = bUseNormROI ? reader.projectionDose(fname,
+                                                   nOriginalNormRegion,
                                                       m_Config.mImageInformation.eFlip,
                                                       m_Config.mImageInformation.eRotate,
-                                                     1.0f,
-                    nOriginalNormRegion) : 0.0f;
+                                                     1.0f) : 0.0f;
 
 
         return img;
@@ -2029,11 +2028,10 @@ kipl::base::TImage <float,3> BBLogNorm::BBExternalLoader(std::string fname,
             }
 
 
-            mylist[i] = bUseNormROI ? reader.GetProjectionDose(filename,
+            mylist[i] = bUseNormROI ? reader.projectionDose(filename,nOriginalNormRegion,
                                                                m_Config.mImageInformation.eFlip,
                                                                m_Config.mImageInformation.eRotate,
-                                                              1.0f,
-                        nOriginalNormRegion) : 0.0f;
+                                                              1.0f) : 0.0f;
 
 
             memcpy(img.GetLinePtr(0,i),tempimg.GetDataPtr(),tempimg.Size()*sizeof(float));

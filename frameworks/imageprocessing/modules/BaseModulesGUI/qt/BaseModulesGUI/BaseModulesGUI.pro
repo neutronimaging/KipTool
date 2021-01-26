@@ -56,7 +56,6 @@ win32 {
         QMAKE_LFLAGS += /MACHINE:X64
     }
 
-    INCLUDEPATH += $$REPOS/imagingsuite/external/src/linalg
     INCLUDEPATH += $$REPOS/imagingsuite/external/include
     INCLUDEPATH += $$REPOS/imagingsuite/external/include/cfitsio
     INCLUDEPATH += $$REPOS/imagingsuite/external/include/libxml2

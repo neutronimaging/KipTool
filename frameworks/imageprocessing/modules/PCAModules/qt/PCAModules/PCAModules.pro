@@ -41,10 +41,9 @@ HEADERS += \
     ../../src/PCAModules_global.h \
     ../../src/pcamodules.h
 
-unix:INCLUDEPATH += $$REPOS/imagingsuite/external/src/linalg
 
 win32 {
-    INCLUDEPATH  += $$REPOS/imagingsuite/external/src/linalg $$REPOS/imagingsuite/external/include $$REPOS/imagingsuite/external/include/cfitsio $$REPOS/imagingsuite/external/include/libxml2
+    INCLUDEPATH  += $$REPOS/imagingsuite/external/include $$REPOS/imagingsuite/external/include/cfitsio $$REPOS/imagingsuite/external/include/libxml2
     QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../../../../external/lib64
     LIBS += -llibxml2_dll -llibtiff -lcfitsio
 }
@@ -81,7 +80,7 @@ win32 {
     contains(QMAKE_HOST.arch, x86_64):{
         QMAKE_LFLAGS += /MACHINE:X64
     }
-    INCLUDEPATH += $$REPOS/imagingsuite/external/src/linalg $$REPOS/imagingsuite/external/include $$REPOS/imagingsuite/external/include/cfitsio $$REPOS/imagingsuite/external/include/libxml2
+    INCLUDEPATH +=  $$REPOS/imagingsuite/external/include $$REPOS/imagingsuite/external/include/cfitsio $$REPOS/imagingsuite/external/include/libxml2
     QMAKE_LIBDIR += $$REPOS/imagingsuite/external/lib64
 
     LIBS += -llibxml2_dll -llibtiff -lcfitsio

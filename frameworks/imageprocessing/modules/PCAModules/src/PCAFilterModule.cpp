@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "PCAFilterModule.h"
 
+#include <armadillo>
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -67,13 +69,13 @@ int PCAFilterModule::ProcessCore(kipl::base::TImage<float,3> & img, std::map<std
     kipl::containers::PlotData<float,float> eigplot(img.Size(2),"Eigen values");
     kipl::containers::PlotData<float,float> normeigplot(img.Size(2),"Normalized eigen values");
 
-    TNT::Array1D<double> eigval=pca.eigenvalues();
+    arma::vec eigval=pca.eigenvalues();
 
     for (size_t i=0; i<eigplot.Size(); i++) {
         eigplot.GetX()[i]=static_cast<float>(i);
-        eigplot.GetY()[i]=static_cast<float>(eigval[i]);
+        eigplot.GetY()[i]=static_cast<float>(eigval(i));
         normeigplot.GetX()[i]=static_cast<float>(i);
-        normeigplot.GetY()[i]=static_cast<float>(eigval[i]/eigval[0]);
+        normeigplot.GetY()[i]=static_cast<float>(eigval(i)/eigval(0));
     }
 
     m_PlotList["Eigen values"]            = eigplot;

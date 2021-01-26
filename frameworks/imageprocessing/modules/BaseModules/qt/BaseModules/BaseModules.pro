@@ -16,7 +16,6 @@ CONFIG(release, debug|release): DESTDIR = $$REPOS/lib
 else:CONFIG(debug, debug|release): DESTDIR = $$REPOS/lib/debug
 
 unix:!symbian {
-    INCLUDEPATH += "$$REPOS/imagingsuite/external/src/linalg"
     QMAKE_CXXFLAGS += -fPIC -O2
 
     unix:!macx {
@@ -51,7 +50,7 @@ win32 {
     contains(QMAKE_HOST.arch, x86_64):{
         QMAKE_LFLAGS += /MACHINE:X64
     }
-    INCLUDEPATH  += $$REPOS/imagingsuite/external/src/linalg $$REPOS/imagingsuite/external/include $$REPOS/imagingsuite/external/include/cfitsio $$REPOS/imagingsuite/external/include/libxml2
+    INCLUDEPATH  += $$REPOS/imagingsuite/external/include $$REPOS/imagingsuite/external/include/cfitsio $$REPOS/imagingsuite/external/include/libxml2
     LIBS += -L$$REPOS/imagingsuite/external/lib64
     LIBS += -llibxml2_dll -llibtiff -lcfitsio
     QMAKE_CXXFLAGS += /openmp /O2 /DNOMINMAX
