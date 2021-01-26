@@ -55,11 +55,12 @@ copy %REPOS%\imagingsuite\external\lib64\hdf5\zlib.dll .
 copy %REPOS%\imagingsuite\external\lib64\hdf5\szip.dll .
 copy %REPOS%\imagingsuite\external\lib64\libgcc_s_seh_64-1.dll .
 copy %REPOS%\imagingsuite\external\lib64\libgcc_s_seh-1.dll .
-copy %REPOS%\imagingsuite\external\lib64\libgfortran_64-3.dll .
-copy %REPOS%\imagingsuite\external\lib64\libquadmath-0.dll .
+rem copy %REPOS%\imagingsuite\external\lib64\libgfortran_64-3.dll .
+rem copy %REPOS%\imagingsuite\external\lib64\libquadmath-0.dll .
 copy %REPOS%\imagingsuite\external\lib64\libwinpthread-1.dll .
-copy %REPOS%\imagingsuite\external\lib64\libblas.dll .
-copy %REPOS%\imagingsuite\external\lib64\liblapack.dll .
+rem copy %REPOS%\imagingsuite\external\lib64\libblas.dll .
+rem copy %REPOS%\imagingsuite\external\lib64\liblapack.dll .
+copy %REPOS%\ExternalDependencies\windows\bin\libopenblas.dll .
 
 cd %QTBINPATH%
 
