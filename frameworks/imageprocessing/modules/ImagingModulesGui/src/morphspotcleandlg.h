@@ -71,6 +71,7 @@ private:
     float m_fMinLevel;
     float m_fMaxLevel;
     float m_bThreading;
+    bool m_bThresholdByFraction;
 };
 
 #endif // MORPHSPOTCLEANDLG_H

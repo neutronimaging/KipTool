@@ -20,6 +20,7 @@
 
 #include <ParameterHandling.h>
 #include <ModuleException.h>
+#include <ImagingException.h>
 
 MorphSpotCleanDlg::MorphSpotCleanDlg(QWidget *parent) :
     ConfiguratorDialogBase("MorphSpotCleanDlg",true,true,true,parent),
@@ -34,7 +35,8 @@ MorphSpotCleanDlg::MorphSpotCleanDlg(QWidget *parent) :
     m_bUseClamping(false),
     m_fMinLevel(-0.1f),
     m_fMaxLevel(12.0f),
-    m_bThreading(false)
+    m_bThreading(true),
+    m_bThresholdByFraction(true)
 {
     ui->setupUi(this);
 
@@ -86,17 +88,16 @@ void MorphSpotCleanDlg::ApplyParameters()
 
     std::copy_n(m_OriginalImage.GetLinePtr(0,m_OriginalImage.Size(2)/2),originalSlice.Size(),originalSlice.GetDataPtr());
 
-    m_DetectionImageHoles=m_Cleaner.DetectionImage(originalSlice, ImagingAlgorithms::MorphDetectHoles);
+    auto dimg = m_Cleaner.DetectionImage(originalSlice, ImagingAlgorithms::MorphDetectHoles,true);
+    m_DetectionImageHoles= dimg.first;
 
-    for (size_t i=0; i<m_DetectionImageHoles.Size(); i++) // Fix nans
-        if (!std::isfinite(m_DetectionImageHoles[i])) m_DetectionImageHoles[i]=0;
+    kipl::math::replaceInfNaN(m_DetectionImageHoles,0.0f);
 
     if ((m_eDetectionMethod==ImagingAlgorithms::MorphDetectHoles) || (m_eDetectionMethod==ImagingAlgorithms::MorphDetectBoth))
         prepareDetectionPlot(m_DetectionImageHoles,0,N,"Detection Holes","Threshold Holes");
 
-    m_DetectionImagePeaks=m_Cleaner.DetectionImage(originalSlice, ImagingAlgorithms::MorphDetectPeaks);
-    for (size_t i=0; i<m_DetectionImagePeaks.Size(); i++) // Fix nans
-        if (!std::isfinite(m_DetectionImagePeaks[i])) m_DetectionImagePeaks[i]=0;
+    m_DetectionImagePeaks= dimg.second;
+    kipl::math::replaceInfNaN(m_DetectionImagePeaks,0.0f);
 
     if ((m_eDetectionMethod==ImagingAlgorithms::MorphDetectPeaks) || (m_eDetectionMethod==ImagingAlgorithms::MorphDetectBoth))
         prepareDetectionPlot(m_DetectionImagePeaks,1,N,"Detection Peaks","Threshold Peaks");
@@ -209,6 +210,11 @@ int MorphSpotCleanDlg::exec(ConfigBase *_config, std::map<std::string, std::stri
         m_fMaxLevel         = GetFloatParameter(parameters,"maxlevel");
         m_bThreading        = kipl::strings::string2bool(GetStringParameter(parameters,"threading"));
     }
+    catch (ImagingException &e) {
+        msg<<"ImagingException exception: Failed to get parameters: "<<e.what();
+        logger(kipl::logging::Logger::LogError,msg.str());
+        return -1;
+    }
     catch (ModuleException &e) {
         msg<<"Module exception: Failed to get parameters: "<<e.what();
         logger(kipl::logging::Logger::LogError,msg.str());
@@ -292,6 +298,7 @@ void MorphSpotCleanDlg::UpdateParameterList(std::map<std::string, std::string> &
     parameters["minlevel"]        = kipl::strings::value2string(m_fMinLevel);
     parameters["maxlevel"]        = kipl::strings::value2string(m_fMaxLevel);
     parameters["threading"]       = kipl::strings::bool2string(m_bThreading);
+    parameters["thresholdbyfraction"] = kipl::strings::bool2string(m_bThresholdByFraction);
 }
 
 

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core widgets charts concurrent # printsupport
+QT       += core widgets charts concurrent # printsupport #
 
 TARGET    = KipTool
 VERSION   = 2.7.0
