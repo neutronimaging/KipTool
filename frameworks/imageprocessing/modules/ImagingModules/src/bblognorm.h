@@ -52,6 +52,7 @@ protected:
 
     std::string blackbodyexternalname; /// name of the externally computed background for the OB
     std::string blackbodysampleexternalname; /// names of the externally computed backgrounds for the sample
+    std::string blackbodyexternalmaskname; /// name of user provided mask
 
     std::string pathBG; /// path for saving BGs
     std::string flatname_BG; /// filename for saving the open beam BG
@@ -90,6 +91,7 @@ protected:
     bool bPBvariante; /// boolean value to enable the full formulation of the correction by PB. It is actually the only one used
     bool bSaveBG; /// boolean value to enable the option of saving the computed BGs
     bool bExtSingleFile; /// boolean value on the use of a single file for sample background correction
+
 
     std::vector<size_t> nNormRegion;
     std::vector<size_t> nOriginalNormRegion;
@@ -162,6 +164,8 @@ private:
     ImagingAlgorithms::ReferenceImageCorrection::eInterpOrderX m_xInterpOrder; /// order chosen for interpolation along the X direction
     ImagingAlgorithms::ReferenceImageCorrection::eInterpOrderY m_yInterpOrder; /// order chosen for interpolation along the Y direction
     ImagingAlgorithms::ReferenceImageCorrection::eInterpMethod m_InterpMethod; /// interpolation method
+    ImagingAlgorithms::ReferenceImageCorrection::eMaskCreationMethod m_maskCreationMethod;
+
     bool updateStatus(float val, std::string msg);
 
 };
