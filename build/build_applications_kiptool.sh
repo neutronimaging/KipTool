@@ -1,11 +1,11 @@
-#!/bin/bash
+﻿#!/bin/bash
 if [ `uname` == 'Linux' ]; then
     SPECSTR="-spec linux-g++"
 else
     SPECSTR="-spec macx-clang CONFIG+=x86_64"
 fi
 
-REPOSPATH=$WORKSPACE/kiptool
+REPOSPATH=$WORKSPACE/KipTool
 
 DEST=$WORKSPACE/builds
 
