@@ -19,8 +19,7 @@
 
 //#include <windowsx.h>
 //#include <Windows.h>
-//#include <winnt.h>
-
+//#include <winnt.h
 
 namespace Ui {
 class BBLogNormDlg;

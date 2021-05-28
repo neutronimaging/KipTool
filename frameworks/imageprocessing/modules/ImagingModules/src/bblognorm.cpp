@@ -68,7 +68,7 @@ IMAGINGMODULESSHARED_EXPORT BBLogNorm::BBLogNorm(kipl::interactors::InteractionB
     m_xInterpOrder(ImagingAlgorithms::ReferenceImageCorrection::SecondOrder_x),
     m_yInterpOrder(ImagingAlgorithms::ReferenceImageCorrection::SecondOrder_y),
     m_InterpMethod(ImagingAlgorithms::ReferenceImageCorrection::Polynomial),
-    m_maskCreationMethod(ImagingAlgorithms::ReferenceImageCorrection::originalMask)
+    m_maskCreationMethod(ImagingAlgorithms::ReferenceImageCorrection::otsuMask)
 {
     blackbodyname = "./";
     blackbodysamplename = "./";

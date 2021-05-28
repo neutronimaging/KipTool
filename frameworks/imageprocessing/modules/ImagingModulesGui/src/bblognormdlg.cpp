@@ -1033,7 +1033,7 @@ void BBLogNormDlg::on_comboBox_maskmethod_currentIndexChanged(int index)
 
     switch (maskmethod)
     {
-        case ImagingAlgorithms::ReferenceImageCorrection::originalMask :
+        case ImagingAlgorithms::ReferenceImageCorrection::otsuMask :
             ui->spinThresh->setVisible(false);
             ui->label_maskthreshold->setVisible(false);
             ui->label_maskfile->setVisible(false);
