@@ -257,7 +257,10 @@ void BBLogNormDlg::UpdateDialog(){
     ui->spin_first_extBB->setValue(nBBextFirstIndex);
     ui->spin_count_ext_BB->setValue(nBBextCount);
     ui->combo_InterpolationMethod->setCurrentText(QString::fromStdString(enum2string(m_InterpMethod)));
-    ui->checkBox_thresh->setChecked(bUseManualThresh);
+    ui->comboBox_maskmethod->setCurrentIndex(static_cast<int>(m_maskCreationMethod));
+    on_comboBox_maskmethod_currentIndexChanged(static_cast<int>(m_maskCreationMethod));
+
+
     ui->spinThresh->setValue(thresh);
     ui->spinFirstAngle->setValue(ffirstAngle);
     ui->spinLastAngle->setValue(flastAngle);
@@ -286,6 +289,7 @@ void BBLogNormDlg::UpdateDialog(){
     ui->lineEdit_pathBG->setText(QString::fromStdString(pathBG));
     ui->lineEdit_flatBG->setText(QString::fromStdString(flatname_BG));
     ui->lineEdit_sampleBG->setText(QString::fromStdString(filemask_BG)); 
+    ui->lineEdit_maskfile->setText(QString::fromStdString(blackbodyexternalmaskname));
     ui->check_singleext->setChecked(bExtSingleFile);
 
 }
@@ -343,8 +347,9 @@ void BBLogNormDlg::UpdateParameters(){
 
     min_area = ui->spin_minarea->value();
 
-    bUseManualThresh = ui->checkBox_thresh->isChecked();
+    m_maskCreationMethod = static_cast<ImagingAlgorithms::ReferenceImageCorrection::eMaskCreationMethod>(ui->comboBox_maskmethod->currentIndex());
     thresh = ui->spinThresh->value();
+    blackbodyexternalmaskname = ui->lineEdit_maskfile->text().toStdString();
 
     flatname = ui->edit_OBfilename->text().toStdString();
     nOBFirstIndex = ui->spinBox_firstOB->value();
@@ -413,7 +418,8 @@ void BBLogNormDlg::UpdateParameterList(std::map<string, string> &parameters){
     parameters["filemask_BG"] = filemask_BG;
     parameters["singleBBext"] = kipl::strings::bool2string(bExtSingleFile);
 
-
+    parameters["BB_mask_ext_name"] = blackbodyexternalmaskname;
+    parameters["MaskCreationMethod"] = enum2string(m_maskCreationMethod);
 }
 
 void BBLogNormDlg::on_button_OBBBpath_clicked()
@@ -995,6 +1001,7 @@ void BBLogNormDlg::on_check_singleext_clicked(bool checked)
         bExtSingleFile = checked;
         ui->button_BBexternal_path->click();
 }
+
 void BBLogNormDlg::on_check_singleext_stateChanged(int arg1)
 {
     if (ui->check_singleext->isChecked())
@@ -1016,4 +1023,58 @@ void BBLogNormDlg::on_pushButton_ext_back_clicked()
 void BBLogNormDlg::on_pushButton_ext_sample_back_clicked()
 {
     ui->edit_BB_external->setText(QString::fromStdString(m_Config->mImageInformation.sSourceFileMask));
+}
+
+void BBLogNormDlg::on_comboBox_maskmethod_currentIndexChanged(int index)
+{
+    auto maskmethod = static_cast<ImagingAlgorithms::ReferenceImageCorrection::eMaskCreationMethod>(index);
+
+
+
+    switch (maskmethod)
+    {
+        case ImagingAlgorithms::ReferenceImageCorrection::originalMask :
+            ui->spinThresh->setVisible(false);
+            ui->label_maskthreshold->setVisible(false);
+            ui->label_maskfile->setVisible(false);
+            ui->pushButton_browsemask->setVisible(false);
+            ui->lineEdit_maskfile->setVisible(false);
+        break;
+        case ImagingAlgorithms::ReferenceImageCorrection::manuallyThresholdedMask :
+            ui->spinThresh->setVisible(true);
+            ui->label_maskthreshold->setVisible(true);
+            ui->label_maskfile->setVisible(false);
+            ui->pushButton_browsemask->setVisible(false);
+            ui->lineEdit_maskfile->setVisible(false);
+        break;
+        case ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask :
+            ui->spinThresh->setVisible(false);
+            ui->label_maskthreshold->setVisible(false);
+            ui->label_maskfile->setVisible(true);
+            ui->pushButton_browsemask->setVisible(true);
+            ui->lineEdit_maskfile->setVisible(true);
+        break;
+        case ImagingAlgorithms::ReferenceImageCorrection::referenceFreeMask :
+            ui->spinThresh->setVisible(false);
+            ui->label_maskthreshold->setVisible(false);
+            ui->label_maskfile->setVisible(false);
+            ui->pushButton_browsemask->setVisible(false);
+            ui->lineEdit_maskfile->setVisible(false);
+        break;
+        default : return;
+    }
+
+}
+
+void BBLogNormDlg::on_pushButton_browsemask_clicked()
+{
+    QString fname=QFileDialog::getOpenFileName(this,
+                                               "Select BB mask image",
+                                               ui->lineEdit_maskfile->text());
+
+    if (!fname.isEmpty())
+    {
+        blackbodyexternalmaskname = fname.toStdString();
+        ui->lineEdit_maskfile->setText(fname);
+    }
 }

@@ -64,6 +64,10 @@ private slots:
 
     void on_pushButton_ext_sample_back_clicked();
 
+    void on_comboBox_maskmethod_currentIndexChanged(int index);
+
+    void on_pushButton_browsemask_clicked();
+
 private:
     virtual void ApplyParameters();
     virtual void UpdateDialog();
@@ -99,6 +103,8 @@ private:
     size_t nBBSampleCount; /// number of sample images with BB
     size_t nBBSampleFirstIndex; /// first index in filename for sample images with BB
     std::string blackbodysamplename;
+    std::string blackbodyexternalmaskname; /// name of user provided mask
+
     std::vector<size_t> BBroi;
     std::vector<size_t> doseBBroi;
     std::vector<size_t> dose_roi;
@@ -140,6 +146,7 @@ private:
     ImagingAlgorithms::ReferenceImageCorrection::eInterpOrderX m_xInterpOrder;
     ImagingAlgorithms::ReferenceImageCorrection::eInterpOrderY m_yInterpOrder;
     ImagingAlgorithms::ReferenceImageCorrection::eInterpMethod m_InterpMethod;
+    ImagingAlgorithms::ReferenceImageCorrection::eMaskCreationMethod m_maskCreationMethod;
     int m_nWindow;
 
     BBLogNorm module;

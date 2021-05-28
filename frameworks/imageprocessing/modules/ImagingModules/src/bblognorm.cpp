@@ -21,6 +21,7 @@
 IMAGINGMODULESSHARED_EXPORT BBLogNorm::BBLogNorm(kipl::interactors::InteractionBase *interactor) : KiplProcessModuleBase("BBLogNorm", false, interactor),
     // to check which one do i need: to be removed: m_nWindow and bUseWeightedMean
     m_Config(""),
+    blackbodyexternalmaskname("./"),
     nBBextCount(1),
     nBBextFirstIndex(0),
     nOBCount(0),
@@ -66,7 +67,8 @@ IMAGINGMODULESSHARED_EXPORT BBLogNorm::BBLogNorm(kipl::interactors::InteractionB
     m_BBOptions(ImagingAlgorithms::ReferenceImageCorrection::Interpolate),
     m_xInterpOrder(ImagingAlgorithms::ReferenceImageCorrection::SecondOrder_x),
     m_yInterpOrder(ImagingAlgorithms::ReferenceImageCorrection::SecondOrder_y),
-    m_InterpMethod(ImagingAlgorithms::ReferenceImageCorrection::Polynomial)
+    m_InterpMethod(ImagingAlgorithms::ReferenceImageCorrection::Polynomial),
+    m_maskCreationMethod(ImagingAlgorithms::ReferenceImageCorrection::originalMask)
 {
     blackbodyname = "./";
     blackbodysamplename = "./";
@@ -152,6 +154,7 @@ int IMAGINGMODULESSHARED_EXPORT BBLogNorm::Configure(KiplProcessConfig config, s
     string2enum(GetStringParameter(parameters, "X_InterpOrder"), m_xInterpOrder);
     string2enum(GetStringParameter(parameters, "Y_InterpOrder"), m_yInterpOrder);
     string2enum(GetStringParameter(parameters,"InterpolationMethod"), m_InterpMethod);
+    string2enum(GetStringParameter(parameters,"MaskCreationMethod"), m_maskCreationMethod);
     bPBvariante = kipl::strings::string2bool(GetStringParameter(parameters,"PBvariante"));
 
 
@@ -164,6 +167,8 @@ int IMAGINGMODULESSHARED_EXPORT BBLogNorm::Configure(KiplProcessConfig config, s
 
     blackbodyexternalname = GetStringParameter(parameters, "BB_OB_ext_name");
     blackbodysampleexternalname = GetStringParameter(parameters, "BB_sample_ext_name");
+    blackbodyexternalmaskname = GetStringParameter(parameters, "BB_mask_ext_name");
+
     nBBextCount = GetIntParameter(parameters, "BB_ext_samplecounts");
     nBBextFirstIndex = GetIntParameter(parameters, "BB_ext_firstindex");
 
@@ -298,6 +303,9 @@ int IMAGINGMODULESSHARED_EXPORT BBLogNorm::ConfigureDLG(KiplProcessConfig config
     string2enum(GetStringParameter(parameters, "Y_InterpOrder"), m_yInterpOrder);
     string2enum(GetStringParameter(parameters,"InterpolationMethod"), m_InterpMethod);
     bPBvariante = kipl::strings::string2bool(GetStringParameter(parameters,"PBvariante"));
+
+    string2enum(GetStringParameter(parameters,"MaskCreationMethod"), m_maskCreationMethod);
+    blackbodyexternalmaskname = GetStringParameter(parameters, "BB_mask_ext_name");
 
 
     blackbodyname = GetStringParameter(parameters,"BB_OB_name");
@@ -454,6 +462,9 @@ std::map<std::string, std::string> IMAGINGMODULESSHARED_EXPORT   BBLogNorm::GetP
     parameters["min_area"] = kipl::strings::value2string(min_area);
     parameters["ManualThreshold"] = kipl::strings::bool2string(bUseManualThresh);
     parameters["thresh"]= kipl::strings::value2string(thresh);
+
+    parameters["BB_mask_ext_name"] = blackbodyexternalmaskname;
+    parameters["MaskCreationMethod"] = enum2string(m_maskCreationMethod);
 
     parameters["OB_PATH"]= flatname;
     parameters["DC_PATH"]= darkname;
