@@ -1535,6 +1535,69 @@ float BBLogNorm::GetInterpolationError(kipl::base::TImage<float,2> &mask)
     return error;
 }
 
+
+float BBLogNorm::GetInterpolationErrorFromMask(kipl::base::TImage<float, 2> &mask)
+{
+
+    if (flatname.empty() && nOBCount!=0)
+        throw ImagingException("The flat field image mask is empty",__FILE__,__LINE__);
+    if (darkname.empty() && nDCCount!=0)
+        throw ImagingException("The dark current image mask is empty",__FILE__,__LINE__);
+
+    if (blackbodyname.empty() && nBBCount!=0)
+        throw ImagingException("The open beam image with BBs image mask is empty",__FILE__,__LINE__);
+
+    kipl::base::TImage<float,2> flat, dark, bb;
+
+    std::string flatmask=flatname;
+    std::string darkmask=darkname;
+
+    float darkdose = 0.0f;
+    float blackdose = 1.0f;
+
+    // reload DC into the BBroi and doseBBroi
+    dark = BBLoader(darkmask,nDCFirstIndex,nDCCount,0.0f,0.0f,darkdose);
+
+    // load OB image with BBs
+    float *bb_ob_param = new float[6];
+    bb = BBLoader(blackbodyname,nBBFirstIndex,nBBCount,1.0f,0.0f,blackdose);
+    std::vector<int> diffroi(BBroi.begin(),BBroi.end()); // it is now just the BBroi position, makes more sense
+
+    m_corrector.SetRadius(radius);
+    m_corrector.SetMinArea(min_area);
+    m_corrector.SetInterpolationOrderX(m_xInterpOrder);
+    m_corrector.SetInterpolationOrderY(m_yInterpOrder);
+    m_corrector.setDiffRoi(diffroi); // left to compute the interpolation parameters in the absolute image coordinates
+
+    std::stringstream msg;
+    msg.str(""); msg<<"Min area set to  "<<min_area;
+    logger(kipl::logging::Logger::LogDebug,msg.str());
+
+    float error;
+    try {
+        bb_ob_param = m_corrector.PrepareBlackBodyImagewithMask(dark, bb, mask, error);
+    }
+    catch (ModuleException &e) {
+        msg.str(""); msg<<"Failed to compute bb_ob_parameters. Try to change thresholding method or value. " << e.what();
+        logger(kipl::logging::Logger::LogDebug,msg.str());
+        throw ModuleException("Failed to compute bb_ob_parameters. Try to change thresholding method or value. ", __FILE__,__LINE__);
+    }
+    catch(ImagingException &e){
+        msg.str(""); msg<<"Failed to compute bb_ob_parameters. Try to change thresholding method or value. " << e.what();
+        logger(kipl::logging::Logger::LogDebug,msg.str());
+        throw ImagingException("Failed to compute bb_ob_parameters. Try to change thresholding method or value. ", __FILE__,__LINE__);
+    }
+    catch(kipl::base::KiplException &e){
+        msg.str(""); msg<<"Failed to compute bb_ob_parameters. Try to change thresholding method or value. " << e.what();
+        logger(kipl::logging::Logger::LogDebug,msg.str());
+        throw kipl::base::KiplException("Failed to compute bb_ob_parameters. Try to change thresholding method or value. ", __FILE__,__LINE__);
+    }
+
+    delete [] bb_ob_param;
+    return error;
+
+}
+
 kipl::base::TImage<float,2> BBLogNorm::GetMaskImage(){
     return mMaskBB;
 }

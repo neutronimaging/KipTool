@@ -1054,7 +1054,7 @@
               </property>
               <item>
                <property name="text">
-                <string>Original mask segmentation</string>
+                <string>Otsu mask segmentation</string>
                </property>
               </item>
               <item>

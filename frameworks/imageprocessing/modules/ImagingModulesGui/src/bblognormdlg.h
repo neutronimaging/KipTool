@@ -57,14 +57,9 @@ private slots:
     void on_pushButton_browseDest_clicked();
     void on_check_singleext_clicked(bool checked);
     void on_check_singleext_stateChanged(int arg1);
-
-
     void on_pushButton_ext_back_clicked();
-
     void on_pushButton_ext_sample_back_clicked();
-
     void on_comboBox_maskmethod_currentIndexChanged(int index);
-
     void on_pushButton_browsemask_clicked();
 
 private:
@@ -73,13 +68,10 @@ private:
     virtual void UpdateParameters();
     virtual void UpdateParameterList(std::map<std::string, std::string> &parameters);
 
-
     void BrowseOBBBPath();
     void UpdateBBROI();
-
     void BrowseSampleBBPath();
     void UpdateDoseROI();
-
     void BrowseOBPath();
     void BrowseDCPath();
 
@@ -114,16 +106,12 @@ private:
     float flastAngle;
     std::vector<float> fScanArc; /// first and last angle of projections (to be used for tomo)
 
-
-
-
     std::string blackbodyexternalname;
     std::string blackbodysampleexternalname;
 
     std::string pathBG; /// path for saving BGs
     std::string flatname_BG; /// filename for saving the open beam BG
     std::string filemask_BG; /// filemask for saving the computed sample BGs
-
 
     size_t nBBextCount; /// number of preprocessed BB images;
     size_t nBBextFirstIndex; /// first index in filneame for preprocessed BB images
@@ -134,7 +122,7 @@ private:
     bool bUseNormROI; /// boolean value on the use of the norm roi
     bool bUseNormROIBB; /// boolean value on the use of the norm roi on BBs
     bool bSameMask; /// boolean value on the use of the same mask for all images with BBs
-    bool bUseManualThresh; /// boolean value on the use of a manual threshold instead of Otsu
+//    bool bUseManualThresh; /// boolean value on the use of a manual threshold instead of Otsu
     bool bSaveBG; /// triggers the saving of computed BGs
     bool bExtSingleFile; /// boolean value on the use of single external file for sample background
 //    bool bUseBB; /// boolean value on the use of BBs, to be set when calling PrepareBBData
@@ -148,15 +136,11 @@ private:
     ImagingAlgorithms::ReferenceImageCorrection::eMaskCreationMethod m_maskCreationMethod;
     int m_nWindow;
 
-    BBLogNorm module;
-
-
-
     kipl::base::TImage <float,2> m_Preview_OBBB;
     kipl::base::TImage <float,2> m_Preview_sampleBB;
+    kipl::base::TImage <float,2> m_User_Mask;
 
-
-
+    BBLogNorm module;
 };
 
 #endif // BBLOGNORMDLG_H
