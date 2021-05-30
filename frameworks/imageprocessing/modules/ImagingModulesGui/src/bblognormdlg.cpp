@@ -68,6 +68,7 @@ BBLogNormDlg::BBLogNormDlg(QWidget *parent) :
 
     blackbodyexternalname = "./";
     blackbodysampleexternalname = "./";
+    blackbodyexternalmaskname = "./";
 
     pathBG="./";
     flatname_BG="flat_background.tif";
@@ -138,6 +139,9 @@ int BBLogNormDlg::exec(ConfigBase *config, std::map<string, string> &parameters,
         string2enum(GetStringParameter(parameters,"X_InterpOrder"), m_xInterpOrder);
         string2enum(GetStringParameter(parameters,"Y_InterpOrder"), m_yInterpOrder);
         string2enum(GetStringParameter(parameters,"InterpolationMethod"), m_InterpMethod);
+        string2enum(GetStringParameter(parameters, "MaskCreationMethod"), m_maskCreationMethod);
+
+        blackbodyexternalmaskname = GetStringParameter(parameters, "BB_mask_ext_name");
 
         blackbodyexternalname = GetStringParameter(parameters,"BB_OB_ext_name");
         blackbodysampleexternalname = GetStringParameter(parameters,"BB_sample_ext_name");
@@ -378,7 +382,6 @@ void BBLogNormDlg::UpdateParameterList(std::map<string, string> &parameters){
     parameters["BB_sample_firstindex"] = kipl::strings::value2string(nBBSampleFirstIndex);
     parameters["doseBBroi"] = kipl::strings::value2string(doseBBroi[0])+" "+kipl::strings::value2string(doseBBroi[1])+" "+kipl::strings::value2string(doseBBroi[2])+" "+kipl::strings::value2string(doseBBroi[3]);
     parameters["dose_roi"] = kipl::strings::value2string(dose_roi[0])+" "+kipl::strings::value2string(dose_roi[1])+" "+kipl::strings::value2string(dose_roi[2])+" "+kipl::strings::value2string(dose_roi[3]);
-
     parameters["radius"] = kipl::strings::value2string(radius);
 
     parameters["avgmethod"] = enum2string(m_ReferenceAverageMethod);
@@ -504,7 +507,6 @@ void BBLogNormDlg::on_buttonPreviewOBBB_clicked()
 
 
 }
-
 
 
 

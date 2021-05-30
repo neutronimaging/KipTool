@@ -21,7 +21,6 @@
 IMAGINGMODULESSHARED_EXPORT BBLogNorm::BBLogNorm(kipl::interactors::InteractionBase *interactor) : KiplProcessModuleBase("BBLogNorm", false, interactor),
     // to check which one do i need: to be removed: m_nWindow and bUseWeightedMean
     m_Config(""),
-    blackbodyexternalmaskname("./"),
     nBBextCount(1),
     nBBextFirstIndex(0),
     nOBCount(0),
@@ -74,6 +73,7 @@ IMAGINGMODULESSHARED_EXPORT BBLogNorm::BBLogNorm(kipl::interactors::InteractionB
     blackbodysamplename = "./";
     blackbodyexternalname = "./";
     blackbodysampleexternalname = "./";
+    blackbodyexternalmaskname = "./";
     path="./";
     flatname="./";
     darkname="./";
