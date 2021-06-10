@@ -127,6 +127,7 @@ protected:
                                                          const std::vector<size_t> &roi,
                                                        int firstIndex,
                                                        std::vector<float> &doselist); /// Loader function for externally created BB, sample image case (nProj images with filemask)
+    virtual kipl::base::TImage<float,2> LoadUserDefinedMask(); /// load function for user defined mask
 
 
     float computedose(kipl::base::TImage<float,2>&img);

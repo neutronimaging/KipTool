@@ -44,9 +44,7 @@ private slots:
     void on_button_OB_BB_ext_clicked();
     void on_button_BBexternal_path_clicked();
     void on_combo_InterpolationMethod_activated(const QString &arg1);
-    void on_checkBox_thresh_clicked(bool checked);
     void on_spinThresh_valueChanged(double arg1);
-    void on_checkBox_thresh_stateChanged(int arg1);
     void on_pushButton_filenameOBBB_clicked();
     void on_pushButton_filenameBB_clicked();
     void on_pushButton_OB_clicked();
@@ -74,6 +72,7 @@ private:
     void UpdateDoseROI();
     void BrowseOBPath();
     void BrowseDCPath();
+    void LoadUserMask(QString fname);
 
     Ui::BBLogNormDlg *ui;
     KiplProcessConfig *m_Config;

@@ -22,6 +22,7 @@
 #include <base/KiplException.h>
 
 #include <imagereader.h>
+#include <qdebug.h>
 
 #include "bblognormdlg.h"
 #include "ui_bblognormdlg.h"
@@ -52,7 +53,7 @@ BBLogNormDlg::BBLogNormDlg(QWidget *parent) :
     fScanArc(2,0.0f),
     nBBextCount(1),
     nBBextFirstIndex(0),
-    thresh(0),
+    thresh(0.5f),
     bSaveBG(false),
     m_xInterpOrder(ImagingAlgorithms::ReferenceImageCorrection::SecondOrder_x),
     m_yInterpOrder(ImagingAlgorithms::ReferenceImageCorrection::SecondOrder_y),
@@ -222,7 +223,6 @@ int BBLogNormDlg::exec(ConfigBase *config, std::map<string, string> &parameters,
 
 void BBLogNormDlg::ApplyParameters(){
 
-    //std::cout << "apply parameters" << std::endl;
 
     ui->buttonPreviewOBBB->click();
     ui->buttonPreviewsampleBB->click();
@@ -352,7 +352,12 @@ void BBLogNormDlg::UpdateParameters(){
     min_area = ui->spin_minarea->value();
 
     m_maskCreationMethod = static_cast<ImagingAlgorithms::ReferenceImageCorrection::eMaskCreationMethod>(ui->comboBox_maskmethod->currentIndex());
-    thresh = ui->spinThresh->value();
+    if (ImagingAlgorithms::ReferenceImageCorrection::manuallyThresholdedMask)
+    {
+//        thresh = QString::number( ui->spinThresh->value(), 'f').toFloat();
+        thresh = ui->spinThresh->value();
+    }
+
     blackbodyexternalmaskname = ui->lineEdit_maskfile->text().toStdString();
 
     flatname = ui->edit_OBfilename->text().toStdString();
@@ -804,6 +809,8 @@ void BBLogNormDlg::on_errorButton_clicked()
     }
     else
     {
+        QString fname = ui->lineEdit_maskfile->text();
+        LoadUserMask(fname);
         try
         {
             error = module.GetInterpolationErrorFromMask(m_User_Mask);
@@ -865,7 +872,6 @@ void BBLogNormDlg::on_errorButton_clicked()
 void BBLogNormDlg::on_combo_BBoptions_activated(const QString &arg1)
 {
 
-//    std::cout << "arg1: " << arg1.toStdString() << std::endl;
     if (arg1.toStdString()=="noBB" || arg1.toStdString()=="ExternalBB"){
         ui->tabWidget->setTabEnabled(1,false);
     }
@@ -971,22 +977,12 @@ void BBLogNormDlg::on_combo_InterpolationMethod_activated(const QString &arg1)
 
 }
 
-void BBLogNormDlg::on_checkBox_thresh_clicked(bool checked)
-{
-//    bUseManualThresh = checked;
-
-}
-
 
 void BBLogNormDlg::on_spinThresh_valueChanged(double arg1)
 {
     thresh = arg1;
 }
 
-void BBLogNormDlg::on_checkBox_thresh_stateChanged(int arg1)
-{
-
-}
 
 void BBLogNormDlg::on_pushButton_filenameOBBB_clicked()
 {
@@ -1077,8 +1073,6 @@ void BBLogNormDlg::on_comboBox_maskmethod_currentIndexChanged(int index)
 {
     auto maskmethod = static_cast<ImagingAlgorithms::ReferenceImageCorrection::eMaskCreationMethod>(index);
 
-
-
     switch (maskmethod)
     {
         case ImagingAlgorithms::ReferenceImageCorrection::otsuMask :
@@ -1112,14 +1106,11 @@ void BBLogNormDlg::on_comboBox_maskmethod_currentIndexChanged(int index)
         default : return;
     }
 
+    m_maskCreationMethod = maskmethod;
 }
 
-void BBLogNormDlg::on_pushButton_browsemask_clicked()
+void BBLogNormDlg::LoadUserMask(QString fname)
 {
-    QString fname=QFileDialog::getOpenFileName(this,
-                                               "Select BB mask image",
-                                               ui->lineEdit_maskfile->text());
-
     if (!fname.isEmpty())
     {
         blackbodyexternalmaskname = fname.toStdString();
@@ -1134,6 +1125,14 @@ void BBLogNormDlg::on_pushButton_browsemask_clicked()
                                       1.0f,
                                       {}
                                       );
+            float max = *std::max_element(m_User_Mask.GetLinePtr(0), m_User_Mask.GetLinePtr(0)+m_User_Mask.Size());
+
+            #pragma omp parallel for
+            for (size_t i=0; i<m_User_Mask.Size(); ++i)
+            {
+                m_User_Mask[i] /= max;
+            }
+
             float lo,hi;
             const size_t NHist=512;
             size_t hist[NHist];
@@ -1146,6 +1145,69 @@ void BBLogNormDlg::on_pushButton_browsemask_clicked()
             hi=axis[nHi];
 
             ui->mask_Viewer->set_image(m_User_Mask.GetDataPtr(), m_User_Mask.dims(), lo, hi);
+
+            bool non_binary = false;
+            #pragma omp parallel for
+            for (size_t i=0; i<m_User_Mask.Size(); ++i)
+            {
+                if (m_User_Mask[i]!=0.0 && m_User_Mask[i]!=1.0)
+                {
+                    non_binary=true;
+                }
+            }
+
+            if (non_binary)
+            {
+                QMessageBox errdlg(this);
+                errdlg.setText("User provided mask is non binary. Please check your inputs");
+                errdlg.exec();
+                return;
+            }
         }
+        else
+        {
+            QMessageBox errdlg(this);
+            errdlg.setText("Filename provided for image mask does not esist. Please check your inputs.");
+            errdlg.exec();
+            return;
+        }
+
     }
+
+}
+void BBLogNormDlg::on_pushButton_browsemask_clicked()
+{
+    QString fname=QFileDialog::getOpenFileName(this,
+                                               "Select BB mask image",
+                                               ui->lineEdit_maskfile->text());
+    LoadUserMask(fname);
+
+//    if (!fname.isEmpty())
+//    {
+//        blackbodyexternalmaskname = fname.toStdString();
+//        ui->lineEdit_maskfile->setText(fname);
+
+//        if (QFile::exists(fname))
+//        {
+//            ImageReader reader;
+//            m_User_Mask = reader.Read(blackbodyexternalmaskname,
+//                                      m_Config->mImageInformation.eFlip,
+//                                      m_Config->mImageInformation.eRotate,
+//                                      1.0f,
+//                                      {}
+//                                      );
+//            float lo,hi;
+//            const size_t NHist=512;
+//            size_t hist[NHist];
+//            float axis[NHist];
+//            size_t nLo=0;
+//            size_t nHi=0;
+//            kipl::base::Histogram(m_User_Mask.GetDataPtr(),m_User_Mask.Size(),hist,NHist,0.0f,0.0f,axis);
+//            kipl::base::FindLimits(hist, NHist, 99.0f, &nLo, &nHi);
+//            lo=axis[nLo];
+//            hi=axis[nHi];
+
+//            ui->mask_Viewer->set_image(m_User_Mask.GetDataPtr(), m_User_Mask.dims(), lo, hi);
+//        }
+//    }
 }

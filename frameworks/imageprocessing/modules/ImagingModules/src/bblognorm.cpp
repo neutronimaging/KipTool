@@ -14,9 +14,12 @@
 #include <ModuleException.h>
 
 #include <imagereader.h>
+#include <io/io_tiff.h>
+#include <QFile>
 
 #include "bblognorm.h"
 #include "../include/ImagingException.h"
+#include <qdebug.h>
 
 IMAGINGMODULESSHARED_EXPORT BBLogNorm::BBLogNorm(kipl::interactors::InteractionBase *interactor) : KiplProcessModuleBase("BBLogNorm", false, interactor),
     // to check which one do i need: to be removed: m_nWindow and bUseWeightedMean
@@ -37,7 +40,7 @@ IMAGINGMODULESSHARED_EXPORT BBLogNorm::BBLogNorm(kipl::interactors::InteractionB
     fdarkBBdose(0.0f),
     fFlatBBdose(1.0f),
     tau(0.97f),
-    thresh(0),
+    thresh(0.5f),
     bUseNormROI(true),
     bUseLUT(false),
     bUseWeightedMean(false),
@@ -418,7 +421,6 @@ int IMAGINGMODULESSHARED_EXPORT BBLogNorm::ConfigureDLG(KiplProcessConfig config
     }
     case(ImagingAlgorithms::ReferenceImageCorrection::manuallyThresholdedMask): {
         bUseManualThresh = true;
-        m_corrector.SetManualThreshold(bUseManualThresh,thresh);
         break;
     }
     case(ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask): {
@@ -431,6 +433,8 @@ int IMAGINGMODULESSHARED_EXPORT BBLogNorm::ConfigureDLG(KiplProcessConfig config
     }
     default: throw ImagingException("Unknown m_maskCreationMethod method in BBLogNorm::Configure",__FILE__,__LINE__);
     }
+
+    m_corrector.SetManualThreshold(bUseManualThresh,thresh);
 
     return 1;
 }
@@ -524,11 +528,12 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::LoadReferenceImages(const std::vect
 {
 
     std::stringstream msg;
-    if ( ! roi.empty() )
+    if (!roi.empty())
     {
         msg<<"Loading reference images with roi: "<< roi[0] << " " << roi[1] << " " << roi[2] <<" " << roi[3];
         logger(kipl::logging::Logger::LogDebug,msg.str());
     }
+
 
     if (flatname.empty() && nOBCount!=0)
         throw ImagingException("The flat field image mask is empty",__FILE__,__LINE__);
@@ -543,18 +548,15 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::LoadReferenceImages(const std::vect
     std::string flatmask=flatname;
     std::string darkmask=darkname;
 
-
     myflat = ReferenceLoader(flatmask,nOBFirstIndex,nOBCount,roi,1.0f,0.0f,m_Config, fFlatDose); // i don't use the bias.. beacuse i think i use it later on
     mydark = ReferenceLoader(darkmask,nDCFirstIndex,nDCCount,roi,0.0f,0.0f,m_Config, fDarkDose);
     SetReferenceImages(mydark,myflat);
 
-
     if (bUseExternalBB && nBBextCount!=0)
     {
-        try {
-
-        LoadExternalBBData(roi); // they must be ready for SetReferenceImages
-
+        try
+        {
+            LoadExternalBBData(roi); // they must be ready for SetReferenceImages
         }
         catch (...)
         {
@@ -563,16 +565,16 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::LoadReferenceImages(const std::vect
         }
     }
 
-     m_corrector.SetReferenceImages(&mflat,
-                                    &mdark,
-                                    (bUseBB && nBBCount!=0 && nBBSampleCount!=0),
-                                    (bUseExternalBB && nBBextCount!=0),
-                                    bExtSingleFile,
-                                    fFlatDose,
-                                    fDarkDose,
-                                    (bUseNormROIBB && bUseNormROI),
-                                    roi,
-                                    dose_roi);
+    m_corrector.SetReferenceImages(&mflat,
+                                   &mdark,
+                                   (bUseBB && nBBCount!=0 && nBBSampleCount!=0),
+                                   (bUseExternalBB && nBBextCount!=0),
+                                   bExtSingleFile,
+                                   fFlatDose,
+                                   fDarkDose,
+                                   (bUseNormROIBB && bUseNormROI),
+                                   roi,
+                                   dose_roi);
 
      msg<<"References loaded";
      logger(kipl::logging::Logger::LogDebug,msg.str());
@@ -629,9 +631,18 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareBBData(){
     if (blackbodysamplename.empty() && nBBSampleCount!=0)
         throw ImagingException("The sample image with BBs image mask is empty", __FILE__,__LINE__);
 
-    std::vector<int> diffroi(BBroi.begin(), BBroi.end());
+    if (m_maskCreationMethod != ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask)
+    {
+        std::vector<int> diffroi(BBroi.begin(), BBroi.end());
+         m_corrector.setDiffRoi(diffroi);
+    }
+    else
+    {
+        std::vector<int> diffroi(4, 0);
+        m_corrector.setDiffRoi(diffroi);
+    }
 
-    m_corrector.setDiffRoi(diffroi);
+
     m_corrector.SetRadius(radius);
     m_corrector.SetTau(tau);
     m_corrector.SetPBvariante(bPBvariante);
@@ -644,6 +655,7 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareBBData(){
 
     switch (m_InterpMethod) {
         case (ImagingAlgorithms::ReferenceImageCorrection::Polynomial): {
+
             PreparePolynomialInterpolationParameters();
 
             if (nBBCount!=0 && nBBSampleCount!=0) {
@@ -653,7 +665,6 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareBBData(){
             break;
         }
         case(ImagingAlgorithms::ReferenceImageCorrection::ThinPlateSplines):{
-            std::cout << "ThinPlateSplines" << std::endl;
              logger(kipl::logging::Logger::LogDebug,"ThinPlateSplines");
 
             int nBBs = PrepareSplinesInterpolationParameters();
@@ -698,21 +709,18 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
         // compute mask for different cases
         switch (m_maskCreationMethod) {
         case (ImagingAlgorithms::ReferenceImageCorrection::otsuMask): {
-            bb_ob_param = m_corrector.PrepareBlackBodyImage(flat,dark,bb, mMaskBB, ferror);
+            bb_ob_param = m_corrector.PrepareBlackBodyImage(flat,dark,bb, obmask, ferror);
             break;
             }
         case (ImagingAlgorithms::ReferenceImageCorrection::manuallyThresholdedMask): {
-            bb_ob_param = m_corrector.PrepareBlackBodyImage(flat,dark,bb, mMaskBB, ferror);
+            bb_ob_param = m_corrector.PrepareBlackBodyImage(flat,dark,bb, obmask, ferror);
+            // write mask here to debug
+//            kipl::io::WriteTIFF(obmask,"mask_inthresh.tiff",kipl::base::Float32);
             break;
             }
         case (ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask): {
-            ImageReader reader;
-            mMaskBB = reader.Read(blackbodyexternalmaskname,
-                                  m_Config.mImageInformation.eFlip,
-                                  m_Config.mImageInformation.eRotate,
-                                  1.0f,
-                                  m_Config.mImageInformation.nROI);
-            bb_ob_param = m_corrector.PrepareBlackBodyImagewithMask(dark,bb, mMaskBB);
+            obmask = LoadUserDefinedMask();
+            bb_ob_param = m_corrector.PrepareBlackBodyImagewithMask(dark,bb, obmask);
             break;
         }
         case (ImagingAlgorithms::ReferenceImageCorrection::referenceFreeMask): {
@@ -743,12 +751,12 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
         throw kipl::base::KiplException("Failed to compute bb_ob_parameters. Try to change maskCreationMethod. ", __FILE__,__LINE__);
     }
 
+
     if (bPBvariante) {
      kipl::base::TImage<float,2> mybb = m_corrector.InterpolateBlackBodyImage(bb_ob_param,doseBBroi);
      float mydose = computedose(mybb);
      fBlackDose = fBlackDose + ((1.0/tau-1.0)*mydose);
     }
-
 
     if(bUseNormROI && bUseNormROIBB){
      fBlackDose = fBlackDose<1 ? 1.0f : fBlackDose;
@@ -810,6 +818,7 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
                      }
                      else
                      {
+                         mMaskBB = obmask;
                          temp_parameters = m_corrector.PrepareBlackBodyImagewithMask(dark,samplebb, mMaskBB);
                      }
 
@@ -899,6 +908,7 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
          }
          else
          {
+             mMaskBB = obmask;
              temp_parameters = m_corrector.PrepareBlackBodyImagewithMask(dark,samplebb, mMaskBB);
          }
 
@@ -966,6 +976,7 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
                 }
                 else
                 {
+                    mMaskBB = obmask;
                     temp_parameters = m_corrector.PrepareBlackBodyImagewithMask(dark,samplebb, mMaskBB);
                 }
 
@@ -1065,21 +1076,22 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
         // compute mask for different cases
         switch (m_maskCreationMethod) {
         case (ImagingAlgorithms::ReferenceImageCorrection::otsuMask): {
-            bb_ob_param = m_corrector.PrepareBlackBodyImage(flat,dark,bb, mMaskBB, ferror);
+            bb_ob_param = m_corrector.PrepareBlackBodyImage(flat,dark,bb, obmask, ferror);
             break;
             }
         case (ImagingAlgorithms::ReferenceImageCorrection::manuallyThresholdedMask): {
-            bb_ob_param = m_corrector.PrepareBlackBodyImage(flat,dark,bb, mMaskBB, ferror);
+            bb_ob_param = m_corrector.PrepareBlackBodyImage(flat,dark,bb, obmask, ferror);
             break;
             }
         case (ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask): {
-            ImageReader reader;
-            mMaskBB = reader.Read(blackbodyexternalmaskname,
-                                  m_Config.mImageInformation.eFlip,
-                                  m_Config.mImageInformation.eRotate,
-                                  1.0f,
-                                  m_Config.mImageInformation.nROI);
-            bb_ob_param = m_corrector.PrepareBlackBodyImagewithMask(dark,bb, mMaskBB);
+//            ImageReader reader;
+//            obmask = reader.Read(blackbodyexternalmaskname,
+//                                  m_Config.mImageInformation.eFlip,
+//                                  m_Config.mImageInformation.eRotate,
+//                                  1.0f,
+//                                  m_Config.mImageInformation.nROI);
+            obmask = LoadUserDefinedMask();
+            bb_ob_param = m_corrector.PrepareBlackBodyImagewithMask(dark,bb, obmask);
             break;
         }
         case (ImagingAlgorithms::ReferenceImageCorrection::referenceFreeMask): {
@@ -1183,6 +1195,7 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
                       }
                       else
                       {
+                          mMaskBB = obmask;
                           values_bb = values;
                           temp_parameters = m_corrector.PrepareBlackBodyImagewithSplinesAndMask(dark,samplebb,mMaskBB, values_bb);
                           m_corrector.SetSplineSampleValues(values_bb);
@@ -1286,6 +1299,7 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
         }
         else
         {
+            mMaskBB = obmask;
             values_bb = values;
             mask_parameters = m_corrector.PrepareBlackBodyImagewithSplinesAndMask(dark,samplebb, mMaskBB, values_bb);
         }
@@ -1361,6 +1375,7 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
                  }
                  else
                  {
+                     mMaskBB = obmask;
                      values_bb = values;
                      temp_parameters = m_corrector.PrepareBlackBodyImagewithSplinesAndMask(dark,samplebb,mMaskBB, values_bb);
                      m_corrector.SetSplineSampleValues(values_bb);
@@ -1561,7 +1576,8 @@ float BBLogNorm::GetInterpolationErrorFromMask(kipl::base::TImage<float, 2> &mas
     // load OB image with BBs
     float *bb_ob_param = new float[6];
     bb = BBLoader(blackbodyname,nBBFirstIndex,nBBCount,1.0f,0.0f,blackdose);
-    std::vector<int> diffroi(BBroi.begin(),BBroi.end()); // it is now just the BBroi position, makes more sense
+//    std::vector<int> diffroi(BBroi.begin(),BBroi.end()); // it is now just the BBroi position, makes more sense
+    std::vector<int> diffroi(4,0); // diffroi is not relevant for external mask option
 
     m_corrector.SetRadius(radius);
     m_corrector.SetMinArea(min_area);
@@ -1637,20 +1653,21 @@ int BBLogNorm::ProcessCore(kipl::base::TImage<float,3> & img, std::map<std::stri
     msg.str(""); msg<<"ProcessCore";
     logger(kipl::logging::Logger::LogDebug,msg.str());
 
-    if (bUseBB && nBBCount!=0 && nBBSampleCount!=0) {
+    if (bUseBB && nBBCount!=0 && nBBSampleCount!=0)
+    {
             PrepareBBData();
     }
 
-     SetROI(m_Config.mImageInformation.nROI);
+    SetROI(m_Config.mImageInformation.nROI);
 
     int nDose=img.Size(2);
-    float *doselist=nullptr;
+    float *doselist=new float[nDose];
 
     ImageReader reader;
 
-    if (bUseNormROI==true) {
-        doselist=new float[nDose];
-//        GetFloatParameterVector(coeff,"dose",doselist,nDose); // i don't have this fucking parameter
+    if (bUseNormROI==true)
+    {
+//        doselist=new float[nDose];
         std:: string filename,ext;
         std::string fmask = m_Config.mImageInformation.sSourceFileMask;
         int firstIndex = m_Config.mImageInformation.nFirstFileIndex;
@@ -1976,4 +1993,60 @@ kipl::base::TImage <float,3> BBLogNorm::BBExternalLoader(std::string fname,
 
     return img;
 }
+
+
+kipl::base::TImage<float,2> BBLogNorm::LoadUserDefinedMask()
+{
+    kipl::base::TImage<float,2> mask;
+    std::stringstream msg;
+    // test on existance of the file name
+    if (!QFile::exists(QString::fromStdString(blackbodyexternalmaskname)) )
+    {
+        msg.str(""); msg<<"user provided filename for mask does not exist. Please check your inputs. ";
+        logger(kipl::logging::Logger::LogDebug,msg.str());
+        throw ModuleException("user provided filename for mask does not exist. Please check your inputs.",__FILE__, __LINE__);
+    }
+    else
+    {
+        ImageReader reader;
+        mask = reader.Read(blackbodyexternalmaskname,
+                              m_Config.mImageInformation.eFlip,
+                              m_Config.mImageInformation.eRotate,
+                              1.0f,
+                              m_Config.mImageInformation.nROI);
+
+        // normalize and check for binary status of the image
+
+        float max = *std::max_element(mask.GetLinePtr(0), mask.GetLinePtr(0)+mask.Size());
+
+        #pragma omp parallel for
+        for (size_t i=0; i<mask.Size(); ++i)
+        {
+            mask[i] /= max;
+        }
+
+        bool non_binary = false;
+        #pragma omp parallel for
+        for (size_t i=0; i<mask.Size(); ++i)
+        {
+            if (mask[i]!=0.0 && mask[i]!=1.0)
+            {
+                non_binary=true;
+            }
+        }
+
+        if (non_binary)
+        {
+            msg.str(""); msg<<"User provided mask is non binary. Please check your inputs. ";
+            logger(kipl::logging::Logger::LogDebug,msg.str());
+            throw ModuleException("User provided mask is non binary. Please check your inputs.",__FILE__, __LINE__);
+        }
+
+
+    }
+
+    return mask;
+}
+
+
 
