@@ -704,7 +704,8 @@ void BBLogNormDlg::on_errorButton_clicked()
     UpdateParameters();
     UpdateParameterList(parameters);
 
-    try{
+    try
+    {
         module.ConfigureDLG(*(dynamic_cast<KiplProcessConfig *>(m_Config)),parameters);
     }
     catch(kipl::base::KiplException &e) {
@@ -1181,33 +1182,4 @@ void BBLogNormDlg::on_pushButton_browsemask_clicked()
                                                "Select BB mask image",
                                                ui->lineEdit_maskfile->text());
     LoadUserMask(fname);
-
-//    if (!fname.isEmpty())
-//    {
-//        blackbodyexternalmaskname = fname.toStdString();
-//        ui->lineEdit_maskfile->setText(fname);
-
-//        if (QFile::exists(fname))
-//        {
-//            ImageReader reader;
-//            m_User_Mask = reader.Read(blackbodyexternalmaskname,
-//                                      m_Config->mImageInformation.eFlip,
-//                                      m_Config->mImageInformation.eRotate,
-//                                      1.0f,
-//                                      {}
-//                                      );
-//            float lo,hi;
-//            const size_t NHist=512;
-//            size_t hist[NHist];
-//            float axis[NHist];
-//            size_t nLo=0;
-//            size_t nHi=0;
-//            kipl::base::Histogram(m_User_Mask.GetDataPtr(),m_User_Mask.Size(),hist,NHist,0.0f,0.0f,axis);
-//            kipl::base::FindLimits(hist, NHist, 99.0f, &nLo, &nHi);
-//            lo=axis[nLo];
-//            hi=axis[nHi];
-
-//            ui->mask_Viewer->set_image(m_User_Mask.GetDataPtr(), m_User_Mask.dims(), lo, hi);
-//        }
-//    }
 }

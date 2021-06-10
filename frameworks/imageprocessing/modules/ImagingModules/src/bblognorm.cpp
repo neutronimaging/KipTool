@@ -265,7 +265,7 @@ int IMAGINGMODULESSHARED_EXPORT BBLogNorm::Configure(KiplProcessConfig config, s
     }
     case(ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask): {
         bUseManualThresh = false;
-        BBroi = m_Config.mImageInformation.nROI; // set BBroi to image roi
+//        BBroi = m_Config.mImageInformation.nROI; // set BBroi to image roi
         break;
     }
     case (ImagingAlgorithms::ReferenceImageCorrection::referenceFreeMask): {
@@ -1588,6 +1588,9 @@ float BBLogNorm::GetInterpolationErrorFromMask(kipl::base::TImage<float, 2> &mas
     std::stringstream msg;
     msg.str(""); msg<<"Min area set to  "<<min_area;
     logger(kipl::logging::Logger::LogDebug,msg.str());
+    kipl::io::WriteTIFF(bb,"bb_debug.tiff",kipl::base::Float32);
+    kipl::io::WriteTIFF(dark,"dc_debug.tiff",kipl::base::Float32);
+    kipl::io::WriteTIFF(mask,"mask_debug.tiff",kipl::base::Float32);
 
     float error;
     try {
@@ -1834,12 +1837,26 @@ kipl::base::TImage<float,2> BBLogNorm::BBLoader(std::string fname,
         msg.str(""); msg<<"Loading "<<N<<" reference images";
         logger(kipl::logging::Logger::LogDebug,msg.str());
         found = fmask.find("hdf");
-            kipl::strings::filenames::MakeFileName(fmask,firstIndex,filename,ext,'#','0');
+        kipl::strings::filenames::MakeFileName(fmask,firstIndex,filename,ext,'#','0');
+
+        if (m_maskCreationMethod!=ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask)
+        {
             img = reader.Read(filename,
                               m_Config.mImageInformation.eFlip,
                               m_Config.mImageInformation.eRotate,
                               1.0f,
                               BBroi);
+        }
+        else
+        {
+            img = reader.Read(filename,
+                              m_Config.mImageInformation.eFlip,
+                              m_Config.mImageInformation.eRotate,
+                              1.0f,
+                              {});
+
+        }
+
 
         tmpdose=bUseNormROIBB ? reader.projectionDose(filename,
                                                       doseBBroi,
@@ -1859,11 +1876,24 @@ kipl::base::TImage<float,2> BBLogNorm::BBLoader(std::string fname,
         for (int i=1; i<N; ++i)
         {
             kipl::strings::filenames::MakeFileName(fmask,i+firstIndex,filename,ext,'#','0');
-            img=reader.Read(filename,
-                            m_Config.mImageInformation.eFlip,
-                            m_Config.mImageInformation.eRotate,
-                           1.0f,
-                    BBroi);
+
+            if (m_maskCreationMethod!=ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask)
+            {
+                img = reader.Read(filename,
+                                  m_Config.mImageInformation.eFlip,
+                                  m_Config.mImageInformation.eRotate,
+                                  1.0f,
+                                  BBroi);
+            }
+            else
+            {
+                img = reader.Read(filename,
+                                  m_Config.mImageInformation.eFlip,
+                                  m_Config.mImageInformation.eRotate,
+                                  1.0f,
+                                  {});
+
+            }
             memcpy(img3D.GetLinePtr(0,i),img.GetDataPtr(),img.Size()*sizeof(float));
             tmpdose = bUseNormROIBB ? reader.projectionDose(filename,
                                                             doseBBroi,
@@ -2013,7 +2043,7 @@ kipl::base::TImage<float,2> BBLogNorm::LoadUserDefinedMask()
                               m_Config.mImageInformation.eFlip,
                               m_Config.mImageInformation.eRotate,
                               1.0f,
-                              m_Config.mImageInformation.nROI);
+                              {});
 
         // normalize and check for binary status of the image
 
