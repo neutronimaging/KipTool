@@ -899,7 +899,6 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
 
          if (!bSameMask && m_maskCreationMethod!=ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask)
          {
-//             sample = BBLoader(m_Config.mImageInformation.sSourceFileMask, m_Config.mImageInformation.nFirstFileIndex+index, 1, 1.0f,fdarkBBdose, dosesample);
              kipl::base::TImage<float,2> mask(sample.dims());
              mask = 0.0f;
              temp_parameters = m_corrector.PrepareBlackBodyImage(sample,dark,samplebb, mask);
@@ -911,19 +910,6 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
              mMaskBB = obmask;
              temp_parameters = m_corrector.PrepareBlackBodyImagewithMask(dark,samplebb, mMaskBB);
          }
-
-
-//                     if (bSameMask){
-//                        mMaskBB = obmask;}
-//                     else {
-//                          kipl::base::TImage<float,2> mask(sample.dims());
-//                          mask = 0.0f;
-//                          mask_parameters= m_corrector.PrepareBlackBodyImage(sample,dark,samplebb_temp, mask); // this is just to compute the mask
-//                          mMaskBB = mask; // or memcpy
-//                     }
-
-//                     temp_parameters= m_corrector.PrepareBlackBodyImagewithMask(dark,samplebb, mMaskBB);
-
 
          //  prenormalize interpolation parameters with dose
          if (bUseNormROIBB && bUseNormROI){
@@ -979,17 +965,6 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
                     mMaskBB = obmask;
                     temp_parameters = m_corrector.PrepareBlackBodyImagewithMask(dark,samplebb, mMaskBB);
                 }
-
-//                if (bSameMask){
-//                   mMaskBB = obmask;
-//                   temp_parameters = m_corrector.PrepareBlackBodyImagewithMask(dark, samplebb, mMaskBB);
-//                }
-//                else {
-//                     kipl::base::TImage<float,2> mask(sample.dims());
-//                     mask = 0.0f;
-//                     temp_parameters= m_corrector.PrepareBlackBodyImage(sample,dark,samplebb, mask); // this is just to compute the mask
-//                     mMaskBB = mask; // or memcpy
-//                }
 
             if (bUseNormROIBB && bUseNormROI)
             {
@@ -1076,22 +1051,16 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
         // compute mask for different cases
         switch (m_maskCreationMethod) {
         case (ImagingAlgorithms::ReferenceImageCorrection::otsuMask): {
-            bb_ob_param = m_corrector.PrepareBlackBodyImage(flat,dark,bb, obmask, ferror);
+            bb_ob_param = m_corrector.PrepareBlackBodyImagewithSplines(flat,dark,bb, obmask, values);
             break;
             }
         case (ImagingAlgorithms::ReferenceImageCorrection::manuallyThresholdedMask): {
-            bb_ob_param = m_corrector.PrepareBlackBodyImage(flat,dark,bb, obmask, ferror);
+            bb_ob_param = m_corrector.PrepareBlackBodyImagewithSplines(flat,dark,bb, obmask, values);
             break;
             }
         case (ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask): {
-//            ImageReader reader;
-//            obmask = reader.Read(blackbodyexternalmaskname,
-//                                  m_Config.mImageInformation.eFlip,
-//                                  m_Config.mImageInformation.eRotate,
-//                                  1.0f,
-//                                  m_Config.mImageInformation.nROI);
             obmask = LoadUserDefinedMask();
-            bb_ob_param = m_corrector.PrepareBlackBodyImagewithMask(dark,bb, obmask);
+            bb_ob_param = m_corrector.PrepareBlackBodyImagewithSplinesAndMask(dark,bb, obmask, values);
             break;
         }
         case (ImagingAlgorithms::ReferenceImageCorrection::referenceFreeMask): {
@@ -1127,7 +1096,7 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
       fBlackDose = fBlackDose + ((1.0/tau-1.0)*mydose);
      }
 
-     m_corrector.SetSplineObValues(values); // what is this doing?
+     m_corrector.SetSplineObValues(values);
 
      if(bUseNormROI && bUseNormROIBB)
      {
@@ -1200,25 +1169,6 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
                           temp_parameters = m_corrector.PrepareBlackBodyImagewithSplinesAndMask(dark,samplebb,mMaskBB, values_bb);
                           m_corrector.SetSplineSampleValues(values_bb);
                       }
-
-//                      if (bSameMask)
-//                      {
-//                         mMaskBB = obmask;
-//                         values_bb = values;
-//                         temp_parameters = m_corrector.PrepareBlackBodyImagewithSplinesAndMask(dark,samplebb,mMaskBB, values_bb);
-//                         m_corrector.SetSplineSampleValues(values_bb);
-//                      }
-//                      else
-//                      {
-//                          sample = BBLoader(m_Config.mImageInformation.sSourceFileMask, m_Config.mImageInformation.nFirstFileIndex+index,
-//                                                1, 1.0f,fdarkBBdose, dosesample);
-//                          kipl::base::TImage<float,2> mask(sample.dims());
-//                          mask = 0.0f;
-//                          temp_parameters = m_corrector.PrepareBlackBodyImagewithSplines(sample,dark,samplebb,mask,values_bb);
-//                          m_corrector.SetSplineSampleValues(values_bb);
-
-//                          mMaskBB = mask; // or memcpy
-//                      }
 
                       if (bUseNormROIBB && bUseNormROI)
                       {
@@ -1303,20 +1253,6 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
             values_bb = values;
             mask_parameters = m_corrector.PrepareBlackBodyImagewithSplinesAndMask(dark,samplebb, mMaskBB, values_bb);
         }
-//              if (bSameMask)
-//              {
-//                 mMaskBB = obmask;
-//                 values_bb = values;
-//                 mask_parameters = m_corrector.PrepareBlackBodyImagewithSplinesAndMask(dark,samplebb, mMaskBB, values_bb);
-//    //
-//              }
-//              else {
-//                   kipl::base::TImage<float,2> mask(sample.dims());
-//                   mask = 0.0f;
-//                   mask_parameters = m_corrector.PrepareBlackBodyImagewithSplines(sample,dark, samplebb_temp, mask,values_bb);
-//    //                               mask_parameters= m_corrector.PrepareBlackBodyImage(sample,dark,samplebb_temp, mask); // this is just to compute the mask
-//                   mMaskBB = mask; // or memcpy
-//              }
 
         m_corrector.SetSplineSampleValues(values_bb);
         temp_parameters = m_corrector.PrepareBlackBodyImagewithSplinesAndMask(dark,samplebb,mMaskBB,values_bb);
@@ -1381,21 +1317,6 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
                      m_corrector.SetSplineSampleValues(values_bb);
                  }
 
-//                 if (bSameMask){
-//                    mMaskBB = obmask;
-//                    values_bb = values;
-//                    temp_parameters = m_corrector.PrepareBlackBodyImagewithSplinesAndMask(dark,samplebb,mMaskBB, values_bb);
-//    //                                temp_parameters = m_corrector.PrepareBlackBodyImagewithMask(dark, samplebb, mMaskBB);
-//                    m_corrector.SetSplineSampleValues(values_bb);
-//                 }
-//                 else {
-//                      kipl::base::TImage<float,2> mask(sample.dims());
-//                      mask = 0.0f;
-//                      temp_parameters = m_corrector.PrepareBlackBodyImagewithSplines(sample,dark,samplebb,mask,values_bb);
-//    //                                  temp_parameters= m_corrector.PrepareBlackBodyImage(sample,dark,samplebb, mask); // this is just to compute the mask
-//                      mMaskBB = mask; // or memcpy
-//                      m_corrector.SetSplineSampleValues(values_bb);
-//                 }
 
                  if (bUseNormROIBB && bUseNormROI)
                  {
@@ -1576,7 +1497,6 @@ float BBLogNorm::GetInterpolationErrorFromMask(kipl::base::TImage<float, 2> &mas
     // load OB image with BBs
     float *bb_ob_param = new float[6];
     bb = BBLoader(blackbodyname,nBBFirstIndex,nBBCount,1.0f,0.0f,blackdose);
-//    std::vector<int> diffroi(BBroi.begin(),BBroi.end()); // it is now just the BBroi position, makes more sense
     std::vector<int> diffroi(4,0); // diffroi is not relevant for external mask option
 
     m_corrector.SetRadius(radius);
@@ -1588,9 +1508,6 @@ float BBLogNorm::GetInterpolationErrorFromMask(kipl::base::TImage<float, 2> &mas
     std::stringstream msg;
     msg.str(""); msg<<"Min area set to  "<<min_area;
     logger(kipl::logging::Logger::LogDebug,msg.str());
-    kipl::io::WriteTIFF(bb,"bb_debug.tiff",kipl::base::Float32);
-    kipl::io::WriteTIFF(dark,"dc_debug.tiff",kipl::base::Float32);
-    kipl::io::WriteTIFF(mask,"mask_debug.tiff",kipl::base::Float32);
 
     float error;
     try {
