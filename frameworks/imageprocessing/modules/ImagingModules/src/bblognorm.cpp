@@ -1966,14 +1966,15 @@ kipl::base::TImage<float,2> BBLogNorm::LoadUserDefinedMask()
 
         float max = *std::max_element(mask.GetLinePtr(0), mask.GetLinePtr(0)+mask.Size());
 
-        #pragma omp parallel for
+        // TODO Revise for more efficiency - only one loop needed
+
         for (size_t i=0; i<mask.Size(); ++i)
         {
             mask[i] /= max;
         }
 
         bool non_binary = false;
-        #pragma omp parallel for
+
         for (size_t i=0; i<mask.Size(); ++i)
         {
             if (mask[i]!=0.0 && mask[i]!=1.0)

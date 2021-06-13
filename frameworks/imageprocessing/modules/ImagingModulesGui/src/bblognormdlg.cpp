@@ -1128,7 +1128,6 @@ void BBLogNormDlg::LoadUserMask(QString fname)
                                       );
             float max = *std::max_element(m_User_Mask.GetLinePtr(0), m_User_Mask.GetLinePtr(0)+m_User_Mask.Size());
 
-            #pragma omp parallel for
             for (size_t i=0; i<m_User_Mask.Size(); ++i)
             {
                 m_User_Mask[i] /= max;
@@ -1148,7 +1147,6 @@ void BBLogNormDlg::LoadUserMask(QString fname)
             ui->mask_Viewer->set_image(m_User_Mask.GetDataPtr(), m_User_Mask.dims(), lo, hi);
 
             bool non_binary = false;
-            #pragma omp parallel for
             for (size_t i=0; i<m_User_Mask.Size(); ++i)
             {
                 if (m_User_Mask[i]!=0.0 && m_User_Mask[i]!=1.0)
