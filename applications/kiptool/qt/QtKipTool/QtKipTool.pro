@@ -22,7 +22,7 @@ unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
     } else {
-        target.path = /usr/lib
+        target.path = $$REPOS/lib
     }
     INSTALLS += target
 
