@@ -5,10 +5,11 @@
 
 #include "AdvancedFilterModules_global.h"
 #include <KiplProcessModuleBase.h>
-#include <scalespace/filterenums.h>
+#include <filterenums.h>
 #include <KiplProcessConfig.h>
 
-class ADVANCEDFILTERMODULES_EXPORT NonLinDiffusionModule: public KiplProcessModuleBase {
+class ADVANCEDFILTERMODULES_EXPORT NonLinDiffusionModule: public KiplProcessModuleBase
+{
 public:
     NonLinDiffusionModule(kipl::interactors::InteractionBase *interactor=nullptr);
     virtual ~NonLinDiffusionModule();
