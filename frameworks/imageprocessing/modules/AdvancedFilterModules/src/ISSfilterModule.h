@@ -7,7 +7,7 @@
 
 #include <interactors/interactionbase.h>
 #include <KiplProcessModuleBase.h>
-#include <scalespace/filterenums.h>
+#include <filterenums.h>
 #include <KiplProcessConfig.h>
 
 class ADVANCEDFILTERMODULES_EXPORT ISSfilterModule: public KiplProcessModuleBase {
@@ -32,8 +32,8 @@ protected:
 	int m_nIterations;
 	std::string m_sIterationPath;
 	bool m_bSaveIterations;
-    akipl::scalespace::eRegularizationType m_eRegularization;
-    akipl::scalespace::eInitialImageType m_eInitialImage;
+    advancedfilters::eRegularizationType m_eRegularization;
+    advancedfilters::eInitialImageType m_eInitialImage;
 };
 
 #endif /* DATASCALER_H_ */
