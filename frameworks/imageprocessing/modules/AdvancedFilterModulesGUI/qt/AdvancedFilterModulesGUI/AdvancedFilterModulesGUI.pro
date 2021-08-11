@@ -100,6 +100,10 @@ DEPENDPATH  += $$PWD/../../../../../../frameworks/imageprocessing/modules/Advanc
 INCLUDEPATH += $$PWD/../../../../../../frameworks/imageprocessing/ProcessFramework/include
 DEPENDPATH  += $$PWD/../../../../../../frameworks/imageprocessing/ProcessFramework/include
 
+
+INCLUDEPATH += $$REPOS/imagingsuite/core/algorithms/AdvancedFilters
+DEPENDPATH  += $$REPOS/imagingsuite/core/algorithms/AdvancedFilters
+
 INCLUDEPATH += $$REPOS/imagingsuite/core/modules/ModuleConfig/include
 DEPENDPATH  += $$REPOS/imagingsuite/core/modules/ModuleConfig/include
 
