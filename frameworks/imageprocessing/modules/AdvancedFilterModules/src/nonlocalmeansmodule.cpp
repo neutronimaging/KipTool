@@ -2,7 +2,7 @@
 #include "nonlocalmeansmodule.h"
 #include <ParameterHandling.h>
 #include <strings/miscstring.h>
-#include <filters/nonlocalmeans.h>
+#include <nonlocalmeans.h>
 
 NonLocalMeansModule::NonLocalMeansModule() :
     KiplProcessModuleBase("NonLocalMeansModule", true),
