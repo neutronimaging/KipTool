@@ -2,7 +2,7 @@
 #include "nonlocalmeansmodule.h"
 #include <ParameterHandling.h>
 #include <strings/miscstring.h>
-#include <filters/nonlocalmeans.h>
+#include <nonlocalmeans.h>
 
 NonLocalMeansModule::NonLocalMeansModule() :
     KiplProcessModuleBase("NonLocalMeansModule", true),
@@ -37,7 +37,7 @@ std::map<std::string, std::string> NonLocalMeansModule::GetParameters()
 
 int NonLocalMeansModule::ProcessCore(kipl::base::TImage<float,3> & img, std::map<std::string, std::string> & coeff)
 {
-    akipl::NonLocalMeans nlm(m_nWidth,m_fSensitivity);
+    advancedfilters::NonLocalMeans nlm(m_nWidth,m_fSensitivity);
 
     kipl::base::TImage<float,3> res;
 

@@ -92,7 +92,11 @@ FORMS += \
 
 CONFIG(release, debug|release):    LIBS += -L$$REPOS/lib
 else:CONFIG(debug, debug|release): LIBS += -L$$REPOS/lib/debug/
-LIBS += -lkipl -lModuleConfig -lProcessFramework -lQtModuleConfigure -lQtAddons -lAdvancedFilterModules
+LIBS += -lkipl -lModuleConfig -lProcessFramework -lQtModuleConfigure -lQtAddons -lAdvancedFilters -lAdvancedFilterModules
+
+
+INCLUDEPATH += $$REPOS/imagingsuite/core/algorithms/AdvancedFilters
+DEPENDPATH  += $$REPOS/imagingsuite/core/algorithms/AdvancedFilters
 
 INCLUDEPATH += $$PWD/../../../../../../frameworks/imageprocessing/modules/AdvancedFilterModules/src
 DEPENDPATH  += $$PWD/../../../../../../frameworks/imageprocessing/modules/AdvancedFilterModules/src
