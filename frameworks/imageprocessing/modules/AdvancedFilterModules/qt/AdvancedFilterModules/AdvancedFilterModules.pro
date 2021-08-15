@@ -75,7 +75,10 @@ LIBS += -L$$REPOS/imagingsuite/external/mac/lib/ -lNeXus.1.0.0 -lNeXusCPP.1.0.0
 CONFIG(release, debug|release):    LIBS += -L$$REPOS/lib
 else:CONFIG(debug, debug|release): LIBS += -L$$REPOS/lib/debug/
 
-LIBS += -lkipl -lModuleConfig -lProcessFramework
+LIBS += -lkipl -lAdvancedFilters -lModuleConfig -lProcessFramework
+
+INCLUDEPATH += $$REPOS/imagingsuite/core/algorithms/AdvancedFilters
+DEPENDPATH  += $$REPOS/imagingsuite/core/algorithms/AdvancedFilters
 
 INCLUDEPATH += $$PWD/../../../../../../frameworks/imageprocessing/ProcessFramework/include
 DEPENDPATH  += $$PWD/../../../../../../frameworks/imageprocessing/ProcessFramework/include

@@ -10,7 +10,7 @@
 
 #include <strings/miscstring.h>
 #include <math/image_statistics.h>
-#include <scalespace/NonLinDiffAOS.h>
+#include <NonLinDiffAOS.h>
 #include <containers/PlotData.h>
 
 NonLinDiffusionModule::NonLinDiffusionModule(kipl::interactors::InteractionBase *interactor) :
@@ -100,7 +100,7 @@ int NonLinDiffusionModule::ProcessCore(kipl::base::TImage<float,3> & img, std::m
 {
     logger(kipl::logging::Logger::LogMessage,"Processing");
 
-    akipl::scalespace::NonLinDiffusionFilter<float,3> nld(m_fSigma, m_fTau, m_fLambda, m_nIterations,m_Interactor);
+    advancedfilters::NonLinDiffusionFilter<float,3> nld(m_fSigma, m_fTau, m_fLambda, m_nIterations,m_Interactor);
 
 
     ScaleImage(img,true);

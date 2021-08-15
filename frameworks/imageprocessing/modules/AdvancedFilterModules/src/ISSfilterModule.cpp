@@ -11,7 +11,7 @@
 
 #include <strings/miscstring.h>
 #include <math/image_statistics.h>
-#include <scalespace/ISSfilterQ3D.h>
+#include <ISSfilterQ3D.h>
 #include <containers/PlotData.h>
 
 ISSfilterModule::ISSfilterModule(kipl::interactors::InteractionBase *interactor) :
@@ -25,8 +25,8 @@ KiplProcessModuleBase("ISSfilter", true,interactor),
 	m_nIterations(10),
 	m_sIterationPath("./issiteration_####.tif"),
     m_bSaveIterations(false),
-    m_eRegularization(akipl::scalespace::RegularizationTV2),
-    m_eInitialImage(akipl::scalespace::InitialImageOriginal)
+    m_eRegularization(advancedfilters::RegularizationTV2),
+    m_eInitialImage(advancedfilters::InitialImageOriginal)
 {
     publications.push_back(Publication(std::vector<string>({"M. Burger","G. Gilboa","S. Osher","J. Xu"}),
                                                 "Nonlinear inverse scale space methods",
@@ -84,18 +84,18 @@ int ISSfilterModule::ProcessCore(kipl::base::TImage<float,3> & img, std::map<std
 {
 	ScaleImage(img,true);
 
-    akipl::scalespace::ISSfilterQ3D<float> filter(m_Interactor);
+    advancedfilters::ISSfilterQ3D<float> filter(m_Interactor);
 
-    filter.eInitialImage = m_eInitialImage;
-    filter.m_eRegularization = m_eRegularization;
-	
-	filter.Process(img,m_fTau,m_fLambda,m_fAlpha,m_nIterations,m_bSaveIterations,m_sIterationPath);
+    filter.setInitialImageType(m_eInitialImage);
+    filter.setRegularizationType(m_eRegularization);
+
+    filter.process(img,m_fTau,m_fLambda,m_fAlpha,m_nIterations,m_bSaveIterations,m_sIterationPath);
 
 	ScaleImage(img,false);
     kipl::containers::PlotData<float,float> errplot(m_nIterations,"ISS error");
 	for (int i=0; i<m_nIterations; i++) {
 		errplot.GetX()[i]=i;
-		errplot.GetY()[i]=filter.GetErrorArray()[i];
+        errplot.GetY()[i]=filter.errors()[i];
 	}
 	m_PlotList["ErrorPlot"]=errplot;
 

@@ -79,6 +79,7 @@ else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../lib/debug/
 
 LIBS += -lkipl
 
-INCLUDEPATH += $$PWD/../../../../core/kipl/kipl/include
-DEPENDPATH += $$PWD/../../../../core/kipl/kipl/include
+INCLUDEPATH += $$PWD/../../../../../imagingsuite/core/kipl/kipl/include
+DEPENDPATH += $$PWD/../../../../../imagingsuite/core/kipl/kipl/include
+
 

@@ -17,6 +17,7 @@ copy %REPOS%\lib\kipl.dll .
 copy %REPOS%\lib\ProcessFramework.dll .
 copy %REPOS%\lib\AdvancedFilterModules.dll .
 copy %REPOS%\lib\AdvancedFilterModulesGUI.dll .
+copy %REPOS%\lib\AdvancedFilters.dll .
 copy %REPOS%\lib\BaseModules.dll .
 copy %REPOS%\lib\BaseModulesGUI.dll .
 copy %REPOS%\lib\ClassificationModules.dll .
@@ -75,7 +76,7 @@ set ldt=%ldt:~0,8%
 FOR /F "tokens=*" %%g IN ('git rev-parse --short HEAD') do (set tag=%%g)
 
 if exist "C:\Program Files\7-Zip\7z.exe" (
-    "C:\Program Files\7-Zip\7z.exe" a %DEST%\..\kiptool_build%tag%-%ldt%.zip %DEST%
+    "C:\Program Files\7-Zip\7z.exe" a %DEST%\..\KipTool-Windows_build%tag%-%ldt%.zip %DEST%
 ) else (
     echo 7zip doesn't exist
 )

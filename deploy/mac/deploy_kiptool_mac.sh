@@ -39,6 +39,7 @@ fi
 `$CPCMD $REPOSPATH/lib/libPCAModules.1.0.0.dylib $DEST/Contents/Frameworks`
 `$CPCMD $REPOSPATH/lib/libImagingModules.1.0.0.dylib $DEST/Contents/Frameworks`
 `$CPCMD $REPOSPATH/lib/libImagingModulesGUI.1.0.0.dylib $DEST/Contents/Frameworks`
+`$CPCMD $REPOSPATH/lib/libAdvancedFilters.1.0.0.dylib $DEST/Contents/Frameworks`
 `$CPCMD $REPOSPATH/lib/libkipl.1.0.0.dylib $DEST/Contents/Frameworks`
 `$CPCMD $REPOSPATH/lib/libModuleConfig.1.0.0.dylib $DEST/Contents/Frameworks`
 `$CPCMD $REPOSPATH/lib/libQtAddons.1.0.0.dylib $DEST/Contents/Frameworks`
@@ -159,13 +160,18 @@ install_name_tool -change libModuleConfig.1.dylib @executable_path/../Frameworks
 # ImagingAlgorithms
 install_name_tool -change libkipl.1.dylib @executable_path/../Frameworks/libkipl.1.dylib libImagingAlgorithms.1.0.0.dylib
 
+# AdvancedFilters
+install_name_tool -change libkipl.1.dylib @executable_path/../Frameworks/libkipl.1.dylib libAdvancedFilters.1.0.0.dylib
+
 # AdvancedFilterModules
 install_name_tool -change libkipl.1.dylib @executable_path/../Frameworks/libkipl.1.dylib libAdvancedFilterModules.1.0.0.dylib
+install_name_tool -change libAdvancedFilters.1.dylib @executable_path/../Frameworks/libAdvancedFilters.1.dylib libAdvancedFilterModules.1.0.0.dylib
 install_name_tool -change libModuleConfig.1.dylib @executable_path/../Frameworks/libModuleConfig.1.dylib libAdvancedFilterModules.1.0.0.dylib
 install_name_tool -change libProcessFramework.1.dylib @executable_path/../Frameworks/libProcessFramework.1.dylib libAdvancedFilterModules.1.0.0.dylib
 
 # AdvancedFilterModulesGUI
 install_name_tool -change libkipl.1.dylib @executable_path/../Frameworks/libkipl.1.dylib libAdvancedFilterModulesGUI.1.0.0.dylib
+install_name_tool -change libAdvancedFilters.1.dylib @executable_path/../Frameworks/libAdvancedFilters.1.dylib libAdvancedFilterModulesGUI.1.0.0.dylib
 install_name_tool -change libModuleConfig.1.dylib @executable_path/../Frameworks/libModuleConfig.1.dylib libAdvancedFilterModulesGUI.1.0.0.dylib
 install_name_tool -change libProcessFramework.1.dylib @executable_path/../Frameworks/libProcessFramework.1.dylib libAdvancedFilterModulesGUI.1.0.0.dylib
 install_name_tool -change libQtModuleConfigure.1.dylib @executable_path/../Frameworks/libQtModuleConfigure.1.dylib libAdvancedFilterModulesGUI.1.0.0.dylib
@@ -289,6 +295,6 @@ if [ ! -e "tmp/kiptool/Applications" ]; then
 fi
 cp -r $DEST /tmp/kiptool
 
-hdiutil create -volname KipTool -srcfolder /tmp/kiptool -ov -format UDZO $DIRECTORY/KipTool_build-$GITVER-`date +%Y%m%d`.dmg
+hdiutil create -volname KipTool -srcfolder /tmp/kiptool -ov -format UDZO $DIRECTORY/KipTool-MacOS_build-$GITVER-`date +%Y%m%d`.dmg
 
 
