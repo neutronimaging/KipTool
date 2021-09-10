@@ -66,7 +66,7 @@ unix:!symbian {
     }
     INSTALLS += target
 
-    LIBS += -ltiff -lxml2
+    LIBS += -ltiff -lxml2 -larmadillo
     INCLUDEPATH += /usr/include/libxml2
 }
 

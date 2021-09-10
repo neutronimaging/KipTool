@@ -22,6 +22,7 @@
 #include <base/KiplException.h>
 
 #include <imagereader.h>
+#include <qdebug.h>
 
 #include "bblognormdlg.h"
 #include "ui_bblognormdlg.h"
@@ -42,7 +43,7 @@ BBLogNormDlg::BBLogNormDlg(QWidget *parent) :
     tau(0.99f),
     bPBvariante(true),
     bSameMask(true),
-    bUseManualThresh(false),
+//    bUseManualThresh(false),
     m_ReferenceAverageMethod(ImagingAlgorithms::AverageImage::ImageWeightedAverage),
     m_ReferenceMethod(ImagingAlgorithms::ReferenceImageCorrection::ReferenceLogNorm),
     m_BBOptions(ImagingAlgorithms::ReferenceImageCorrection::Interpolate),
@@ -52,7 +53,7 @@ BBLogNormDlg::BBLogNormDlg(QWidget *parent) :
     fScanArc(2,0.0f),
     nBBextCount(1),
     nBBextFirstIndex(0),
-    thresh(0),
+    thresh(0.5f),
     bSaveBG(false),
     m_xInterpOrder(ImagingAlgorithms::ReferenceImageCorrection::SecondOrder_x),
     m_yInterpOrder(ImagingAlgorithms::ReferenceImageCorrection::SecondOrder_y),
@@ -68,6 +69,7 @@ BBLogNormDlg::BBLogNormDlg(QWidget *parent) :
 
     blackbodyexternalname = "./";
     blackbodysampleexternalname = "./";
+    blackbodyexternalmaskname = "./";
 
     pathBG="./";
     flatname_BG="flat_background.tif";
@@ -138,13 +140,16 @@ int BBLogNormDlg::exec(ConfigBase *config, std::map<string, string> &parameters,
         string2enum(GetStringParameter(parameters,"X_InterpOrder"), m_xInterpOrder);
         string2enum(GetStringParameter(parameters,"Y_InterpOrder"), m_yInterpOrder);
         string2enum(GetStringParameter(parameters,"InterpolationMethod"), m_InterpMethod);
+        string2enum(GetStringParameter(parameters, "MaskCreationMethod"), m_maskCreationMethod);
+
+        blackbodyexternalmaskname = GetStringParameter(parameters, "BB_mask_ext_name");
 
         blackbodyexternalname = GetStringParameter(parameters,"BB_OB_ext_name");
         blackbodysampleexternalname = GetStringParameter(parameters,"BB_sample_ext_name");
         nBBextCount = GetIntParameter(parameters,"BB_ext_samplecounts");
         nBBextFirstIndex = GetIntParameter(parameters,"BB_ext_firstindex");
         bSameMask = kipl::strings::string2bool(GetStringParameter(parameters,"SameMask"));
-        bUseManualThresh = kipl::strings::string2bool(GetStringParameter(parameters,"ManualThreshold"));
+//        bUseManualThresh = kipl::strings::string2bool(GetStringParameter(parameters,"ManualThreshold"));
         thresh = GetFloatParameter(parameters,"thresh");
         min_area = GetIntParameter(parameters, "min_area");
 
@@ -218,7 +223,6 @@ int BBLogNormDlg::exec(ConfigBase *config, std::map<string, string> &parameters,
 
 void BBLogNormDlg::ApplyParameters(){
 
-    //std::cout << "apply parameters" << std::endl;
 
     ui->buttonPreviewOBBB->click();
     ui->buttonPreviewsampleBB->click();
@@ -257,7 +261,10 @@ void BBLogNormDlg::UpdateDialog(){
     ui->spin_first_extBB->setValue(nBBextFirstIndex);
     ui->spin_count_ext_BB->setValue(nBBextCount);
     ui->combo_InterpolationMethod->setCurrentText(QString::fromStdString(enum2string(m_InterpMethod)));
-    ui->checkBox_thresh->setChecked(bUseManualThresh);
+    ui->comboBox_maskmethod->setCurrentIndex(static_cast<int>(m_maskCreationMethod));
+    on_comboBox_maskmethod_currentIndexChanged(static_cast<int>(m_maskCreationMethod));
+
+
     ui->spinThresh->setValue(thresh);
     ui->spinFirstAngle->setValue(ffirstAngle);
     ui->spinLastAngle->setValue(flastAngle);
@@ -286,6 +293,7 @@ void BBLogNormDlg::UpdateDialog(){
     ui->lineEdit_pathBG->setText(QString::fromStdString(pathBG));
     ui->lineEdit_flatBG->setText(QString::fromStdString(flatname_BG));
     ui->lineEdit_sampleBG->setText(QString::fromStdString(filemask_BG)); 
+    ui->lineEdit_maskfile->setText(QString::fromStdString(blackbodyexternalmaskname));
     ui->check_singleext->setChecked(bExtSingleFile);
 
 }
@@ -343,8 +351,14 @@ void BBLogNormDlg::UpdateParameters(){
 
     min_area = ui->spin_minarea->value();
 
-    bUseManualThresh = ui->checkBox_thresh->isChecked();
-    thresh = ui->spinThresh->value();
+    m_maskCreationMethod = static_cast<ImagingAlgorithms::ReferenceImageCorrection::eMaskCreationMethod>(ui->comboBox_maskmethod->currentIndex());
+    if (ImagingAlgorithms::ReferenceImageCorrection::manuallyThresholdedMask)
+    {
+//        thresh = QString::number( ui->spinThresh->value(), 'f').toFloat();
+        thresh = ui->spinThresh->value();
+    }
+
+    blackbodyexternalmaskname = ui->lineEdit_maskfile->text().toStdString();
 
     flatname = ui->edit_OBfilename->text().toStdString();
     nOBFirstIndex = ui->spinBox_firstOB->value();
@@ -373,7 +387,6 @@ void BBLogNormDlg::UpdateParameterList(std::map<string, string> &parameters){
     parameters["BB_sample_firstindex"] = kipl::strings::value2string(nBBSampleFirstIndex);
     parameters["doseBBroi"] = kipl::strings::value2string(doseBBroi[0])+" "+kipl::strings::value2string(doseBBroi[1])+" "+kipl::strings::value2string(doseBBroi[2])+" "+kipl::strings::value2string(doseBBroi[3]);
     parameters["dose_roi"] = kipl::strings::value2string(dose_roi[0])+" "+kipl::strings::value2string(dose_roi[1])+" "+kipl::strings::value2string(dose_roi[2])+" "+kipl::strings::value2string(dose_roi[3]);
-
     parameters["radius"] = kipl::strings::value2string(radius);
 
     parameters["avgmethod"] = enum2string(m_ReferenceAverageMethod);
@@ -393,7 +406,7 @@ void BBLogNormDlg::UpdateParameterList(std::map<string, string> &parameters){
     parameters["BB_ext_samplecounts"] = kipl::strings::value2string(nBBextCount);
     parameters["BB_ext_firstindex"] = kipl::strings::value2string(nBBextFirstIndex);
     parameters["SameMask"] = kipl::strings::bool2string(bSameMask);
-    parameters["ManualThreshold"] = kipl::strings::bool2string(bUseManualThresh);
+//    parameters["ManualThreshold"] = kipl::strings::bool2string(bUseManualThresh);
     parameters["min_area"] = kipl::strings::value2string(min_area);
     parameters["thresh"]= kipl::strings::value2string(thresh);
 
@@ -413,7 +426,8 @@ void BBLogNormDlg::UpdateParameterList(std::map<string, string> &parameters){
     parameters["filemask_BG"] = filemask_BG;
     parameters["singleBBext"] = kipl::strings::bool2string(bExtSingleFile);
 
-
+    parameters["BB_mask_ext_name"] = blackbodyexternalmaskname;
+    parameters["MaskCreationMethod"] = enum2string(m_maskCreationMethod);
 }
 
 void BBLogNormDlg::on_button_OBBBpath_clicked()
@@ -428,7 +442,8 @@ void BBLogNormDlg::BrowseOBBBPath(){
                                       "Select location of the open beam images with BB",
                                                    ui->edit_OB_BB_mask->text());
 
-    if (!ob_bb_dir.isEmpty()) {
+    if (!ob_bb_dir.isEmpty())
+    {
         std::string pdir=ob_bb_dir.toStdString();
 
         #ifdef _MSC_VER
@@ -443,27 +458,14 @@ void BBLogNormDlg::BrowseOBBBPath(){
         kipl::io::DirAnalyzer da;
         kipl::io::FileItem fi=da.GetFileMask(pdir);
 
-//        if (fi.m_sExt=="hdf"){
-//            ui->edit_OB_BB_mask->setText(QString::fromStdString(pdir));
-
-//            ImageReader reader;
-//            size_t Nofimgs[2];
-//            reader.GetNexusInfo(pdir,Nofimgs,NULL);
-//            ui->spinFirstOBBB->setValue(Nofimgs[0]);
-//            ui->spinCountsOBBB->setValue(Nofimgs[1]);
-//        }
-//        else {
-            ui->edit_OB_BB_mask->setText(QString::fromStdString(fi.m_sMask));
-            int c=0;
-            int f=0;
-            int l=0;
-            da.AnalyzeMatchingNames(fi.m_sMask,c,f,l);
-            ui->spinFirstOBBB->setValue(f);
-            ui->spinCountsOBBB->setValue(c);
-//        }
+        ui->edit_OB_BB_mask->setText(QString::fromStdString(fi.m_sMask));
+        int c=0;
+        int f=0;
+        int l=0;
+        da.AnalyzeMatchingNames(fi.m_sMask,c,f,l);
+        ui->spinFirstOBBB->setValue(f);
+        ui->spinCountsOBBB->setValue(c);
     }
-
-
 }
 
 
@@ -494,25 +496,22 @@ void BBLogNormDlg::on_buttonPreviewOBBB_clicked()
 //                                                 m_Config->ProjectionInfo.fBinning,
 //                                                 NULL);
 //            }
-            float lo,hi;
+        float lo,hi;
+        const size_t NHist=512;
+        size_t hist[NHist];
+        float axis[NHist];
+        size_t nLo=0;
+        size_t nHi=0;
+        kipl::base::Histogram(m_Preview_OBBB.GetDataPtr(),m_Preview_OBBB.Size(),hist,NHist,0.0f,0.0f,axis);
+        kipl::base::FindLimits(hist, NHist, 99.0f, &nLo, &nHi);
+        lo=axis[nLo];
+        hi=axis[nHi];
 
-        //    if (x < 0) {
-                const size_t NHist=512;
-                size_t hist[NHist];
-                float axis[NHist];
-                size_t nLo=0;
-                size_t nHi=0;
-                kipl::base::Histogram(m_Preview_OBBB.GetDataPtr(),m_Preview_OBBB.Size(),hist,NHist,0.0f,0.0f,axis);
-                kipl::base::FindLimits(hist, NHist, 99.0f, &nLo, &nHi);
-                lo=axis[nLo];
-                hi=axis[nHi];
-
-                ui->ob_bb_Viewer->set_image(m_Preview_OBBB.GetDataPtr(), m_Preview_OBBB.dims(), lo,hi);
+        ui->ob_bb_Viewer->set_image(m_Preview_OBBB.GetDataPtr(), m_Preview_OBBB.dims(), lo,hi);
     }
 
 
 }
-
 
 
 
@@ -700,49 +699,127 @@ void BBLogNormDlg::on_buttonPreviewsampleBB_clicked()
 
 void BBLogNormDlg::on_errorButton_clicked()
 {
+    // configure dialog
+    std::map<std::string, std::string> parameters;
+    UpdateParameters();
+    UpdateParameterList(parameters);
 
-    // has to run only if bb ob image and bb roi are loaded
+    try
+    {
+        module.ConfigureDLG(*(dynamic_cast<KiplProcessConfig *>(m_Config)),parameters);
+    }
+    catch(kipl::base::KiplException &e) {
+        QMessageBox errdlg(this);
+        errdlg.setText("Failed to configure the module dialog, check the parameters");
+        errdlg.setDetailedText(QString::fromStdString(e.what()));
+        logger(kipl::logging::Logger::LogWarning,e.what());
+        errdlg.exec();
+        return ;
+    }
+    catch(...){
+        QMessageBox errdlg(this);
+        errdlg.setText("Failed to configure the module dialog.. generic exception.");
+        return ;
+    }
 
-    QRect rect=ui->ob_bb_Viewer->get_marked_roi();
+    // switch on different mask methods
+    float error;
+    ostringstream msg;
 
+    if (m_maskCreationMethod != ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask)
+    {
+        QRect rect=ui->ob_bb_Viewer->get_marked_roi();
 
-    if (rect.width()*rect.height()!=0) {
+        if (rect.width()*rect.height()!=0)
+        {
+            kipl::base::TImage<float,2> mymask;
 
-        std::map<std::string, std::string> parameters;
-        UpdateParameters();
-        UpdateParameterList(parameters);
+            try
+            {
+                error = module.GetInterpolationError(mymask);
+            }
+            catch (KiplFrameworkException &e)
+            {
+                QMessageBox errdlg(this);
+                errdlg.setText("Failed to compute interpolation error. Hint: try to change mask creation method");
+                errdlg.setDetailedText(QString::fromStdString(e.what()));
+                logger(kipl::logging::Logger::LogWarning,e.what());
+                errdlg.exec();
+                return ;
+            }
+            catch (ModuleException &e) {
 
-        kipl::base::TImage<float,2> mymask;
-        float error;
+                QMessageBox errdlg(this);
+                errdlg.setText("Failed to compute interpolation error. Hint: try to change mask creation method");
+                errdlg.setDetailedText(QString::fromStdString(e.what()));
+                logger(kipl::logging::Logger::LogWarning,e.what());
+                errdlg.exec();
+                return ;
+            }
+            catch (kipl::base::KiplException &e)
+            {
 
-        try{
-            module.ConfigureDLG(*(dynamic_cast<KiplProcessConfig *>(m_Config)),parameters);
+                QMessageBox errdlg(this);
+                errdlg.setText("Failed to compute interpolation error. Hint: try to change mask creation method");
+                errdlg.setDetailedText(QString::fromStdString(e.what()));
+                logger(kipl::logging::Logger::LogWarning,e.what());
+                errdlg.exec();
+                return ;
+            }
+            catch (std::exception &e)
+            {
+                msg<<"STL exception with message: "<<e.what();
 
+                QMessageBox errdlg(this);
+                errdlg.setText("Failed to compute interpolation error. Hint: try to change mask creation method");
+                errdlg.setDetailedText(QString::fromStdString(e.what()));
+                logger(kipl::logging::Logger::LogWarning,e.what());
+                errdlg.exec();
+                return ;
+            }
+            catch (...)
+            {
+                msg<<"An unknown exception";
+
+                QMessageBox errdlg(this);
+                errdlg.setText("Failed to compute interpolation error. Hint: try to change mask creation method");
+                errdlg.exec();
+                return ;
+            }
+
+            // display computed mask
+            float lo,hi;
+            const size_t NHist=512;
+            size_t hist[NHist];
+            float axis[NHist];
+            size_t nLo=0;
+            size_t nHi=0;
+            kipl::base::Histogram(mymask.GetDataPtr(),mymask.Size(),hist,NHist,0.0f,0.0f,axis);
+            kipl::base::FindLimits(hist, NHist, 99.0f, &nLo, &nHi);
+            lo=axis[nLo];
+            hi=axis[nHi];
+            ui->mask_Viewer->set_image(mymask.GetDataPtr(), mymask.dims(), lo,hi);
         }
-        catch(kipl::base::KiplException &e) {
+        else
+        {
             QMessageBox errdlg(this);
-            errdlg.setText("Failed to configure the module dialog, check the parameters");
-            errdlg.setDetailedText(QString::fromStdString(e.what()));
-            logger(kipl::logging::Logger::LogWarning,e.what());
+            errdlg.setText("Please select a ROI including the BBs in the OB with BB images. This is necessary for mask computation.");
             errdlg.exec();
             return ;
         }
-        catch(...){
-            QMessageBox errdlg(this);
-            errdlg.setText("Failed to configure the module dialog.. generic exception.");
-            return ;
+    }
+    else
+    {
+        QString fname = ui->lineEdit_maskfile->text();
+        LoadUserMask(fname);
+        try
+        {
+            error = module.GetInterpolationErrorFromMask(m_User_Mask);
         }
-            ostringstream msg;
-
-        try {           
-            error = module.GetInterpolationError(mymask);
-        }
-
         catch (KiplFrameworkException &e)
         {
-
             QMessageBox errdlg(this);
-            errdlg.setText("Failed to compute interpolation error. Hint: try to change the threshold by using the manual threshold option");
+            errdlg.setText("Failed to compute interpolation error from user defined mask. Please check your inputs.");
             errdlg.setDetailedText(QString::fromStdString(e.what()));
             logger(kipl::logging::Logger::LogWarning,e.what());
             errdlg.exec();
@@ -751,7 +828,7 @@ void BBLogNormDlg::on_errorButton_clicked()
         catch (ModuleException &e) {
 
             QMessageBox errdlg(this);
-            errdlg.setText("Failed to compute interpolation error. Hint: try to change the threshold by using the manual threshold option");
+            errdlg.setText("Failed to compute interpolation error from user defined mask. Please check your inputs.");
             errdlg.setDetailedText(QString::fromStdString(e.what()));
             logger(kipl::logging::Logger::LogWarning,e.what());
             errdlg.exec();
@@ -761,7 +838,7 @@ void BBLogNormDlg::on_errorButton_clicked()
         {
 
             QMessageBox errdlg(this);
-            errdlg.setText("Failed to compute interpolation error. Hint: try to change the threshold by using the manual threshold option");
+            errdlg.setText("Failed to compute interpolation error from user defined mask. Please check your inputs.");
             errdlg.setDetailedText(QString::fromStdString(e.what()));
             logger(kipl::logging::Logger::LogWarning,e.what());
             errdlg.exec();
@@ -772,7 +849,7 @@ void BBLogNormDlg::on_errorButton_clicked()
             msg<<"STL exception with message: "<<e.what();
 
             QMessageBox errdlg(this);
-            errdlg.setText("Failed to compute interpolation error. Hint: try to change the threshold by using the manual threshold option");
+            errdlg.setText("Failed to compute interpolation error from user defined mask. Please check your inputs.");
             errdlg.setDetailedText(QString::fromStdString(e.what()));
             logger(kipl::logging::Logger::LogWarning,e.what());
             errdlg.exec();
@@ -783,35 +860,19 @@ void BBLogNormDlg::on_errorButton_clicked()
             msg<<"An unknown exception";
 
             QMessageBox errdlg(this);
-            errdlg.setText("Failed to compute interpolation error. Hint: try to change the threshold by using the manual threshold option");
+            errdlg.setText("Failed to compute interpolation error from user defined mask. Please check your inputs.");
             errdlg.exec();
             return ;
         }
-
-
-        ui->label_error->setText(QString::number(error));
-
-        // display computed mask
-    //    kipl::base::TImage<float,2> mymask = module.GetMaskImage();
-        float lo,hi;
-        const size_t NHist=512;
-        size_t hist[NHist];
-        float axis[NHist];
-        size_t nLo=0;
-        size_t nHi=0;
-        kipl::base::Histogram(mymask.GetDataPtr(),mymask.Size(),hist,NHist,0.0f,0.0f,axis);
-        kipl::base::FindLimits(hist, NHist, 99.0f, &nLo, &nHi);
-        lo=axis[nLo];
-        hi=axis[nHi];
-        ui->mask_Viewer->set_image(mymask.GetDataPtr(), mymask.dims(), lo,hi);
     }
+
+    ui->label_error->setText(QString::number(error));
 
 }
 
 void BBLogNormDlg::on_combo_BBoptions_activated(const QString &arg1)
 {
 
-//    std::cout << "arg1: " << arg1.toStdString() << std::endl;
     if (arg1.toStdString()=="noBB" || arg1.toStdString()=="ExternalBB"){
         ui->tabWidget->setTabEnabled(1,false);
     }
@@ -917,22 +978,12 @@ void BBLogNormDlg::on_combo_InterpolationMethod_activated(const QString &arg1)
 
 }
 
-void BBLogNormDlg::on_checkBox_thresh_clicked(bool checked)
-{
-    bUseManualThresh = checked;
-
-}
-
 
 void BBLogNormDlg::on_spinThresh_valueChanged(double arg1)
 {
     thresh = arg1;
 }
 
-void BBLogNormDlg::on_checkBox_thresh_stateChanged(int arg1)
-{
-
-}
 
 void BBLogNormDlg::on_pushButton_filenameOBBB_clicked()
 {
@@ -995,6 +1046,7 @@ void BBLogNormDlg::on_check_singleext_clicked(bool checked)
         bExtSingleFile = checked;
         ui->button_BBexternal_path->click();
 }
+
 void BBLogNormDlg::on_check_singleext_stateChanged(int arg1)
 {
     if (ui->check_singleext->isChecked())
@@ -1016,4 +1068,116 @@ void BBLogNormDlg::on_pushButton_ext_back_clicked()
 void BBLogNormDlg::on_pushButton_ext_sample_back_clicked()
 {
     ui->edit_BB_external->setText(QString::fromStdString(m_Config->mImageInformation.sSourceFileMask));
+}
+
+void BBLogNormDlg::on_comboBox_maskmethod_currentIndexChanged(int index)
+{
+    auto maskmethod = static_cast<ImagingAlgorithms::ReferenceImageCorrection::eMaskCreationMethod>(index);
+
+    switch (maskmethod)
+    {
+        case ImagingAlgorithms::ReferenceImageCorrection::otsuMask :
+            ui->spinThresh->setVisible(false);
+            ui->label_maskthreshold->setVisible(false);
+            ui->label_maskfile->setVisible(false);
+            ui->pushButton_browsemask->setVisible(false);
+            ui->lineEdit_maskfile->setVisible(false);
+        break;
+        case ImagingAlgorithms::ReferenceImageCorrection::manuallyThresholdedMask :
+            ui->spinThresh->setVisible(true);
+            ui->label_maskthreshold->setVisible(true);
+            ui->label_maskfile->setVisible(false);
+            ui->pushButton_browsemask->setVisible(false);
+            ui->lineEdit_maskfile->setVisible(false);
+        break;
+        case ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask :
+            ui->spinThresh->setVisible(false);
+            ui->label_maskthreshold->setVisible(false);
+            ui->label_maskfile->setVisible(true);
+            ui->pushButton_browsemask->setVisible(true);
+            ui->lineEdit_maskfile->setVisible(true);
+        break;
+        case ImagingAlgorithms::ReferenceImageCorrection::referenceFreeMask :
+            ui->spinThresh->setVisible(false);
+            ui->label_maskthreshold->setVisible(false);
+            ui->label_maskfile->setVisible(false);
+            ui->pushButton_browsemask->setVisible(false);
+            ui->lineEdit_maskfile->setVisible(false);
+        break;
+        default : return;
+    }
+
+    m_maskCreationMethod = maskmethod;
+}
+
+void BBLogNormDlg::LoadUserMask(QString fname)
+{
+    if (!fname.isEmpty())
+    {
+        blackbodyexternalmaskname = fname.toStdString();
+        ui->lineEdit_maskfile->setText(fname);
+
+        if (QFile::exists(fname))
+        {
+            ImageReader reader;
+            m_User_Mask = reader.Read(blackbodyexternalmaskname,
+                                      m_Config->mImageInformation.eFlip,
+                                      m_Config->mImageInformation.eRotate,
+                                      1.0f,
+                                      {}
+                                      );
+            float max = *std::max_element(m_User_Mask.GetLinePtr(0), m_User_Mask.GetLinePtr(0)+m_User_Mask.Size());
+
+            for (size_t i=0; i<m_User_Mask.Size(); ++i)
+            {
+                m_User_Mask[i] /= max;
+            }
+
+            float lo,hi;
+            const size_t NHist=512;
+            size_t hist[NHist];
+            float axis[NHist];
+            size_t nLo=0;
+            size_t nHi=0;
+            kipl::base::Histogram(m_User_Mask.GetDataPtr(),m_User_Mask.Size(),hist,NHist,0.0f,0.0f,axis);
+            kipl::base::FindLimits(hist, NHist, 99.0f, &nLo, &nHi);
+            lo=axis[nLo];
+            hi=axis[nHi];
+
+            ui->mask_Viewer->set_image(m_User_Mask.GetDataPtr(), m_User_Mask.dims(), lo, hi);
+
+            bool non_binary = false;
+            for (size_t i=0; i<m_User_Mask.Size(); ++i)
+            {
+                if (m_User_Mask[i]!=0.0 && m_User_Mask[i]!=1.0)
+                {
+                    non_binary=true;
+                }
+            }
+
+            if (non_binary)
+            {
+                QMessageBox errdlg(this);
+                errdlg.setText("User provided mask is non binary. Please check your inputs");
+                errdlg.exec();
+                return;
+            }
+        }
+        else
+        {
+            QMessageBox errdlg(this);
+            errdlg.setText("Filename provided for image mask does not esist. Please check your inputs.");
+            errdlg.exec();
+            return;
+        }
+
+    }
+
+}
+void BBLogNormDlg::on_pushButton_browsemask_clicked()
+{
+    QString fname=QFileDialog::getOpenFileName(this,
+                                               "Select BB mask image",
+                                               ui->lineEdit_maskfile->text());
+    LoadUserMask(fname);
 }

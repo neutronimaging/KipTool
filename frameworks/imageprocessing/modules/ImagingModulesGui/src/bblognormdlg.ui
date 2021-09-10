@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1094</width>
+    <width>1246</width>
     <height>982</height>
    </rect>
   </property>
@@ -1045,6 +1045,36 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_9">
             <item>
+             <widget class="QComboBox" name="comboBox_maskmethod">
+              <property name="minimumSize">
+               <size>
+                <width>200</width>
+                <height>0</height>
+               </size>
+              </property>
+              <item>
+               <property name="text">
+                <string>Otsu mask segmentation</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Manual threshold</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Used defined mask</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Reference free mask segmentation</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
              <widget class="QLabel" name="label_16">
               <property name="text">
                <string>radius</string>
@@ -1076,19 +1106,26 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_30">
+             <widget class="QLabel" name="label_maskfile">
               <property name="text">
-               <string/>
+               <string>Mask file</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="checkBox_thresh">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select manual threshold for BB segmentation. Threshold should be a normalized values between 0.0 and 1.0. Values below the theshold are considerd as BB. If unchecked, Otsu thresholding is applied&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
+             <widget class="QLineEdit" name="lineEdit_maskfile"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_browsemask">
               <property name="text">
-               <string>Manual Threshold</string>
+               <string>Browse</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_maskthreshold">
+              <property name="text">
+               <string>Threshold</string>
               </property>
              </widget>
             </item>
@@ -1111,7 +1148,7 @@
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Compute the interpolation error in the case of the polynomial interpolation&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>Compute error</string>
+               <string>Evaluate</string>
               </property>
              </widget>
             </item>

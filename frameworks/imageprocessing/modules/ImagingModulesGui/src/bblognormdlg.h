@@ -19,8 +19,7 @@
 
 //#include <windowsx.h>
 //#include <Windows.h>
-//#include <winnt.h>
-
+//#include <winnt.h
 
 namespace Ui {
 class BBLogNormDlg;
@@ -45,9 +44,7 @@ private slots:
     void on_button_OB_BB_ext_clicked();
     void on_button_BBexternal_path_clicked();
     void on_combo_InterpolationMethod_activated(const QString &arg1);
-    void on_checkBox_thresh_clicked(bool checked);
     void on_spinThresh_valueChanged(double arg1);
-    void on_checkBox_thresh_stateChanged(int arg1);
     void on_pushButton_filenameOBBB_clicked();
     void on_pushButton_filenameBB_clicked();
     void on_pushButton_OB_clicked();
@@ -58,11 +55,10 @@ private slots:
     void on_pushButton_browseDest_clicked();
     void on_check_singleext_clicked(bool checked);
     void on_check_singleext_stateChanged(int arg1);
-
-
     void on_pushButton_ext_back_clicked();
-
     void on_pushButton_ext_sample_back_clicked();
+    void on_comboBox_maskmethod_currentIndexChanged(int index);
+    void on_pushButton_browsemask_clicked();
 
 private:
     virtual void ApplyParameters();
@@ -70,15 +66,13 @@ private:
     virtual void UpdateParameters();
     virtual void UpdateParameterList(std::map<std::string, std::string> &parameters);
 
-
     void BrowseOBBBPath();
     void UpdateBBROI();
-
     void BrowseSampleBBPath();
     void UpdateDoseROI();
-
     void BrowseOBPath();
     void BrowseDCPath();
+    void LoadUserMask(QString fname);
 
     Ui::BBLogNormDlg *ui;
     KiplProcessConfig *m_Config;
@@ -99,6 +93,8 @@ private:
     size_t nBBSampleCount; /// number of sample images with BB
     size_t nBBSampleFirstIndex; /// first index in filename for sample images with BB
     std::string blackbodysamplename;
+    std::string blackbodyexternalmaskname; /// name of user provided mask
+
     std::vector<size_t> BBroi;
     std::vector<size_t> doseBBroi;
     std::vector<size_t> dose_roi;
@@ -109,16 +105,12 @@ private:
     float flastAngle;
     std::vector<float> fScanArc; /// first and last angle of projections (to be used for tomo)
 
-
-
-
     std::string blackbodyexternalname;
     std::string blackbodysampleexternalname;
 
     std::string pathBG; /// path for saving BGs
     std::string flatname_BG; /// filename for saving the open beam BG
     std::string filemask_BG; /// filemask for saving the computed sample BGs
-
 
     size_t nBBextCount; /// number of preprocessed BB images;
     size_t nBBextFirstIndex; /// first index in filneame for preprocessed BB images
@@ -129,7 +121,7 @@ private:
     bool bUseNormROI; /// boolean value on the use of the norm roi
     bool bUseNormROIBB; /// boolean value on the use of the norm roi on BBs
     bool bSameMask; /// boolean value on the use of the same mask for all images with BBs
-    bool bUseManualThresh; /// boolean value on the use of a manual threshold instead of Otsu
+//    bool bUseManualThresh; /// boolean value on the use of a manual threshold instead of Otsu
     bool bSaveBG; /// triggers the saving of computed BGs
     bool bExtSingleFile; /// boolean value on the use of single external file for sample background
 //    bool bUseBB; /// boolean value on the use of BBs, to be set when calling PrepareBBData
@@ -140,17 +132,14 @@ private:
     ImagingAlgorithms::ReferenceImageCorrection::eInterpOrderX m_xInterpOrder;
     ImagingAlgorithms::ReferenceImageCorrection::eInterpOrderY m_yInterpOrder;
     ImagingAlgorithms::ReferenceImageCorrection::eInterpMethod m_InterpMethod;
+    ImagingAlgorithms::ReferenceImageCorrection::eMaskCreationMethod m_maskCreationMethod;
     int m_nWindow;
-
-    BBLogNorm module;
-
-
 
     kipl::base::TImage <float,2> m_Preview_OBBB;
     kipl::base::TImage <float,2> m_Preview_sampleBB;
+    kipl::base::TImage <float,2> m_User_Mask;
 
-
-
+    BBLogNorm module;
 };
 
 #endif // BBLOGNORMDLG_H
