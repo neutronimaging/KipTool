@@ -1,4 +1,5 @@
 #!/bin/bash
+
 if [ `uname` == 'Linux' ]; then
     SPECSTR="-spec linux-g++"
 else
