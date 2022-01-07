@@ -64,10 +64,15 @@ win32 {
     contains(QMAKE_HOST.arch, x86_64):{
         QMAKE_LFLAGS += /MACHINE:X64
     }
-    INCLUDEPATH  += $$REPOS/imagingsuite/external/include $$REPOS/imagingsuite/external/include/cfitsio $$REPOS/imagingsuite/external/include/libxml2
+
+    INCLUDEPATH  += $$REPOS/ExternalDependencies/windows/include/libxml2
+    INCLUDEPATH  += $$REPOS/ExternalDependencies/windows/include/cfitsio
+    QMAKE_LIBDIR += $$REPOS/ExternalDependencies/windows/lib
+
+    INCLUDEPATH  += $$REPOS/imagingsuite/external/include
     QMAKE_LIBDIR += $$REPOS/imagingsuite/external/lib64
 
-    LIBS += -llibxml2_dll -llibtiff -lcfitsio
+    LIBS += -llibxml2 -llibtiff -lcfitsio
     QMAKE_CXXFLAGS += /openmp /O2 /DNOMINMAX
 }
 

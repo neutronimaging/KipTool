@@ -53,8 +53,6 @@ unix:!symbian {
         INCLUDEPATH += /opt/local/include
         INCLUDEPATH += /opt/local/include/libxml2
         QMAKE_LIBDIR += /opt/local/lib
- #       QMAKE_INFO_PLIST = Info.plist
- #       ICON = muhrec3.icns
     }
     else {
         INCLUDEPATH += /usr/include/cfitsio
@@ -71,10 +69,15 @@ win32 {
     contains(QMAKE_HOST.arch, x86_64):{
         QMAKE_LFLAGS += /MACHINE:X64
     }
-    INCLUDEPATH  += $$REPOS/imagingsuite/external/include $$REPOS/imagingsuite/external/include/cfitsio $$REPOS/imagingsuite/external/include/libxml2
+
+    QMAKE_LIBDIR += $$REPOS/ExternalDependencies/windows/lib
+    INCLUDEPATH  += $$REPOS/ExternalDependencies/windows/include/cfitsio
+    INCLUDEPATH  += $$REPOS/ExternalDependencies/windows/include/libxml2
+
+    INCLUDEPATH  += $$REPOS/imagingsuite/external/include
     QMAKE_LIBDIR += $$REPOS/imagingsuite/external/lib64
 
-    LIBS += -llibxml2_dll -llibtiff -lcfitsio
+    LIBS += -llibxml2 -llibtiff -lcfitsio
     QMAKE_CXXFLAGS += /openmp /O2
 }
 
@@ -115,7 +118,7 @@ else:CONFIG(debug, debug|release): LIBS += -L$$REPOS/lib/debug/
 LIBS+= -lkipl -lModuleConfig
 
 INCLUDEPATH += $$REPOS/imagingsuite/core/kipl/kipl/include
-DEPENDPATH += $$REPOS/imagingsuite/core/kipl/kipl/include
+DEPENDPATH  += $$REPOS/imagingsuite/core/kipl/kipl/include
 
 INCLUDEPATH += $$REPOS/imagingsuite/core/modules/ModuleConfig/include
-DEPENDPATH += $$REPOS/imagingsuite/core/modules/ModuleConfig/include
+DEPENDPATH  += $$REPOS/imagingsuite/core/modules/ModuleConfig/include
