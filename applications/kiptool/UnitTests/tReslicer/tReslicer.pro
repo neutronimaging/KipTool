@@ -7,9 +7,9 @@ CONFIG += c++11
 
 TEMPLATE = app
 
-
-CONFIG(release, debug|release): DESTDIR = $$PWD/../../../../../lib
-else:CONFIG(debug, debug|release): DESTDIR = $$PWD/../../../../../lib/debug
+REPOS = $$PWD/../../../../..
+CONFIG(release, debug|release):    DESTDIR = $$REPOS/lib
+else:CONFIG(debug, debug|release): DESTDIR = $$REPOS/lib/debug
 
 unix {
     maemo5 {
@@ -40,10 +40,15 @@ win32 {
     contains(QMAKE_HOST.arch, x86_64):{
         QMAKE_LFLAGS += /MACHINE:X64
     }
-    INCLUDEPATH += $$PWD/../../../../external/src/linalg $$PWD/../../../../external/include $$PWD/../../../../external/include/cfitsio $$PWD/../../../../external/include/libxml2
-    QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../../external/lib64
 
-    LIBS += -llibxml2_dll -llibtiff -lcfitsio
+    INCLUDEPATH  += $$REPOS/ExternalDependencies/windows/include/libxml2
+    INCLUDEPATH  += $$REPOS/ExternalDependencies/windows/include/cfitsio
+    QMAKE_LIBDIR += $$REPOS/ExternalDependencies/windows/lib
+
+    INCLUDEPATH  += $$REPOS/imagingsuite/external/include
+    QMAKE_LIBDIR += $$REPOS/imagingsuite/external/lib64
+
+    LIBS += -llibxml2 -llibtiff -lcfitsio
     QMAKE_CXXFLAGS += /openmp /O2
 }
 
@@ -74,12 +79,12 @@ HEADERS += \
     ../../src/Reslicer.h
 
 
-CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../lib/
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../lib/debug/
+CONFIG(release, debug|release): LIBS += -L$$REPOS/lib/
+else:CONFIG(debug, debug|release): LIBS += -L$$REPOS/lib/debug/
 
 LIBS += -lkipl
 
-INCLUDEPATH += $$PWD/../../../../../imagingsuite/core/kipl/kipl/include
-DEPENDPATH += $$PWD/../../../../../imagingsuite/core/kipl/kipl/include
+INCLUDEPATH += $$REPOS/imagingsuite/core/kipl/kipl/include
+DEPENDPATH += $$REPOS/imagingsuite/core/kipl/kipl/include
 
 

@@ -10,9 +10,9 @@ cd %DEST%\build-kiptoolCLI
 
 
 %QTBINPATH%\qmake.exe -makefile ..\..\KipTool\applications\kiptoolCLI\QtKipToolCLI\QtKipToolCLI.pro -o Makefile
-%QTBINPATH%\..\..\..\Tools\QtCreator\bin\jom.exe -f Makefile clean
-%QTBINPATH%\..\..\..\Tools\QtCreator\bin\jom.exe -f Makefile mocables all
-%QTBINPATH%\..\..\..\Tools\QtCreator\bin\jom.exe -f Makefile release
+%QTBINPATH%\..\..\..\Tools\QtCreator\bin\jom\jom.exe -f Makefile.release clean
+%QTBINPATH%\..\..\..\Tools\QtCreator\bin\jom\jom.exe -f Makefile.release mocables all
+%QTBINPATH%\..\..\..\Tools\QtCreator\bin\jom\jom.exe -f Makefile.release
 
 popd 
 
