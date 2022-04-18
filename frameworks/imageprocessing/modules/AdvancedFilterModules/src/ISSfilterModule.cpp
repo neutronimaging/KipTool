@@ -1,7 +1,6 @@
 //<LICENSE>
 
 #include "stdafx.h"
-#include <QDebug>
 #include "ISSfilterModule.h"
 
 #ifdef _OPENMP

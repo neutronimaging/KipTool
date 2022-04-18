@@ -133,7 +133,7 @@ endif()
 add_subdirectory(frameworks/imageprocessing/ProcessFramework)
 
 ## modules
-#add_subdirectory(frameworks/imageprocessing/modules/AdvancedFilterModules)
+add_subdirectory(frameworks/imageprocessing/modules/AdvancedFilterModules)
 #add_subdirectory(frameworks/imageprocessing/modules/ImagingModules)
 #add_subdirectory(frameworks/imageprocessing/modules/BaseModules)
 #add_subdirectory(frameworks/imageprocessing/modules/StatisticsModules)
