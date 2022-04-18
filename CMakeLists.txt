@@ -150,7 +150,7 @@ add_subdirectory(frameworks/imageprocessing/ProcessFramework)
 ## applications
 #add_subdirectory(applications/kiptool)
 #add_subdirectory(applications/kiptoolCLI)
-add_subdirectory(applications/kiptool/UnitTests)
+#add_subdirectory(applications/kiptool/UnitTests)
 
 ## Binder modules
 #add_subdirectory(frameworks/tomography/pyMuhRec)
@@ -216,12 +216,12 @@ if(DYNAMIC_LIB)
 #    ../lib/libFDKBackProjectors.1.0.0.dylib
 #    ../lib/libImagingAlgorithms.1.0.0.dylib
 #    ../lib/libReaderConfig.1.0.0.dylib
-    external/mac/lib/libNeXus.1.0.0.dylib	
-    external/mac/lib//libhdf5_cpp.11.dylib
-    external/mac/lib//libNeXusCPP.1.0.0.dylib
-    external/mac/lib//libhdf5_hl.10.dylib
-    external/mac/lib//libhdf5.10.dylib	
-    external/mac/lib//libsz.2.dylib
+    ../imagingsuite/external/mac/lib/libNeXus.1.0.0.dylib	
+    ../imagingsuite/external/mac/lib//libhdf5_cpp.11.dylib
+    ../imagingsuite/external/mac/lib//libNeXusCPP.1.0.0.dylib
+    ../imagingsuite/external/mac/lib//libhdf5_hl.10.dylib
+    ../imagingsuite/external/mac/lib//libhdf5.10.dylib	
+    ../imagingsuite/external/mac/lib//libsz.2.dylib
     /opt/local/lib/libxml2.2.dylib 
     /opt/local/lib/libtiff.5.dylib
     /opt/local/lib/libfftw3.3.dylib
