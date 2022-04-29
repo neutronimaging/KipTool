@@ -8,6 +8,7 @@ KipTool requires that imaging suit is built as it depends on many support librar
 There are two ways to build KipTool using shell scripts calling QMake and make or by using CMake (in preparation).
 
 ### Build using CMake
+__Please note:__ this currently only works for arm64.
 Preparations, move outside of the KipTool repository tree then create a build folder. It is assumed that you alread created an install folder when you built the imaging suite
 ```bash
 mkdir build_kiptool
