@@ -134,11 +134,13 @@ add_subdirectory(frameworks/imageprocessing/ProcessFramework)
 
 ## modules
 add_subdirectory(frameworks/imageprocessing/modules/AdvancedFilterModules)
-#add_subdirectory(frameworks/imageprocessing/modules/ImagingModules)
-#add_subdirectory(frameworks/imageprocessing/modules/BaseModules)
+add_subdirectory(frameworks/imageprocessing/modules/BaseModules)
+add_subdirectory(frameworks/imageprocessing/modules/ClassificationModules)
+add_subdirectory(frameworks/imageprocessing/modules/ImagingModules)
+
 #add_subdirectory(frameworks/imageprocessing/modules/StatisticsModules)
 #add_subdirectory(frameworks/imageprocessing/modules/PorespaceModules)
-#add_subdirectory(frameworks/imageprocessing/modules/ClassificationModules)
+
 #add_subdirectory(frameworks/imageprocessing/modules/PCAModules)
 
 ## module GUI

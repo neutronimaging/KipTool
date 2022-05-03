@@ -1,11 +1,13 @@
 #ifndef IMAGINGMODULES_GLOBAL_H
 #define IMAGINGMODULES_GLOBAL_H
-#include <QtCore/qglobal.h>
 
-//ifdef _MSC_VER
-//    #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-//    #include <windows.h>
-//#endif
+#if defined(_MSC_VER) || defined(WIN64) || defined(_WIN64) || defined(__WIN64__) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#  define Q_DECL_EXPORT __declspec(dllexport)
+#  define Q_DECL_IMPORT __declspec(dllimport)
+#else
+#  define Q_DECL_EXPORT     __attribute__((visibility("default")))
+#  define Q_DECL_IMPORT     __attribute__((visibility("default")))
+#endif
 
 #if defined(IMAGINGMODULES_LIBRARY)
 #  define IMAGINGMODULESSHARED_EXPORT Q_DECL_EXPORT

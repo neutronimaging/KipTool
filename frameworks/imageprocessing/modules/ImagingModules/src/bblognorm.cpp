@@ -15,7 +15,7 @@
 
 #include <imagereader.h>
 #include <io/io_tiff.h>
-#include <QFile>
+// #include <QFile>
 
 #include "bblognorm.h"
 #include "../include/ImagingException.h"
