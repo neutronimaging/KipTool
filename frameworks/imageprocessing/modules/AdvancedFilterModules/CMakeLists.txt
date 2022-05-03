@@ -60,7 +60,7 @@ add_library(${TARGET_NAME} SHARED
       else()
           target_link_directories(${TARGET_NAME} PRIVATE
               /opt/local/lib
-              ../../../../../imagingsuite/external/mac/lib/
+              ../../../../../ExternalDependencies/macos/x86_64/lib
               )
       endif()
   

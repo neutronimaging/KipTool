@@ -17,8 +17,8 @@ include_directories(
     ../../../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
     ../../../../../imagingsuite/core/algorithms/AdvancedFilters/
     ../../../../../ExternalDependencies/macos/include
+    ../../../../../ExternalDependencies/macos/include/nexus
     ../../../../../imagingsuite/external/mac/include/
-    ../../../../../imagingsuite/external/mac/include/nexus
     ../../../../../imagingsuite/external/mac/include/hdf5
     )
 
@@ -64,7 +64,7 @@ add_library(${TARGET_NAME} SHARED
       else()
           target_link_directories(${TARGET_NAME} PRIVATE
               /opt/local/lib
-              ../../../../../imagingsuite/external/mac/lib/
+              ../../../../../ExternalDependencies/macos/x86_64/lib
               )
       endif()
   
