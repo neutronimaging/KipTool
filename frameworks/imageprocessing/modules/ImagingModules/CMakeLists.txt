@@ -75,6 +75,7 @@ add_library(${TARGET_NAME} SHARED
           kipl
           ImagingAlgorithms
           ModuleConfig
+          ReaderConfig
           ProcessFramework
           xml2
           fftw3

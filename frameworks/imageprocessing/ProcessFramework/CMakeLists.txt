@@ -72,7 +72,8 @@ if (APPLE)
     else()
         target_link_directories(${TARGET_NAME} PRIVATE
             /opt/local/lib
-            ../../../../external/mac/lib/
+            ../../../../install/lib
+            ../../../../ExternalDependencies/macos/x86_64/lib
             )
     endif()
     target_link_libraries(${TARGET_NAME}
@@ -80,6 +81,7 @@ if (APPLE)
         kipl
         ImagingAlgorithms
         ModuleConfig
+        ReaderConfig
         xml2
         fftw3
         fftw3f

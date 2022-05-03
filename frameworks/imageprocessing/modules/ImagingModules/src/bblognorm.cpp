@@ -1,5 +1,8 @@
 //<LICENSE>
 
+#include <filesystem>
+namespace fs = std::filesystem;
+
 #include "ImagingModules_global.h"
 #include <strings/miscstring.h>
 
@@ -15,11 +18,11 @@
 
 #include <imagereader.h>
 #include <io/io_tiff.h>
-// #include <QFile>
 
 #include "bblognorm.h"
 #include "../include/ImagingException.h"
-#include <qdebug.h>
+// #include <qdebug.h>
+// #include <QFile>
 
 IMAGINGMODULESSHARED_EXPORT BBLogNorm::BBLogNorm(kipl::interactors::InteractionBase *interactor) : KiplProcessModuleBase("BBLogNorm", false, interactor),
     // to check which one do i need: to be removed: m_nWindow and bUseWeightedMean
@@ -1947,7 +1950,8 @@ kipl::base::TImage<float,2> BBLogNorm::LoadUserDefinedMask()
     kipl::base::TImage<float,2> mask;
     std::stringstream msg;
     // test on existance of the file name
-    if (!QFile::exists(QString::fromStdString(blackbodyexternalmaskname)) )
+    if ( !std::filesystem::exists(fs::path(blackbodyexternalmaskname)) )
+    // if (!QFile::exists(QString::fromStdString(blackbodyexternalmaskname)) )
     {
         msg.str(""); msg<<"user provided filename for mask does not exist. Please check your inputs. ";
         logger(kipl::logging::Logger::LogDebug,msg.str());
