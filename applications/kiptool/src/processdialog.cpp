@@ -59,8 +59,8 @@ int ProcessDialog::exec(KiplEngine * engine, kipl::base::TImage<float,3> *img)
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(100);
 
-    QFuture<int> proc_thread=QtConcurrent::run(this,&ProcessDialog::process);
-    QFuture<int> progress_thread=QtConcurrent::run(this,&ProcessDialog::progress);
+    QFuture<int> proc_thread=QtConcurrent::run(&ProcessDialog::process,this);
+    QFuture<int> progress_thread=QtConcurrent::run(&ProcessDialog::progress,this);
 
     int res=exec();
 

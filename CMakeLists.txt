@@ -140,6 +140,7 @@ add_subdirectory(frameworks/imageprocessing/modules/ImagingModules)
 add_subdirectory(frameworks/imageprocessing/modules/PCAModules)
 add_subdirectory(frameworks/imageprocessing/modules/StatisticsModules)
 add_subdirectory(frameworks/imageprocessing/modules/PorespaceModules)
+add_subdirectory(applications/kiptool)
 
 ## module GUI
 #add_subdirectory(frameworks/imageprocessing/modules/ClassificationModulesGUI)

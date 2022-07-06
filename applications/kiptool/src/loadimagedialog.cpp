@@ -59,8 +59,8 @@ int LoadImageDialog::exec(KiplProcessConfig *config, kipl::base::TImage<float,3>
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(100);
 
-    QFuture<int> proc_thread=QtConcurrent::run(this,&LoadImageDialog::process);
-    QFuture<int> progress_thread=QtConcurrent::run(this,&LoadImageDialog::progress);
+    QFuture<int> proc_thread=QtConcurrent::run(&LoadImageDialog::process,this);
+    QFuture<int> progress_thread=QtConcurrent::run(&LoadImageDialog::progress,this);
 
     int res=exec();
 

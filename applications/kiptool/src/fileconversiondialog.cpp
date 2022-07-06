@@ -153,8 +153,8 @@ void FileConversionDialog::on_pushButton_StartConversion_clicked()
     msg<<"The input data has ext="<<ext1<<", and will be saved as ext="<<ext2;
     logger(logger.LogDebug,msg.str());
 
-    QFuture<int> progress_thread = QtConcurrent::run(this,&FileConversionDialog::Progress);
-    QFuture<int> proc_thread     = QtConcurrent::run(this,&FileConversionDialog::Process, ext1==ext2);
+    QFuture<int> progress_thread = QtConcurrent::run(&FileConversionDialog::Progress,this);
+    QFuture<int> proc_thread     = QtConcurrent::run(&FileConversionDialog::Process,this, ext1==ext2);
 
     progress_thread.waitForFinished();
     proc_thread.waitForFinished();

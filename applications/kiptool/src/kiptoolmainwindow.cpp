@@ -251,8 +251,8 @@ void KipToolMainWindow::UpdateHistogramView()
     if (!m_HistogramList.empty()) {
 
         for (it=m_HistogramList.begin(); it!=m_HistogramList.end(); it++, idx++) {
-            QString lbl;
-            lbl.sprintf("Hist ",idx);
+            QString lbl="Hist "+QString::number(idx);
+            
             ui->plotter_histogram->setCurveData(idx,it->second.GetX(),it->second.GetY(),static_cast<int>(it->second.Size()),lbl);
         }
 
