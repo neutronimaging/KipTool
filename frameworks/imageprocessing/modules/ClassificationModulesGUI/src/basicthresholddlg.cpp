@@ -108,9 +108,9 @@ int BasicThresholdDlg::exec(ConfigBase *config, std::map<string, string> &parame
 void BasicThresholdDlg::on_doubleSpinBox_threshold_valueChanged(double arg1)
 {
 
-    QtCharts::QLineSeries *series=nullptr;
+    QLineSeries *series=nullptr;
     try {
-        series=new QtCharts::QLineSeries();
+        series=new QLineSeries();
     }
     catch (std::bad_alloc & e) {
         QString msg="Failed to allocate series: ";
