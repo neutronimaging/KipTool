@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(
     /opt/local/include
     /opt/local/include/libxml2
+    /usr/include/libxml2
     ../../ProcessFramework/include/
 #    ../../../../external/src/linalg
     ../../../../../imagingsuite/core/kipl/kipl/include
@@ -21,6 +22,7 @@ include_directories(
     ../../../../../imagingsuite/external/mac/include/nexus
     ../../../../../imagingsuite/external/mac/include/hdf5
     )
+
 
 link_directories(../../../../../install/lib /opt/local/lib )
 
@@ -83,5 +85,30 @@ add_library(${TARGET_NAME} SHARED
           NeXusCPP.1.0.0
       )
   endif()
+
+  if (UNIX)
+    target_link_directories(${TARGET_NAME} PRIVATE
+        /opt/local/lib
+    )
+
+    target_link_libraries(${TARGET_NAME}
+        PRIVATE
+        kipl
+        ImagingAlgorithms
+        AdvancedFilters
+        ModuleConfig
+        ProcessFramework
+        xml2
+        fftw3
+        fftw3f
+        cfitsio
+        tiff
+        armadillo
+        lapack
+        blas
+        # NeXus.1.0.0
+        # NeXusCPP.1.0.0
+    )
+endif()
 
   install(TARGETS ${TARGET_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

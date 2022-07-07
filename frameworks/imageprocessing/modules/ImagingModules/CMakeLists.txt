@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(
     /opt/local/include
     /opt/local/include/libxml2
+    /usr/include/libxml2
     ../../ProcessFramework/include/
 #    ../../../../external/src/linalg
     ../../../../../imagingsuite/core/kipl/kipl/include
