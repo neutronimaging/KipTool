@@ -7,6 +7,8 @@ QT_PATH=$QTBINPATH/..
 QtV=${QT_PATH:end-17:end-14}
 QtVmain=${QT_PATH:end-17:end-16}
 
+GITVER=`git rev-parse --short HEAD`
+
 echo $QtV
 echo $QtVmain
 echo $QT_PATH
