@@ -86,4 +86,29 @@ add_library(${TARGET_NAME} SHARED
       )
   endif()
 
+  if (UNIX)
+    target_link_directories(${TARGET_NAME} PRIVATE
+        /opt/local/lib
+    )
+
+    target_link_libraries(${TARGET_NAME}
+        PRIVATE
+        kipl
+        ImagingAlgorithms
+        AdvancedFilters
+        ModuleConfig
+        ProcessFramework
+        xml2
+        fftw3
+        fftw3f
+        cfitsio
+        tiff
+        armadillo
+        lapack
+        blas
+        # NeXus.1.0.0
+        # NeXusCPP.1.0.0
+    )
+endif()
+
   install(TARGETS ${TARGET_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
