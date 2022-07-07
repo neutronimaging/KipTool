@@ -134,6 +134,7 @@ add_subdirectory(frameworks/imageprocessing/ProcessFramework)
 
 ## modules
 add_subdirectory(frameworks/imageprocessing/modules/AdvancedFilterModules)
+add_subdirectory(frameworks/imageprocessing/modules/AdvancedFilterModulesGUI)
 add_subdirectory(frameworks/imageprocessing/modules/BaseModules)
 add_subdirectory(frameworks/imageprocessing/modules/ClassificationModules)
 add_subdirectory(frameworks/imageprocessing/modules/ImagingModules)
