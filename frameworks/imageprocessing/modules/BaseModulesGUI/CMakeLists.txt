@@ -125,7 +125,7 @@ if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
         AdvancedFilterModules
         AdvancedFilters
         ModuleConfig
-        ReconFramework
+        ProcessFramework
         QtAddons
         QtModuleConfigure
         xml2

@@ -121,8 +121,8 @@ if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
         ImagingAlgorithms
         AdvancedFilterModules
         AdvancedFilters
+        ProcessFramework
         ModuleConfig
-        ReconFramework
         QtAddons
         QtModuleConfigure
         xml2
@@ -133,8 +133,8 @@ if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
         armadillo
         lapack
         blas
-        NeXus.1.0.0
-        NeXusCPP.1.0.0
+        # NeXus.1.0.0
+        # NeXusCPP.1.0.0
     )
 endif()
 
@@ -148,7 +148,6 @@ if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
       kipl
       ImagingAlgorithms
       ModuleConfig
-      ReconFramework
       QtAddons
       QtModuleConfigure
       xml2

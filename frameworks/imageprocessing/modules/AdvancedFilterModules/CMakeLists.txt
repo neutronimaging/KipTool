@@ -81,8 +81,8 @@ add_library(${TARGET_NAME} SHARED
           armadillo
           lapack
           blas
-          NeXus.1.0.0
-          NeXusCPP.1.0.0
+        #   NeXus.1.0.0
+        #   NeXusCPP.1.0.0
       )
   endif()
 

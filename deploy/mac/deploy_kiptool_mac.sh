@@ -1,24 +1,25 @@
 DIRECTORY=$WORKSPACE/deployed
 
-ARCH=`uname -m`
-
 REPOSPATH=$WORKSPACE
 QTPATH=$QTBINPATH/..
 DEST="$DIRECTORY/KipTool.app"
 
+ARCH=`uname -m`
+
 GITVER=`git rev-parse --short HEAD`
-echo $DIRECTORY
-echo $QTPATH
-echo $DEST
-echo $REPOSPATH
 
 echo "start"
 if [ ! -d "$DIRECTORY" ]; then
   mkdir $DIRECTORY
 fi
 
+echo $DIRECTORY
+echo $QTPATH
+echo $DEST
+echo $REPOSPATH
+
 echo "Copy app"
-cp -r $REPOSPATH/Applications/KipTool.app $DIRECTORY
+cp -r $REPOSPATH/install/applications/KipTool.app $DIRECTORY
 
 pushd .
 CPCMD="cp"
@@ -28,6 +29,31 @@ pwd
 if [ ! -d "./Frameworks" ]; then
  mkdir ./Frameworks
 fi
+
+if [ ! -d "./MacOS" ]; then
+ mkdir ./MacOS
+fi
+
+# `$CPCMD $REPOSPATH/install/lib/libProcessFramework.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libAdvancedFilterModules.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libAdvancedFilterModulesGUI.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libBaseModules.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libBaseModulesGUI.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libClassificationModules.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libClassificationModulesGUI.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libStatisticsModules.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libPorespaceModules.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libPCAModules.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libImagingModules.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libImagingModulesGUI.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libAdvancedFilters.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libkipl.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libModuleConfig.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libQtAddons.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libQtModuleConfigure.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libImagingAlgorithms.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libReaderConfig.dylib $DEST/Contents/Frameworks`
+# `$CPCMD $REPOSPATH/install/lib/libReaderGUI.dylib $DEST/Contents/Frameworks`
 
 `$CPCMD $REPOSPATH/install/lib/libProcessFramework.dylib $DEST/Contents/Frameworks`
 `$CPCMD $REPOSPATH/install/lib/libAdvancedFilterModules.dylib $DEST/Contents/Frameworks`
@@ -49,8 +75,9 @@ fi
 `$CPCMD $REPOSPATH/install/lib/libImagingAlgorithms.dylib $DEST/Contents/Frameworks`
 `$CPCMD $REPOSPATH/install/lib/libReaderConfig.dylib $DEST/Contents/Frameworks`
 `$CPCMD $REPOSPATH/install/lib/libReaderGUI.dylib $DEST/Contents/Frameworks`
+`$CPCMD $REPOSPATH/install/lib/libQtImaging.dylib $DEST/Contents/Frameworks`
 
-`$CPCMD $REPOSPATH//ExternalDependencies/macos/$ARCH/lib/libNeXus.1.0.0.dylib $DEST/Contents/Frameworks`
+`$CPCMD $REPOSPATH/ExternalDependencies/macos/$ARCH/lib/libNeXus.1.0.0.dylib $DEST/Contents/Frameworks`
 `$CPCMD $REPOSPATH/ExternalDependencies/macos/$ARCH/lib/libNeXusCPP.1.0.0.dylib $DEST/Contents/Frameworks`
 `$CPCMD /opt/local/lib/libhdf5.10.dylib    $DEST/Contents/Frameworks`
 `$CPCMD /opt/local/lib/libhdf5_cpp.dylib $DEST/Contents/Frameworks`
@@ -69,9 +96,6 @@ rm -f ./MacOS/*.dylib
 cd Frameworks
 rm -f *.1.0.dylib
 rm -f *.1.dylib
-
-
-
 
 if [ -e "/opt/local/lib/libzstd.1.dylib" ]; then
 	`$CPCMD /opt/local/lib/libzstd.1.dylib $DEST/Contents/Frameworks`
@@ -120,7 +144,7 @@ if [ ! -d "./PlugIns/accessible" ]; then
 fi
 
 if [ ! -f "./PlugIns/accessible/libqtaccessiblewidgets.dylib" ]; then 
-	if [ -f "$QTPATH/plugins/accessible/libqtaccessiblewidgets.dylib"] ; then
+	if [ -f "$QTPATH/plugins/accessible/libqtaccessiblewidgets.dylib" ] ; then
 		cp $QTPATH/plugins/accessible/libqtaccessiblewidgets.dylib $DEST/Contents/PlugIns/accessible/
 	fi
 fi
@@ -129,7 +153,7 @@ pwd
 ls PlugIns
 
 popd
-sed -i.bak s+com.yourcompany+ch.imagingscience+g $DEST/Contents/Info.plist
+sed -i.bak s+com.yourcompany+ch.psi+g $DEST/Contents/Info.plist
 
 cd $QTBINPATH
 echo "Do deploy ..."
@@ -139,18 +163,18 @@ pwd
 cd $DEST/Contents/MacOS
 install_name_tool -add_rpath @executable_path/../Frameworks KipTool
 
-install_name_tool -change libkipl.1.dylib @executable_path/../Frameworks/libkipl.1.dylib KipTool
-install_name_tool -change libModuleConfig.1.dylib @executable_path/../Frameworks/libModuleConfig.1.dylib KipTool
-install_name_tool -change libQtAddons.1.dylib @executable_path/../Frameworks/libQtAddons.1.dylib KipTool
-install_name_tool -change libQtModuleConfigure.1.dylib @executable_path/../Frameworks/libQtModuleConfigure.1.dylib KipTool
-install_name_tool -change libProcessFramework.1.dylib @executable_path/../Frameworks/libProcessFramework.1.dylib KipTool
-install_name_tool -change libReaderConfig.1.dylib @executable_path/../Frameworks/libReaderConfig.1.dylib KipTool
-install_name_tool -change libReaderGUI.1.dylib @executable_path/../Frameworks/libReaderGUI.1.dylib KipTool
-install_name_tool -change libImagingAlgorithms.1.dylib @executable_path/../Frameworks/libImagingAlgorithms.1.dylib KipTool
-install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib KipTool
-install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib KipTool
+# install_name_tool -change libkipl.1.dylib @executable_path/../Frameworks/libkipl.1.dylib KipTool
+# install_name_tool -change libModuleConfig.1.dylib @executable_path/../Frameworks/libModuleConfig.1.dylib KipTool
+# install_name_tool -change libQtAddons.1.dylib @executable_path/../Frameworks/libQtAddons.1.dylib KipTool
+# install_name_tool -change libQtModuleConfigure.1.dylib @executable_path/../Frameworks/libQtModuleConfigure.1.dylib KipTool
+# install_name_tool -change libProcessFramework.1.dylib @executable_path/../Frameworks/libProcessFramework.1.dylib KipTool
+# install_name_tool -change libReaderConfig.1.dylib @executable_path/../Frameworks/libReaderConfig.1.dylib KipTool
+# install_name_tool -change libReaderGUI.1.dylib @executable_path/../Frameworks/libReaderGUI.1.dylib KipTool
+# install_name_tool -change libImagingAlgorithms.1.dylib @executable_path/../Frameworks/libImagingAlgorithms.1.dylib KipTool
+# install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib KipTool
+# install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib KipTool
 
-# cd ../Frameworks
+cd ../Frameworks
 # # ModuleConfig
 # install_name_tool -change libkipl.1.dylib @executable_path/../Frameworks/libkipl.1.dylib libModuleConfig.1.0.0.dylib
 
@@ -195,10 +219,18 @@ install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/lib
 # install_name_tool -change libQtAddons.1.dylib @executable_path/../Frameworks/libQtAddons.1.dylib libReaderGUI.1.0.0.dylib
 
 # #nexus_related
-# install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libkipl.1.0.0.dylib
+install_name_tool -change /Users/kaestner/git/ExternalDependencies/sources/build_nexus/src/libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libkipl.dylib 
+install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libModuleConfig.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libModuleConfig.dylib
+install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libImagingAlgorithms.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libImagingAlgorithms.dylib
+
 # install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libkipl.1.0.0.dylib
 install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libProcessFramework.dylib
 install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libProcessFramework.dylib
+
+install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libReaderConfig.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libReaderConfig.dylib
 # install_name_tool -change /usr/lib/libz.1.dylib @executable_path/../Frameworks/libz.1.dylib libNexus.1.dylib
 # install_name_tool -change /usr/lib/libz.1.dylib @executable_path/../Frameworks/libz.1.dylib libNexusCPP.1.dylib
 install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libNeXusCPP.1.0.0.dylib
@@ -236,8 +268,8 @@ install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeX
 # install_name_tool -change libModuleConfig.1.dylib @executable_path/../Frameworks/libModuleConfig.1.dylib libImagingModules.1.0.0.dylib
 # install_name_tool -change libImagingAlgorithms.1.dylib @executable_path/../Frameworks/libImagingAlgorithms.1.dylib libImagingModules.1.0.0.dylib
 # install_name_tool -change libProcessFramework.1.dylib @executable_path/../Frameworks/libProcessFramework.1.dylib libImagingModules.1.0.0.dylib
-# install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libImagingModules.1.0.0.dylib
-# install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libImagingModules.1.0.0.dylib
+install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libImagingModules.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libImagingModules.dylib
 # install_name_tool -change libReaderConfig.1.dylib @executable_path/../Frameworks/libReaderConfig.1.dylib libImagingModules.1.0.0.dylib
 # install_name_tool -change libReaderConfig.1.dylib @executable_path/../Frameworks/libReaderConfig.1.dylib libImagingModulesGUI.1.0.0.dylib
 # install_name_tool -change libkipl.1.dylib @executable_path/../Frameworks/libkipl.1.dylib libImagingModulesGUI.1.0.0.dylib
@@ -247,16 +279,20 @@ install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeX
 # install_name_tool -change libImagingModules.1.dylib @executable_path/../Frameworks/libImagingModules.1.dylib libImagingModulesGUI.1.0.0.dylib
 # install_name_tool -change libQtModuleConfigure.1.dylib @executable_path/../Frameworks/libQtModuleConfigure.1.dylib libImagingModulesGUI.1.0.0.dylib
 # install_name_tool -change libQtAddons.1.dylib @executable_path/../Frameworks/libQtAddons.1.dylib libImagingModulesGUI.1.0.0.dylib
-# install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libImagingModulesGUI.1.0.0.dylib
-# install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libImagingModulesGUI.1.0.0.dylib
+install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libImagingModulesGUI.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libImagingModulesGUI.dylib
+install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libImagingAlgorithms.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libImagingAlgorithms.dylib
+
+
 
 # # BaseModules and BasemodulesGUI
 # install_name_tool -change libkipl.1.dylib @executable_path/../Frameworks/libkipl.1.dylib libBaseModules.1.0.0.dylib
 # install_name_tool -change libModuleConfig.1.dylib @executable_path/../Frameworks/libModuleConfig.1.dylib libBaseModules.1.0.0.dylib
 # #install_name_tool -change libImagingAlgorithms.1.dylib @executable_path/../Frameworks/libImagingAlgorithms.1.dylib libImagingModules.1.0.0.dylib
 # install_name_tool -change libProcessFramework.1.dylib @executable_path/../Frameworks/libProcessFramework.1.dylib libBaseModules.1.0.0.dylib
-# install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libBaseModules.1.0.0.dylib
-# install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libBaseModules.1.0.0.dylib
+install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libBaseModules.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libBaseModules.dylib
 # install_name_tool -change libReaderConfig.1.dylib @executable_path/../Frameworks/libReaderConfig.1.dylib libBaseModules.1.0.0.dylib
 # install_name_tool -change libReaderConfig.1.dylib @executable_path/../Frameworks/libReaderConfig.1.dylib libBaseModulesGUI.1.0.0.dylib
 # install_name_tool -change libkipl.1.dylib @executable_path/../Frameworks/libkipl.1.dylib libBaseModulesGUI.1.0.0.dylib
@@ -266,15 +302,15 @@ install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeX
 # install_name_tool -change libBaseModules.1.dylib @executable_path/../Frameworks/libImagingModules.1.dylib libBaseModulesGUI.1.0.0.dylib
 # install_name_tool -change libQtModuleConfigure.1.dylib @executable_path/../Frameworks/libQtModuleConfigure.1.dylib libBaseModulesGUI.1.0.0.dylib
 # install_name_tool -change libQtAddons.1.dylib @executable_path/../Frameworks/libQtAddons.1.dylib libBaseModulesGUI.1.0.0.dylib
-# install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libBaseModulesGUI.1.0.0.dylib
-# install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libBaseModulesGUI.1.0.0.dylib
+install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libBaseModulesGUI.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libBaseModulesGUI.dylib
 
 # # ClassificationModules and ClassificationModulesGUI
 # install_name_tool -change libkipl.1.dylib @executable_path/../Frameworks/libkipl.1.dylib libClassificationModules.1.0.0.dylib
 # install_name_tool -change libModuleConfig.1.dylib @executable_path/../Frameworks/libModuleConfig.1.dylib libClassificationModules.1.0.0.dylib
 # install_name_tool -change libProcessFramework.1.dylib @executable_path/../Frameworks/libProcessFramework.1.dylib libClassificationModules.1.0.0.dylib
-# install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libClassificationModules.1.0.0.dylib
-# install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libClassificationModules.1.0.0.dylib
+install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libClassificationModules.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libClassificationModules.dylib
 # #install_name_tool -change libReaderConfig.1.dylib @executable_path/../Frameworks/libReaderConfig.1.dylib libClassificationModules.1.0.0.dylib
 # #install_name_tool -change libReaderConfig.1.dylib @executable_path/../Frameworks/libReaderConfig.1.dylib libClassificationModulesGUI.1.0.0.dylib
 # install_name_tool -change libkipl.1.dylib @executable_path/../Frameworks/libkipl.1.dylib libClassificationModulesGUI.1.0.0.dylib
@@ -283,15 +319,17 @@ install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeX
 # install_name_tool -change libClassificationModules.1.dylib @executable_path/../Frameworks/libClassificationModules.1.dylib libClassificationModulesGUI.1.0.0.dylib
 # install_name_tool -change libQtModuleConfigure.1.dylib @executable_path/../Frameworks/libQtModuleConfigure.1.dylib libClassificationModulesGUI.1.0.0.dylib
 # install_name_tool -change libQtAddons.1.dylib @executable_path/../Frameworks/libQtAddons.1.dylib libClassificationModulesGUI.1.0.0.dylib
-# install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libClassificationModulesGUI.1.0.0.dylib
-# install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libClassificationModulesGUI.1.0.0.dylib
+install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libClassificationModulesGUI.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libClassificationModulesGUI.dylib
 # install_name_tool -change libAdvancedFilterModules.1.dylib @executable_path/../Frameworks/libAdvancedFilterModules.1.dylib libClassificationModulesGUI.1.0.0.dylib
 
 # # AdvancedFilterModule and AdvancedFilterModuleGUI
-# install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libAdvancedFilterModules.1.0.0.dylib
-# install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libAdvancedFilterModules.1.0.0.dylib
-# install_name_tool -change libNeXus.1.dylib @executable_path/../Frameworks/libNeXus.1.dylib libAdvancedFilterModulesGUI.1.0.0.dylib
-# install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libAdvancedFilterModulesGUI.1.0.0.dylib
+install_name_tool -change libNeXus.1.dylib    @executable_path/../Frameworks/libNeXus.1.dylib    libAdvancedFilterModules.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libAdvancedFilterModules.dylib
+install_name_tool -change libNeXus.1.dylib    @executable_path/../Frameworks/libNeXus.1.dylib    libAdvancedFilterModulesGUI.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libAdvancedFilterModulesGUI.dylib
+install_name_tool -change libNeXus.1.dylib    @executable_path/../Frameworks/libNeXus.1.dylib    libAdvancedFilters.dylib
+install_name_tool -change libNeXusCPP.1.dylib @executable_path/../Frameworks/libNeXusCPP.1.dylib libAdvancedFilters.dylib
 # install_name_tool -change libQtAddons.1.dylib @executable_path/../Frameworks/libQtAddons.1.dylib libAdvancedFilterModulesGUI.1.0.0.dylib
 # install_name_tool -change libAdvancedFilterModules.1.dylib @executable_path/../Frameworks/libAdvancedFilterModules.1.dylib libAdvancedFilterModulesGUI.1.0.0.dylib
 
