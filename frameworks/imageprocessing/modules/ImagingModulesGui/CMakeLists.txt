@@ -10,14 +10,12 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# find_package(QT NAMES Qt6 COMPONENTS Widgets Charts PrintSupport REQUIRED)
-# find_package(Qt6 REQUIRED COMPONENTS Widgets Charts PrintSupport)
-
 find_package(QT NAMES Qt6 COMPONENTS Widgets Charts REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Charts )
 
 message("Using Qt${QT_VERSION_MAJOR}")
 
+if (APPLE)
 include_directories(
     /opt/local/include
     /opt/local/include/libxml2
@@ -32,11 +30,28 @@ include_directories(
     ../../../../../ExternalDependencies/macos/include
     ../ImagingModules/src
     ../../ProcessFramework/include/
-    # ../../../../external/mac/include/
-    # ../../../../external/mac/include/nexus
-    # ../../../../external/mac/include/hdf5
-
     )
+endif()
+
+if (WIN32)
+include_directories(
+    ../../ProcessFramework/include/
+    ../ImagingModules/src
+    ../../../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
+    ../../../../../imagingsuite/GUI/qt/QtAddons/
+    ../../../../../imagingsuite/GUI/qt/QtModuleConfigure/
+    ../../../../../imagingsuite/core/kipl/kipl/include
+    ../../../../../imagingsuite/core/modules/ModuleConfig/include
+    ../../../../../imagingsuite/core/modules/ReaderConfig
+    ../../../../../ExternalDependencies/macos/include
+
+    ../../../../../ExternalDependencies/windows/include
+    ../../../../../ExternalDependencies/windows/include/nexus
+    ../../../../../ExternalDependencies/windows/include/cfitsio
+    ../../../../../ExternalDependencies/windows/include/libxml2
+    ../../../../../imagingsuite/external/include/
+    )
+endif()
 
 link_directories( ../../../../../install/lib /opt/local/lib )
 
@@ -71,13 +86,44 @@ set_target_properties(${TARGET_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(${TARGET_NAME} PROPERTIES INSTALL_RPATH "\$ORIGIN")
 set_target_properties(${TARGET_NAME} PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
-# target_compile_definitions(${TARGET_NAME} PRIVATE INSPECTORMODULESGUI_LIBRARY HAVE_NEXUS)
+target_compile_definitions(${TARGET_NAME} PRIVATE IMAGINGMODULESGUI_LIBRARY NOMINMAX HAVE_NEXUS)
 
 add_definitions(-DHAVE_NEXUS)
 
 message(${CMAKE_HOST_SYSTEM_PROCESSOR})
 
 link_directories(../../../../../install/lib /opt/local/lib )
+
+if (WIN32)
+target_link_directories(${TARGET_NAME} PRIVATE
+    ../../../../../build-imagingsuite/lib/Release
+    ../../../../../ExternalDependencies/windows/lib
+    ../../../../../imagingsuite/external/lib64
+)
+
+target_link_libraries(${TARGET_NAME} PRIVATE
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Charts
+
+  kipl
+  ImagingAlgorithms
+  ImagingModules
+  ProcessFramework
+  ReaderConfig
+  ModuleConfig
+  QtAddons
+  QtModuleConfigure
+  libxml2
+  libfftw3-3
+  libfftw3f-3
+  cfitsio
+  libtiff
+ # armadillo
+ # lapack
+  libopenblas
+)
+endif()
 
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
 
@@ -97,8 +143,6 @@ if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
         kipl
         ImagingAlgorithms
         ImagingModules
-        AdvancedFilterModules
-        AdvancedFilters
         ModuleConfig
         ReaderConfig
         ProcessFramework

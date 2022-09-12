@@ -34,8 +34,6 @@ include_directories(
     ../../../../../imagingsuite/core/modules/ModuleConfig/include
     ../../../../../ExternalDependencies/windows/include
     ../../../../../ExternalDependencies/windows/include/nexus
-    ../../../../../ExternalDependencies/windows/include
-    ../../../../../ExternalDependencies/windows/include/nexus
     ../../../../../ExternalDependencies/windows/include/cfitsio
     ../../../../../ExternalDependencies/windows/include/libxml2
     ../../../../../imagingsuite/external/include/

@@ -7,6 +7,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if (APPLE)
 include_directories(
     /opt/local/include
     /opt/local/include/libxml2
@@ -23,6 +24,22 @@ include_directories(
  
     ../../../../../imagingsuite/external/mac/include/hdf5
     )
+endif()
+
+if (WIN32)
+include_directories(
+    ../../ProcessFramework/include/
+    ../../../../../imagingsuite/core/kipl/kipl/include
+    # ../../../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
+    # ../../../../../imagingsuite/core/algorithms/AdvancedFilters/
+    ../../../../../imagingsuite/core/modules/ModuleConfig/include
+    ../../../../../ExternalDependencies/windows/include
+    ../../../../../ExternalDependencies/windows/include/nexus
+    ../../../../../ExternalDependencies/windows/include/cfitsio
+    ../../../../../ExternalDependencies/windows/include/libxml2
+    ../../../../../imagingsuite/external/include/
+    )
+endif()
 
 link_directories(../../../../../install/lib /opt/local/lib )
 
@@ -49,14 +66,53 @@ set(SRC_FILES
     src/VolumeProject.cpp
 )
 
-# target_compile_definitions(${TARGET_NAME} PRIVATE ADVANCEDFILTERMODULES_LIBRARY HAVE_NEXUS)
-
 add_library(${TARGET_NAME} SHARED
   ${SRC_FILES}
   ${INC_FILES}
   )
 
+target_compile_definitions(${TARGET_NAME} PRIVATE BASEMODULES_LIBRARY NOMINMAX HAVE_NEXUS)
+
+
+
   message(${CMAKE_HOST_SYSTEM_PROCESSOR})
+
+  if (WIN32)
+    target_link_directories(${TARGET_NAME} PRIVATE
+    ../../../../../build-imagingsuite/lib/Release
+    ../../../../../install/lib
+    ../../../../../ExternalDependencies/windows/lib
+    ../../../../../imagingsuite/external/lib64
+    ../../../../../imagingsuite/external/lib64/nexus
+    )
+    
+    target_link_libraries(${TARGET_NAME}
+    PRIVATE
+        kipl
+        ImagingAlgorithms
+        ModuleConfig
+        ProcessFramework
+        libxml2
+        # fftw3
+        # fftw3f
+        # cfitsio
+        libtiff
+        # armadillo
+        # lapack
+        # blas
+        # NeXus.1.0.0
+        # NeXusCPP.1.0.0
+        # liblapack
+        # libopenblas
+        # libfftw3-3
+        # libfftw3f-3
+        # NeXus
+        # NeXusCPP
+        # Iphlpapi
+
+        )
+endif()
+
   if (APPLE)
       if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
           target_link_directories(${TARGET_NAME} PRIVATE
