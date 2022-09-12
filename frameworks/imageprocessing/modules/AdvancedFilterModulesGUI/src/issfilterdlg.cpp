@@ -9,8 +9,11 @@
 #include <ParameterHandling.h>
 
 #include <strings/miscstring.h>
-#include <scalespace/ISSfilter.h>
-#include <scalespace/filterenums.h>
+#include <ISSfilterQ3D.h>
+#include <filterenums.h>
+// #include <scalespace/ISSfilter.h>
+// #include <scalespace/filterenums.h>
+
 #include <math/image_statistics.h>
 #include <base/thistogram.h>
 
@@ -99,8 +102,8 @@ void ISSFilterDlg::UpdateParameters()
     m_sIterationPath = ui->lineEdit_iterationPath->text().toStdString();
     m_bSaveIterations = ui->groupBox_saveIterations->isChecked();
 
-    m_eRegularization=static_cast<akipl::scalespace::eRegularizationType>(ui->comboBox_regularization->currentIndex());
-    m_eInitialImage=static_cast<akipl::scalespace::eInitialImageType>(ui->comboBox_initialImage->currentIndex());
+    m_eRegularization=static_cast<advancedfilters::eRegularizationType>(ui->comboBox_regularization->currentIndex());
+    m_eInitialImage=static_cast<advancedfilters::eInitialImageType>(ui->comboBox_initialImage->currentIndex());
 }
 
 void ISSFilterDlg::ApplyParameters()
@@ -111,14 +114,16 @@ void ISSFilterDlg::ApplyParameters()
     UpdateParameterList(parameters);
 
 
-    akipl::scalespace::ISSfilterQ3D<float> iss(nullptr);
+    advancedfilters::ISSfilterQ3D<float> iss(nullptr);
     filtered.Clone(*pOriginal);
 
     normalizeImage(filtered,true);
-    iss.eInitialImage = m_eInitialImage;
-    iss.m_eRegularization = m_eRegularization;
 
-    iss.Process(    filtered,
+
+    iss.setInitialImageType(m_eInitialImage);
+    iss.setRegularizationType(m_eRegularization);
+
+    iss.process(    filtered,
                     m_fTau,
                     m_fLambda,
                     m_fAlpha,
@@ -139,12 +144,11 @@ void ISSFilterDlg::ApplyParameters()
     kipl::base::Histogram(filtered.GetDataPtr(),filtered.Size(),hist,N,0.0f,0.0f,axis);
     ui->plotHistogram->setCurveData(1,axis,hist,N,"Filtered");
 
-    float x[4096];
+    std::vector<float> x(m_nIterations);
+    std::iota(x.begin(),x.end(),0.0f);
 
-    for (int i=0; i<m_nIterations; ++i)
-        x[i]=i+1;
     ui->plotError->hideLegend();
-    ui->plotError->setCurveData(0,x,iss.GetErrorArray(), m_nIterations);
+    ui->plotError->setCurveData(0,x,iss.errors(),"Error");
 }
 
 void ISSFilterDlg::UpdateParameterList(std::map<string, string> &parameters)

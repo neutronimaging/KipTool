@@ -7,7 +7,7 @@
 #include <ConfiguratorDialogBase.h>
 
 #include <base/timage.h>
-#include <scalespace/ISSfilterQ3D.h>
+#include <ISSfilterQ3D.h>
 
 
 namespace Ui {
@@ -49,8 +49,8 @@ private slots:
     int m_nIterations;
     std::string m_sIterationPath;
     bool m_bSaveIterations;
-    akipl::scalespace::eRegularizationType m_eRegularization;
-    akipl::scalespace::eInitialImageType m_eInitialImage;
+    advancedfilters::eRegularizationType m_eRegularization;
+    advancedfilters::eInitialImageType m_eInitialImage;
 
     kipl::base::TImage<float,3> *pOriginal;
     kipl::base::TImage<float,3> filtered;
