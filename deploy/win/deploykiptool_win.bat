@@ -5,31 +5,38 @@ IF NOT EXIST %DEST% mkdir %DEST%
 pushd .
 cd %DEST%
 
-copy %REPOS%\Applications\KipTool.exe .
-copy %REPOS%\Applications\KipToolCLI.exe .
-copy %REPOS%\lib\ImagingAlgorithms.dll .
-copy %REPOS%\lib\ModuleConfig.dll .
-copy %REPOS%\lib\ReaderConfig.dll .
-copy %REPOS%\lib\ReaderGUI.dll .
-copy %REPOS%\lib\QtAddons.dll .
-copy %REPOS%\lib\QtModuleConfigure.dll .
-copy %REPOS%\lib\kipl.dll .
-copy %REPOS%\lib\ProcessFramework.dll .
-copy %REPOS%\lib\AdvancedFilterModules.dll .
-copy %REPOS%\lib\AdvancedFilterModulesGUI.dll .
-copy %REPOS%\lib\AdvancedFilters.dll .
-copy %REPOS%\lib\BaseModules.dll .
-copy %REPOS%\lib\BaseModulesGUI.dll .
-copy %REPOS%\lib\ClassificationModules.dll .
-copy %REPOS%\lib\ClassificationModulesGUI.dll . 
-copy %REPOS%\lib\ImagingModules.dll .
-copy %REPOS%\lib\ImagingModulesGUI.dll .
+copy %REPOS%\build-kiptool\bin\Release\KipTool.exe .
+@REM copy %REPOS%\Applications\KipToolCLI.exe .
+copy %REPOS%\build-imagingsuite\bin\Release\ImagingAlgorithms.dll .
+copy %REPOS%\build-imagingsuite\bin\Release\ModuleConfig.dll .
+copy %REPOS%\build-imagingsuite\bin\Release\ReaderConfig.dll .
+copy %REPOS%\build-imagingsuite\bin\Release\ReaderGUI.dll .
+copy %REPOS%\build-imagingsuite\bin\Release\QtAddons.dll .
+copy %REPOS%\build-imagingsuite\bin\Release\QtModuleConfigure.dll .
+copy %REPOS%\build-imagingsuite\bin\Release\kipl.dll .
+copy %REPOS%\build-kiptool\bin\Release\ProcessFramework.dll .
+copy %REPOS%\build-kiptool\bin\Release\AdvancedFilterModules.dll .
+copy %REPOS%\build-kiptool\bin\Release\AdvancedFilterModulesGUI.dll .
+copy %REPOS%\build-imagingsuite\bin\Release\AdvancedFilters.dll .
+copy %REPOS%\build-kiptool\bin\Release\BaseModules.dll .
+copy %REPOS%\build-kiptool\bin\Release\BaseModulesGUI.dll .
+copy %REPOS%\build-kiptool\bin\Release\ClassificationModules.dll .
+copy %REPOS%\build-kiptool\bin\Release\ClassificationModulesGUI.dll . 
+copy %REPOS%\build-kiptool\bin\Release\ImagingModules.dll .
+copy %REPOS%\build-kiptool\bin\Release\ImagingModulesGUI.dll .
 
 copy %REPOS%\imagingsuite\external\lib64\libtiff.dll .
 copy %REPOS%\imagingsuite\external\lib64\libjpeg-62.dll .
 copy %REPOS%\imagingsuite\external\lib64\zlib1.dll .
 copy %REPOS%\imagingsuite\external\lib64\libfftw3-3.dll .
 copy %REPOS%\imagingsuite\external\lib64\libfftw3f-3.dll .
+copy %REPOS%\imagingsuite\external\lib64\liblapack.dll .
+copy %REPOS%\imagingsuite\external\lib64\libgcc_s_seh_64-1.dll .
+copy %REPOS%\imagingsuite\external\lib64\libgcc_s_seh-1.dll .
+copy %REPOS%\imagingsuite\external\lib64\libgfortran_64-3.dll .
+copy %REPOS%\imagingsuite\external\lib64\libquadmath-0.dll .
+copy %REPOS%\imagingsuite\external\lib64\libwinpthread-1.dll .
+copy %REPOS%\imagingsuite\external\lib64\libblas.dll .
 copy %REPOS%\imagingsuite\external\lib64\nexus\NeXus.dll .
 copy %REPOS%\imagingsuite\external\lib64\nexus\NexusCPP.dll .
 copy %REPOS%\imagingsuite\external\lib64\hdf5\hdf5.dll .
@@ -37,9 +44,9 @@ copy %REPOS%\imagingsuite\external\lib64\hdf5\hdf5_cpp.dll .
 copy %REPOS%\imagingsuite\external\lib64\hdf5\zlib.dll .
 copy %REPOS%\imagingsuite\external\lib64\hdf5\szip.dll .
 
-copy %REPOS%\imagingsuite\external\lib64\libgcc_s_seh_64-1.dll .
-copy %REPOS%\imagingsuite\external\lib64\libgcc_s_seh-1.dll .
-copy %REPOS%\imagingsuite\external\lib64\libwinpthread-1.dll .
+@REM copy %REPOS%\imagingsuite\external\lib64\libgcc_s_seh_64-1.dll .
+@REM copy %REPOS%\imagingsuite\external\lib64\libgcc_s_seh-1.dll .
+@REM copy %REPOS%\imagingsuite\external\lib64\libwinpthread-1.dll .
 
 copy %REPOS%\ExternalDependencies\windows\bin\libopenblas.dll .
 copy %REPOS%\ExternalDependencies\windows\bin\libxml2.dll .
@@ -49,8 +56,11 @@ cd %QTBINPATH%
 
 windeployqt %DEST%\KipTool.exe
 windeployqt %DEST%\KipToolCLI.exe
-copy Qt5PrintSupport.dll %DEST%
-copy Qt5Charts.dll %DEST%
+copy Qt6PrintSupport.dll %DEST%
+copy Qt6Charts.dll %DEST%
+copy Qt6OpenGLWidgets.dll %DEST%
+copy Qt6OpenGl.dll %DEST%
+
 
 popd
 for /F "usebackq tokens=1,2 delims==" %%i in (`wmic os get LocalDateTime /VALUE 2^>NUL`) do if '.%%i.'=='.LocalDateTime.' set ldt=%%j
