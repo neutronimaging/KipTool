@@ -52,6 +52,7 @@ copy %REPOS%\ExternalDependencies\windows\bin\libopenblas.dll .
 copy %REPOS%\ExternalDependencies\windows\bin\libxml2.dll .
 copy %REPOS%\ExternalDependencies\windows\bin\cfitsio.dll .
 
+copy %REPOS%\KipTool\applications\kiptool\Resources resources
 cd %QTBINPATH%
 
 windeployqt %DEST%\KipTool.exe

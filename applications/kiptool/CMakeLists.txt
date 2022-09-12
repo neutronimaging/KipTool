@@ -114,7 +114,7 @@ set(MACOSX_BUNDLE_ICON_FILE kiptool_icon.icns)
 
 # And the following tells CMake where to find and install the file itself.
 set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/resources/kiptool_icon.icns")
-set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources/kiptool_icon.rc")
+set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/src/kiptool_icon.rc")
 set_source_files_properties(${app_icon_macos} PROPERTIES
         MACOSX_PACKAGE_LOCATION "Resources")
 
@@ -206,7 +206,7 @@ target_link_libraries(${TARGET_NAME} PRIVATE
 endif()
 
 set_target_properties(${TARGET_NAME} PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER ch.psi.muhrec
+    MACOSX_BUNDLE_GUI_IDENTIFIER ch.psi.kiptool
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
