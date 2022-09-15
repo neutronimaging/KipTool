@@ -736,6 +736,7 @@ void BBLogNormDlg::on_errorButton_clicked()
 
             try
             {
+//                error = 1.0;
                 error = module.GetInterpolationError(mymask);
             }
             catch (KiplFrameworkException &e)

@@ -53,13 +53,14 @@ set(SRC_FILES
 )
 
 set(UI_FILES
-    issfilterdlg.ui
-    nonlindiffusiondlg.ui
+    src/issfilterdlg.ui
+    src/nonlindiffusiondlg.ui
 )
 
 add_library(${TARGET_NAME} SHARED
   ${SRC_FILES}
   ${INC_FILES}
+  ${UI_FILES}
 )
 
 

@@ -107,6 +107,7 @@ message(App Qt${QT_VERSION_MAJOR})
         ${INC_FILES}
         ${UI_FILES}
         ${app_icon_macos}
+        ${APP_ICON_RESOURCE_WINDOWS}
     )
 #else()
 #        add_executable(${TARGET_NAME}
