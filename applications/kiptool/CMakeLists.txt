@@ -10,10 +10,11 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-find_package(Qt6 REQUIRED COMPONENTS Widgets Charts Concurrent)
-#find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Charts Concurrent REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Charts Concurrent PrintSupport)
+find_package(QT NAMES Qt6 COMPONENTS Widgets Charts Concurrent PrintSupport REQUIRED)
 #find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Charts REQUIRED)
 
+if (APPLE)
 include_directories(
     /opt/local/include
     /opt/local/include/libxml2
@@ -34,6 +35,28 @@ include_directories(
     #../../../imagingsuite/external/mac/include/hdf5
     Qt6Widgets_INCLUDE_DIRS/QtCharts
     )
+endif()
+
+if (WIN32)
+    include_directories(
+        ../../../imagingsuite/core/kipl/kipl/include
+        ../../../imagingsuite/core/modules/ModuleConfig/include
+        ../../../imagingsuite/core/modules/ReaderConfig
+        ../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
+        ../../../imagingsuite/GUI/qt/QtAddons
+        ../../../imagingsuite/GUI/qt/QtImaging
+        ../../../imagingsuite/GUI/qt/QtModuleConfigure
+        ../../../imagingsuite/core/modules/ReaderGUI
+        ../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
+        ../../frameworks/imageprocessing/ProcessFramework/include
+        ../../../ExternalDependencies/windows/include
+        ../../../ExternalDependencies/windows/include/libxml2
+        ../../../ExternalDependencies/windows/include/cfitsio
+        ../../../ExternalDependencies/windows/include/nexus
+        ../../../imagingsuite/external/include
+        Qt6Widgets_INCLUDE_DIRS/QtCharts
+    )
+endif()
 
 set(SRC_FILES
     src/Fits2Tif.cpp
@@ -91,11 +114,13 @@ set(MACOSX_BUNDLE_ICON_FILE kiptool_icon.icns)
 
 # And the following tells CMake where to find and install the file itself.
 set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/resources/kiptool_icon.icns")
-set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources/kiptool_icon.rc")
+set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/src/kiptool_icon.rc")
 set_source_files_properties(${app_icon_macos} PROPERTIES
         MACOSX_PACKAGE_LOCATION "Resources")
 
 # qt_add_executable(${TARGET_NAME} MACOSX_BUNDLE  ${app_icon_macos})
+
+add_definitions(-DNOMINMAX)
 
 message(App Qt${QT_VERSION_MAJOR})
 
@@ -116,7 +141,39 @@ message(App Qt${QT_VERSION_MAJOR})
 #endif()
 
 link_directories(../../../lib /opt/local/lib )
+if (WIN32)
+target_link_directories(${TARGET_NAME} PRIVATE
+    ../../../build-imagingsuite/lib/Release
+    ../../../install/lib
+    ../../../ExternalDependencies/windows/lib
+    ../../../imagingsuite/external/lib64/
+    )
 
+target_link_libraries(${TARGET_NAME} PRIVATE
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Concurrent
+    Qt${QT_VERSION_MAJOR}::PrintSupport
+    kipl
+    ModuleConfig
+    ImagingAlgorithms
+    ReaderConfig
+    QtAddons
+    ReaderGUI
+    QtModuleConfigure
+    ProcessFramework
+    QtImaging
+    libtiff
+    cfitsio
+    libxml2
+    # armadillo
+    # lapack
+    libopenblas
+)
+endif()
+
+
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
 target_link_directories(${TARGET_NAME} PRIVATE
     /opt/local/lib
     ../../../install/lib
@@ -130,6 +187,7 @@ target_link_libraries(${TARGET_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Concurrent
+    Qt${QT_VERSION_MAJOR}::PrintSupport
     kipl
     ModuleConfig
     ImagingAlgorithms
@@ -146,9 +204,10 @@ target_link_libraries(${TARGET_NAME} PRIVATE
     lapack
     blas
 )
+endif()
 
 set_target_properties(${TARGET_NAME} PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER ch.psi.muhrec
+    MACOSX_BUNDLE_GUI_IDENTIFIER ch.psi.kiptool
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE

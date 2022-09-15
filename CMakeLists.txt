@@ -141,19 +141,13 @@ add_subdirectory(frameworks/imageprocessing/modules/ClassificationModules)
 add_subdirectory(frameworks/imageprocessing/modules/ClassificationModulesGUI)
 add_subdirectory(frameworks/imageprocessing/modules/ImagingModules)
 add_subdirectory(frameworks/imageprocessing/modules/ImagingModulesGui)
-add_subdirectory(frameworks/imageprocessing/modules/PCAModules)
-add_subdirectory(frameworks/imageprocessing/modules/StatisticsModules)
-add_subdirectory(frameworks/imageprocessing/modules/PorespaceModules)
-add_subdirectory(applications/kiptool)
+# add_subdirectory(frameworks/imageprocessing/modules/PCAModules)
+# add_subdirectory(frameworks/imageprocessing/modules/StatisticsModules)
+# add_subdirectory(frameworks/imageprocessing/modules/PorespaceModules)
 
-## module GUI
-#add_subdirectory(frameworks/imageprocessing/modules/ClassificationModulesGUI)
-#add_subdirectory(frameworks/imageprocessing/modules/BaseModulesGUI)
-#add_subdirectory(frameworks/imageprocessing/modules/ImagingModulesGui)
-#add_subdirectory(frameworks/imageprocessing/modules/AdvancedFilterModulesGUI)
 
 ## applications
-#add_subdirectory(applications/kiptool)
+add_subdirectory(applications/kiptool)
 #add_subdirectory(applications/kiptoolCLI)
 #add_subdirectory(applications/kiptool/UnitTests)
 
