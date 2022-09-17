@@ -1,8 +1,9 @@
 //<LICENSE>
 
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <cstring>
-#include <cmath>
+#include <limits>
+//#include <cmath>
 #include <sstream>
 #include <iomanip>
 
