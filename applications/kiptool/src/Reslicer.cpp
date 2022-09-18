@@ -100,7 +100,7 @@ void TIFFReslicer::ParseXML(std::string fname)
         msg.str(""); msg<<"Found "<<sName<<" expect reslice";
         logger(kipl::logging::Logger::LogMessage,msg.str());
         if (sName!="reslice") {
-            msg.str();
+            msg.str("");
             msg<<"Unexpected project contents in parameter file ("<<sName<<"!=reslice)";
             logger(kipl::logging::Logger::LogMessage,msg.str());
             throw kipl::base::KiplException(msg.str(),__FILE__,__LINE__);
@@ -481,7 +481,7 @@ int TIFFReslicer::LoadBuffer(std::string fname)
     TIFFSetWarningHandler(nullptr);
 	// Open the TIFF image
     if((image = TIFFOpen(fname.c_str(), "r")) == nullptr){
-		msg.str();
+        msg.str("");
 		msg<<"LoadBuffer: Could not open image "<<fname;
 		throw kipl::base::KiplException(msg.str(),__FILE__,__LINE__);
 	}

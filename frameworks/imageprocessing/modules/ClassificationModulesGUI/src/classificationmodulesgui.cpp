@@ -28,7 +28,7 @@ CLASSIFICATIONMODULESGUISHARED_EXPORT void  * GetGUIModule(const char *applicati
 
     if (name!=nullptr) {
         std::string sName=name;
-        msg.str();
+        msg.str("");
         msg<<"Looking for "<<sName;
         logger.message(msg.str());
 
