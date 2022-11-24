@@ -51,7 +51,8 @@ KipToolMainWindow::KipToolMainWindow(QApplication *app, QWidget *parent) :
 {
     ui->setupUi(this);
     //logger.AddLogTarget(*(ui->widget_logviewer));
-    logger.AddLogTarget(*logdlg);
+    logger.addLogTarget(*(ui->widget_logviewer));
+
 
     ui->widget_moduleconfigurator->configure("kiptool",QDir::currentPath().toStdString(),&m_ModuleConfigurator);
     ui->widget_moduleconfigurator->SetApplicationObject(this);
