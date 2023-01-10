@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 set(TARGET_NAME "KipTool")
-project(${TARGET_NAME} VERSION 4.3 LANGUAGES CXX)
+project(${TARGET_NAME} VERSION 2.9 LANGUAGES CXX)
+# dirty fix
+add_definitions(-DVERSION="2.9")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -11,14 +13,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Charts Concurrent ) #PrintSupport
-#find_package(QT NAMES Qt6 COMPONENTS Widgets Charts Concurrent  REQUIRED) #PrintSupport
-#find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Charts REQUIRED)
 
 if (APPLE)
 include_directories(
-    /opt/local/include
-    /opt/local/include/libxml2
-    /usr/include/libxml2
     ../../../imagingsuite/core/kipl/kipl/include
     ../../../imagingsuite/core/modules/ModuleConfig/include
     ../../../imagingsuite/core/modules/ReaderConfig
@@ -30,9 +27,6 @@ include_directories(
     ../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
     ../../frameworks/imageprocessing/ProcessFramework/include
     ../../../ExternalDependencies/macos/include
-    ../../../ExternalDependencies/macos/include/nexus
-    ../../../imagingsuite/external/mac/include/
-    #../../../imagingsuite/external/mac/include/hdf5
     Qt6Widgets_INCLUDE_DIRS/QtCharts
     )
 endif()
@@ -64,7 +58,6 @@ set(SRC_FILES
     src/genericconversion.cpp
     src/loadimagedialog.cpp
     src/mergevolumesdialog.cpp
-    #src/stdafx.cpp
     src/ImageIO.cpp
     src/confighistorydialog.cpp
     src/imagingmoduleconfigurator.cpp
@@ -83,7 +76,6 @@ set(INC_FILES
     src/genericconversion.h
     src/loadimagedialog.h
     src/processdialog.h
-    #targetver.h
     src/ImageIO.h
     src/confighistorydialog.h
     src/imagingmoduleconfigurator.h
@@ -93,7 +85,6 @@ set(INC_FILES
     src/fileconversiondialog.h
     src/kiptoolmainwindow.h
     src/mergevolumesdialog.h
-    #stdafx.h
 )
 
 set(UI_FILES
@@ -122,25 +113,23 @@ set_source_files_properties(${app_icon_macos} PROPERTIES
 
 add_definitions(-DNOMINMAX)
 
-message(App Qt${QT_VERSION_MAJOR})
+message(KipTool Qt${QT_VERSION_MAJOR})
 
-#if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(${TARGET_NAME}
-        MANUAL_FINALIZATION
+qt_add_executable(${TARGET_NAME}
+    MANUAL_FINALIZATION
 #        MACOSX_BUNDLE
-        ${SRC_FILES}
-        ${INC_FILES}
-        ${UI_FILES}
-        ${app_icon_macos}
-        ${APP_ICON_RESOURCE_WINDOWS}
-    )
-#else()
-#        add_executable(${TARGET_NAME}
-#            ${PROJECT_SOURCES}
-#        )
-#endif()
+    ${SRC_FILES}
+    ${INC_FILES}
+    ${UI_FILES}
+    ${app_icon_macos}
+    ${APP_ICON_RESOURCE_WINDOWS}
+)
 
-link_directories(../../../lib /opt/local/lib )
+link_directories(../../../install/lib )
+target_link_directories(${TARGET_NAME} PUBLIC
+    ../../../install/lib
+    )
+
 if (WIN32)
 target_link_directories(${TARGET_NAME} PRIVATE
     ../../../build-imagingsuite/lib/Release
@@ -172,39 +161,26 @@ target_link_libraries(${TARGET_NAME} PRIVATE
 )
 endif()
 
+if (UNIX)
+    target_link_libraries(${TARGET_NAME} 
+    PUBLIC
+        Qt${QT_VERSION_MAJOR}::Core
+        Qt${QT_VERSION_MAJOR}::Widgets
+        Qt${QT_VERSION_MAJOR}::Concurrent
+    #    Qt${QT_VERSION_MAJOR}::PrintSupport
+        kipl
+        ModuleConfig
+        ImagingAlgorithms
+        ReaderConfig
+        QtAddons
+        ReaderGUI
+        QtModuleConfigure
+        ProcessFramework
+        QtImaging
 
-#if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-if (APPLE)
-target_link_directories(${TARGET_NAME} PRIVATE
-    /opt/local/lib
-    ../../../install/lib
-    ../../../ExternalDependencies/macos/${CMAKE_HOST_SYSTEM_PROCESSOR}/lib
-    ../../../imagingsuite/external/mac/lib/
-
-
+        ${CFITSIO_LIBRARIES}
+        LibXml2::LibXml2
     )
-
-target_link_libraries(${TARGET_NAME} PRIVATE
-    Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Widgets
-    Qt${QT_VERSION_MAJOR}::Concurrent
-#    Qt${QT_VERSION_MAJOR}::PrintSupport
-    kipl
-    ModuleConfig
-    ImagingAlgorithms
-    ReaderConfig
-    QtAddons
-    ReaderGUI
-    QtModuleConfigure
-    ProcessFramework
-    QtImaging
-    tiff
-    cfitsio
-    xml2
-    armadillo
-    lapack
-    blas
-)
 endif()
 
 set_target_properties(${TARGET_NAME} PROPERTIES

@@ -9,20 +9,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (APPLE)
 include_directories(
-    /opt/local/include
-    /opt/local/include/libxml2
-    /usr/include/libxml2
     ../../ProcessFramework/include/
-#    ../../../../external/src/linalg
     ../../../../../imagingsuite/core/kipl/kipl/include
     ../../../../../imagingsuite/core/modules/ModuleConfig/include
     ../../../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
     ../../../../../imagingsuite/core/algorithms/AdvancedFilters/
     ../../../../../ExternalDependencies/macos/include
-    ../../../../../ExternalDependencies/macos/include/nexus
-    ../../../../../imagingsuite/external/mac/include/
- 
-    ../../../../../imagingsuite/external/mac/include/hdf5
     )
 endif()
 
@@ -41,7 +33,7 @@ include_directories(
     )
 endif()
 
-link_directories(../../../../../install/lib /opt/local/lib )
+link_directories(../../../../../install/lib)
 
 set(INC_FILES
     src/BaseModules.h
@@ -93,56 +85,18 @@ target_compile_definitions(${TARGET_NAME} PRIVATE BASEMODULES_LIBRARY NOMINMAX H
         ModuleConfig
         ProcessFramework
         libxml2
-        # fftw3
-        # fftw3f
-        # cfitsio
         libtiff
-        # armadillo
-        # lapack
-        # blas
-        # NeXus.1.0.0
-        # NeXusCPP.1.0.0
-        # liblapack
-        # libopenblas
-        # libfftw3-3
-        # libfftw3f-3
-        # NeXus
-        # NeXusCPP
-        # Iphlpapi
-
         )
 endif()
 
-  if (APPLE)
-      if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
-          target_link_directories(${TARGET_NAME} PRIVATE
-              /opt/local/lib
-              ../../../../../ExternalDependencies/macos/arm64/lib
-              )
-      else()
-          target_link_directories(${TARGET_NAME} PRIVATE
-              /opt/local/lib
-              ../../../../../ExternalDependencies/macos/x86_64/lib
-              )
-      endif()
-  
-      target_link_libraries(${TARGET_NAME}
-          PRIVATE
-          kipl
-          ImagingAlgorithms
-          ModuleConfig
-          ProcessFramework
-          xml2
-          fftw3
-          fftw3f
-          cfitsio
-          tiff
-          armadillo
-          lapack
-          blas
-          NeXus.1.0.0
-          NeXusCPP.1.0.0
-      )
-  endif()
+if (UNIX)
+    target_link_libraries(${TARGET_NAME}
+        PUBLIC
+        kipl
+        ImagingAlgorithms
+        ModuleConfig
+        ProcessFramework
+    )
+endif()
 
-  install(TARGETS ${TARGET_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(TARGETS ${TARGET_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
