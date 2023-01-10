@@ -21,6 +21,7 @@ kipl::base::TImage<float,3> LoadVolumeImage(KiplProcessConfig & config, kipl::in
         roi = config.mImageInformation.nROI;
 
     ImageReader reader(interactor);
+
 	try {	
         img=reader.Read(fname,
             config.mImageInformation.nFirstFileIndex,

@@ -10,8 +10,8 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-find_package(Qt6 REQUIRED COMPONENTS Widgets Charts Concurrent PrintSupport)
-find_package(QT NAMES Qt6 COMPONENTS Widgets Charts Concurrent PrintSupport REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Charts Concurrent ) #PrintSupport
+#find_package(QT NAMES Qt6 COMPONENTS Widgets Charts Concurrent  REQUIRED) #PrintSupport
 #find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Charts REQUIRED)
 
 if (APPLE)
@@ -153,7 +153,7 @@ target_link_libraries(${TARGET_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Concurrent
-    Qt${QT_VERSION_MAJOR}::PrintSupport
+#    Qt${QT_VERSION_MAJOR}::PrintSupport
     kipl
     ModuleConfig
     ImagingAlgorithms
@@ -173,7 +173,8 @@ target_link_libraries(${TARGET_NAME} PRIVATE
 endif()
 
 
-if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+#if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+if (APPLE)
 target_link_directories(${TARGET_NAME} PRIVATE
     /opt/local/lib
     ../../../install/lib
@@ -187,7 +188,7 @@ target_link_libraries(${TARGET_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Concurrent
-    Qt${QT_VERSION_MAJOR}::PrintSupport
+#    Qt${QT_VERSION_MAJOR}::PrintSupport
     kipl
     ModuleConfig
     ImagingAlgorithms

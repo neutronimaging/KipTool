@@ -10,11 +10,10 @@
 #include <QPushButton>
 
 #include <sstream>
+#include <filesystem>
 #include <strings/filenames.h>
 #include <strings/miscstring.h>
 #include <base/KiplException.h>
-#include <utilities/nodelocker.h>
-
 
 #include <KiplEngine.h>
 #include <KiplFactory.h>
@@ -40,10 +39,23 @@ int main(int argc, char *argv[])
     kipl::logging::Logger logger("KipTool");
     kipl::logging::Logger::SetLogLevel(kipl::logging::Logger::LogMessage);
 
-    std::ostringstream msg;
-
-    std::string homedir = dir.homePath().toStdString();
+    std::string homedir = QDir::homePath().toStdString();
     kipl::strings::filenames::CheckPathSlashes(homedir,true);
+
+    std::string logpath = homedir+".imagingtools";
+    if (!std::filesystem::exists(logpath))
+    {
+      std::filesystem::create_directories(logpath);
+    }
+
+    logpath = logpath+ "/kiptool.log";
+    kipl::strings::filenames::CheckPathSlashes(logpath,false);
+    kipl::logging::LogStreamWriter logstream(logpath);
+    logger.addLogTarget(&logstream);
+
+
+
+    std::ostringstream msg;
 
     #ifdef _OPENMP
         omp_set_nested(1);
