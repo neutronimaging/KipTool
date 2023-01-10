@@ -1,6 +1,26 @@
 # KipTool
-This repository is currently only used for the releases of KipTool.
+KipTool is a tool for three analysis of 3D images. The main processing features are 
+- Scattering correction of time series.
+- Denoising using advanced filtering techniques.
 
-The sources for the Application have not yet been migrated from the [ImagingSuite Repository](https://github.com/neutronimaging/imagingsuite/tree/master/applications/kiptool).
+## Build
+KipTool requires that imaging suit is built as it depends on many support libraries in the imaging suite.
+There are two ways to build KipTool using shell scripts calling QMake and make or by using CMake (in preparation).
 
-The easiest way to compile the application from source is to follow the build instructions for imaging suite.
+### Build using CMake
+__Please note:__ this currently only works for arm64.  
+Preparations, move outside of the KipTool repository tree then create a build folder. It is assumed that you alread created an install folder when you built the imaging suite
+```bash
+mkdir build_kiptool
+cd build_kiptool
+```
+Run cmake configuration
+```bash
+cmake ../KipTool -DCMAKE_INSTALL_PREFIX=../install -DDYNAMIC_LIB=ON -DCMAKE_PREFIX_PATH=<path to your Qt installation>
+```
+and build 
+```bash
+cmake --build . --target install
+```
+
+Currently, the build doesn't deploy the application. So, you need to run the deployment script separately. 
