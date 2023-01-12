@@ -9,19 +9,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (APPLE)
 include_directories(
-    /opt/local/include
-    /opt/local/include/libxml2
-    /usr/include/libxml2
     ../../ProcessFramework/include/
-#    ../../../../external/src/linalg
     ../../../../../imagingsuite/core/kipl/kipl/include
     ../../../../../imagingsuite/core/modules/ModuleConfig/include
     ../../../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
     ../../../../../imagingsuite/core/algorithms/AdvancedFilters/
     ../../../../../ExternalDependencies/macos/include
-    ../../../../../imagingsuite/external/mac/include/
-    ../../../../../imagingsuite/external/mac/include/nexus
-    ../../../../../imagingsuite/external/mac/include/hdf5
     )
 endif()
 
@@ -40,7 +33,7 @@ include_directories(
     )
 endif()
 
-link_directories(../../../../../install/lib /opt/local/lib )
+link_directories(../../../../../install/lib )
 
 set(INC_FILES
     src/AdvancedFilterModules.h
@@ -67,14 +60,10 @@ add_library(${TARGET_NAME} SHARED
   )
 
 set_target_properties(${TARGET_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
-set_target_properties(${TARGET_NAME} PROPERTIES INSTALL_RPATH "\$ORIGIN")
 
 target_compile_definitions(${TARGET_NAME} PRIVATE ADVANCEDFILTERMODULES_LIBRARY NOMINMAX HAVE_NEXUS)
 
-
-
-
-  message(${CMAKE_HOST_SYSTEM_PROCESSOR})
+message("AdvancedFilterModules ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
 if (WIN32)
     target_link_directories(${TARGET_NAME} PRIVATE
@@ -86,15 +75,24 @@ if (WIN32)
     )
     
     target_link_libraries(${TARGET_NAME}
-    PRIVATE
+    PUBLIC
         kipl
         ModuleConfig
         ImagingAlgorithms
         AdvancedFilters
         ProcessFramework
-        libxml2
-        cfitsio
-        libtiff
+        # LibXml2::LibXml2
+        TIFF::TIFF
+        # ${LAPACK_LIBRARIES}
+        # # LAPACK::LAPACK
+        # ${BLAS_LIBRARIES}
+        # # BLAS::BLAS
+        # ${ARMADILLO_LIBRARIES}
+        FFTW::Double
+        FFTW::Float
+        # libxml2
+        # cfitsio
+        # libtiff
         # liblapack
         # libopenblas
         # libfftw3-3
@@ -106,62 +104,26 @@ if (WIN32)
         )
 endif()
 
-  if (APPLE)
-      if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
-          target_link_directories(${TARGET_NAME} PRIVATE
-              /opt/local/lib
-              ../../../../../ExternalDependencies/macos/arm64/lib
-              )
-      else()
-          target_link_directories(${TARGET_NAME} PRIVATE
-              /opt/local/lib
-              ../../../../../ExternalDependencies/macos/x86_64/lib
-              )
-      endif()
-  
+if (UNIX)
       target_link_libraries(${TARGET_NAME}
-          PRIVATE
-          kipl
-          ImagingAlgorithms
-          AdvancedFilters
-          ModuleConfig
-          ProcessFramework
-          xml2
-          fftw3
-          fftw3f
-          cfitsio
-          tiff
-          armadillo
-          lapack
-          blas
-        #   NeXus.1.0.0
-        #   NeXusCPP.1.0.0
+          PUBLIC
+            kipl
+            ImagingAlgorithms
+            AdvancedFilters
+            ModuleConfig
+            ProcessFramework
+            # LibXml2::LibXml2
+            TIFF::TIFF
+            # ${LAPACK_LIBRARIES}
+            # # LAPACK::LAPACK
+            # ${BLAS_LIBRARIES}
+            # # BLAS::BLAS
+            # ${ARMADILLO_LIBRARIES}
+            FFTW::Double
+            FFTW::Float
       )
   endif()
 
-  if (UNIX)
-    target_link_directories(${TARGET_NAME} PRIVATE
-        /opt/local/lib
-    )
 
-    target_link_libraries(${TARGET_NAME}
-        PRIVATE
-        kipl
-        ImagingAlgorithms
-        AdvancedFilters
-        ModuleConfig
-        ProcessFramework
-        xml2
-        fftw3
-        fftw3f
-        cfitsio
-        tiff
-        armadillo
-        lapack
-        blas
-        # NeXus.1.0.0
-        # NeXusCPP.1.0.0
-    )
-endif()
 
   install(TARGETS ${TARGET_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

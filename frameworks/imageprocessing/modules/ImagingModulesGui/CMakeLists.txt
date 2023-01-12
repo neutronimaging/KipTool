@@ -17,9 +17,6 @@ message("Using Qt${QT_VERSION_MAJOR}")
 
 if (APPLE)
 include_directories(
-    /opt/local/include
-    /opt/local/include/libxml2
-    /usr/include/libxml2
     ../../../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
     ../../../../../imagingsuite/core/algorithms/AdvancedFilters
     ../../../../../imagingsuite/GUI/qt/QtAddons/
@@ -93,7 +90,7 @@ add_definitions(-DHAVE_NEXUS)
 
 message(${CMAKE_HOST_SYSTEM_PROCESSOR})
 
-link_directories(../../../../../install/lib /opt/local/lib )
+link_directories(../../../../../install/lib )
 
 if (WIN32)
 target_link_directories(${TARGET_NAME} PRIVATE
@@ -128,15 +125,8 @@ endif()
 
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
 
-
-    target_link_directories(${TARGET_NAME} PRIVATE
-        /opt/local/lib
-        ../../../../../ExternalDependencies/macos/${CMAKE_HOST_SYSTEM_PROCESSOR}/lib
-    )
-
-
     target_link_libraries(${TARGET_NAME}
-        PRIVATE
+        PUBLIC
         Qt${QT_VERSION_MAJOR}::Core
         Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::Charts
@@ -149,16 +139,6 @@ if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
         ProcessFramework
         QtAddons
         QtModuleConfigure
-        xml2
-        fftw3
-        fftw3f
-        cfitsio
-        tiff
-        armadillo
-        lapack
-        blas
-        NeXus.1.0.0
-        NeXusCPP.1.0.0
     )
 endif()
 

@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 execute_process(
   COMMAND git describe --tags --abbrev=0 | cut -d'v' -f 2
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-  OUTPUT_VARIABLE IMGSUITE_VERSION
+  OUTPUT_VARIABLE KIPTOOL_VERSION
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
@@ -16,8 +16,9 @@ project(kiptool VERSION 2.9 LANGUAGES CXX)
 
 # require C++17
 if(NOT DEFINED CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD 20)
 endif(NOT DEFINED CMAKE_CXX_STANDARD)
+
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -37,7 +38,7 @@ set(CMAKE_MODULE_PATH "lib" )
 # for testing we will need the python interpreter
 find_package(PythonInterp REQUIRED)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/applications)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
@@ -48,51 +49,35 @@ if("${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}" VERSION_LESS "3.5")
   )
 endif()
 
-# Get version from git-describe
-execute_process(
-  COMMAND git describe --tag
-  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-  RESULT_VARIABLE HAVE_GIT_VERSION_INFO
-  OUTPUT_VARIABLE GIT_VERSION_INFO
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-if(${HAVE_GIT_VERSION_INFO} EQUAL 0)
-  message(STATUS "Got version from Git: ${GIT_VERSION_INFO}")
-  add_definitions(-DVERSION="${GIT_VERSION_INFO}")
-endif()
+if (WIN32)
+  find_package(PythonInterp REQUIRED)
+  find_package(LibXml2 REQUIRED)
+  find_package(armadillo REQUIRED)
+  find_package(ZLIB REQUIRED)
+  find_package(TIFF REQUIRED)
+  find_package(FFTW3 REQUIRED)
+  find_package(OpenBLAS REQUIRED)
+  find_package(pybind11 REQUIRED)
+  # find_package(cfitsio REQUIRED)
+  # find_package(Nexus REQUIRED)
 
-include(FetchContent)
-
-FetchContent_Declare(
-  pybind11_sources
-  GIT_REPOSITORY https://github.com/pybind/pybind11.git
-  GIT_TAG        v2.2
-)
-
-FetchContent_GetProperties(pybind11_sources)
-
-if(NOT pybind11_sources_POPULATED)
-  FetchContent_Populate(pybind11_sources)
-
-  add_subdirectory(
-    ${pybind11_sources_SOURCE_DIR}
-    ${pybind11_sources_BINARY_DIR}
-    )
-    #add_definitions(-DHAVEPYBIND11 -DNO_QT)
-    add_definitions(-DHAVEPYBIND11)
-endif()
-
-#include(pybind11)
-
-execute_process(
-  COMMAND git describe --tag
-  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-  RESULT_VARIABLE HAVE_GIT_VERSION_INFO
-  OUTPUT_VARIABLE GIT_VERSION_INFO OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-if(${HAVE_GIT_VERSION_INFO} EQUAL 0)
-  message(STATUS "Got version from Git: ${GIT_VERSION_INFO}")
-  add_definitions(-DIMGSUITE_VERSION="${GIT_VERSION_INFO}")
+  set(PC_LIBXML_INCLUDEDIR ${PROJECT_SOURCE_DIR}/../ExternalDependencies/windows/include)
+  set(PC_LIBXML_LIBDIR  ${PROJECT_SOURCE_DIR}/../ExternalDependencies/windows/lib)
+else()
+  set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+  
+  # for testing we will need the python interpreter
+  find_package(PythonInterp REQUIRED)
+  find_package(LibXml2 REQUIRED)
+  find_package(Armadillo REQUIRED)
+  find_package(ZLIB REQUIRED)
+  find_package(TIFF REQUIRED)
+  find_package(FFTW REQUIRED)
+  find_package(LAPACK REQUIRED)
+  find_package(BLAS REQUIRED)
+  find_package(pybind11 REQUIRED)
+  find_package(CFITSIO REQUIRED)
+  find_package(Nexus REQUIRED)
 endif()
 
 if(NOT WIN32)
@@ -121,12 +106,12 @@ set(INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR})
 
 set(EXPORT_NAME ${PROJECT_NAME}-targets)
 
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 if(NOT APPLE)
-  set(CMAKE_INSTALL_RPATH $ORIGIN)
+  set(CMAKE_INSTALL_RPATH $ORIGIN/../lib)
 else()
-  set(CMAKE_INSTALL_RPATH @loader_path)
- # SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH YES)
+  set(CMAKE_INSTALL_RPATH @loader_path/../Frameworks)
 endif()
 
 ## Core libraries
@@ -215,18 +200,18 @@ if(DYNAMIC_LIB)
 #    ../lib/libFDKBackProjectors.1.0.0.dylib
 #    ../lib/libImagingAlgorithms.1.0.0.dylib
 #    ../lib/libReaderConfig.1.0.0.dylib
-    ../imagingsuite/external/mac/lib/libNeXus.1.0.0.dylib	
-    ../imagingsuite/external/mac/lib//libhdf5_cpp.11.dylib
-    ../imagingsuite/external/mac/lib//libNeXusCPP.1.0.0.dylib
-    ../imagingsuite/external/mac/lib//libhdf5_hl.10.dylib
-    ../imagingsuite/external/mac/lib//libhdf5.10.dylib	
-    ../imagingsuite/external/mac/lib//libsz.2.dylib
-    /opt/local/lib/libxml2.2.dylib 
-    /opt/local/lib/libtiff.5.dylib
-    /opt/local/lib/libfftw3.3.dylib
-    /opt/local/lib/libfftw3f.3.dylib
-    /opt/local/lib/libcfitsio.dylib
-    /opt/local/lib/libarmadillo.10.dylib
+    # ../imagingsuite/external/mac/lib/libNeXus.1.0.0.dylib	
+    # ../imagingsuite/external/mac/lib//libhdf5_cpp.11.dylib
+    # ../imagingsuite/external/mac/lib//libNeXusCPP.1.0.0.dylib
+    # ../imagingsuite/external/mac/lib//libhdf5_hl.10.dylib
+    # ../imagingsuite/external/mac/lib//libhdf5.10.dylib	
+    # ../imagingsuite/external/mac/lib//libsz.2.dylib
+    # /opt/local/lib/libxml2.2.dylib 
+    # /opt/local/lib/libtiff.5.dylib
+    # /opt/local/lib/libfftw3.3.dylib
+    # /opt/local/lib/libfftw3f.3.dylib
+    # /opt/local/lib/libcfitsio.dylib
+    # /opt/local/lib/libarmadillo.10.dylib
 
     DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 

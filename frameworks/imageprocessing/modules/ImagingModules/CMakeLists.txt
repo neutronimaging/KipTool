@@ -9,20 +9,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (APPLE)
 include_directories(
-    /opt/local/include
-    /opt/local/include/libxml2
-    /usr/include/libxml2
     ../../ProcessFramework/include/
-#    ../../../../external/src/linalg
     ../../../../../imagingsuite/core/kipl/kipl/include
     ../../../../../imagingsuite/core/modules/ModuleConfig/include
     ../../../../../imagingsuite/core/modules/ReaderConfig
     ../../../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
     ../../../../../imagingsuite/core/algorithms/AdvancedFilters/
     ../../../../../ExternalDependencies/macos/include
-    ../../../../../ExternalDependencies/macos/include/nexus
-    ../../../../../imagingsuite/external/mac/include/
-    ../../../../../imagingsuite/external/mac/include/hdf5
     )
 endif()
 
@@ -114,36 +107,25 @@ target_compile_definitions(${TARGET_NAME} PRIVATE IMAGINGMODULES_LIBRARY NOMINMA
       )
 endif()
 
-  if (APPLE)
-      if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
-          target_link_directories(${TARGET_NAME} PRIVATE
-              /opt/local/lib
-              ../../../../../ExternalDependencies/macos/arm64/lib
-              )
-      else()
-          target_link_directories(${TARGET_NAME} PRIVATE
-              /opt/local/lib
-              ../../../../../ExternalDependencies/macos/x86_64/lib
-              )
-      endif()
+if (APPLE)
   
       target_link_libraries(${TARGET_NAME}
-          PRIVATE
+          PUBLIC
           kipl
           ImagingAlgorithms
           ModuleConfig
           ReaderConfig
           ProcessFramework
-          xml2
-          fftw3
-          fftw3f
-          cfitsio
-          tiff
-          armadillo
-          lapack
-          blas
-          NeXus.1.0.0
-          NeXusCPP.1.0.0
+        #   xml2
+        #   fftw3
+        #   fftw3f
+        #   cfitsio
+        #   tiff
+        #   armadillo
+        #   lapack
+        #   blas
+        #   NeXus.1.0.0
+        #   NeXusCPP.1.0.0
       )
   endif()
 
