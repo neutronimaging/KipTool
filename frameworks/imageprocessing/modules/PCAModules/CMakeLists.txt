@@ -17,13 +17,13 @@ include_directories(
     ../../../../../imagingsuite/core/modules/ModuleConfig/include
     ../../../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
     ../../../../../imagingsuite/core/algorithms/AdvancedFilters/
-    ../../../../../ExternalDependencies/macos/include
-    ../../../../../ExternalDependencies/macos/include/nexus
-    ../../../../../imagingsuite/external/mac/include/
-    ../../../../../imagingsuite/external/mac/include/hdf5
+    # ../../../../../ExternalDependencies/macos/include
+    # ../../../../../ExternalDependencies/macos/include/nexus
+    # ../../../../../imagingsuite/external/mac/include/
+    # ../../../../../imagingsuite/external/mac/include/hdf5
     )
 
-link_directories(../../../../../install/lib /opt/local/lib )
+link_directories(../../../../../install/lib )
 
 set(INC_FILES
     src/PCAFilterModule.h
@@ -38,8 +38,6 @@ set(SRC_FILES
     src/pcamodules.cpp
     src/stdafx.cpp
 )
-
-# target_compile_definitions(${TARGET_NAME} PRIVATE ADVANCEDFILTERMODULES_LIBRARY HAVE_NEXUS)
 
 add_library(${TARGET_NAME} SHARED
   ${SRC_FILES}

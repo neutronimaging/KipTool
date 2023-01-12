@@ -40,17 +40,17 @@ include_directories(
     ../../../../../imagingsuite/core/kipl/kipl/include
     ../../../../../imagingsuite/core/modules/ModuleConfig/include
     ../../../../../imagingsuite/core/modules/ReaderConfig
-    ../../../../../ExternalDependencies/macos/include
+    # ../../../../../ExternalDependencies/macos/include
 
-    ../../../../../ExternalDependencies/windows/include
-    ../../../../../ExternalDependencies/windows/include/nexus
-    ../../../../../ExternalDependencies/windows/include/cfitsio
-    ../../../../../ExternalDependencies/windows/include/libxml2
+    # ../../../../../ExternalDependencies/windows/include
+    # ../../../../../ExternalDependencies/windows/include/nexus
+    # ../../../../../ExternalDependencies/windows/include/cfitsio
+    # ../../../../../ExternalDependencies/windows/include/libxml2
     ../../../../../imagingsuite/external/include/
     )
 endif()
 
-link_directories( ../../../../../install/lib /opt/local/lib )
+link_directories(../../../../../install/lib )
 
 set(INC_FILES
     src/WaveletRingCleanDlg.h
@@ -90,12 +90,10 @@ add_definitions(-DHAVE_NEXUS)
 
 message(${CMAKE_HOST_SYSTEM_PROCESSOR})
 
-link_directories(../../../../../install/lib )
+
 
 if (WIN32)
 target_link_directories(${TARGET_NAME} PRIVATE
-    ../../../../../build-imagingsuite/lib/Release
-    ../../../../../ExternalDependencies/windows/lib
     ../../../../../imagingsuite/external/lib64
 )
 
@@ -112,14 +110,6 @@ target_link_libraries(${TARGET_NAME} PRIVATE
   ModuleConfig
   QtAddons
   QtModuleConfigure
-  libxml2
-  libfftw3-3
-  libfftw3f-3
-  cfitsio
-  libtiff
- # armadillo
- # lapack
-  libopenblas
 )
 endif()
 

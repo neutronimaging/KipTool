@@ -24,18 +24,13 @@ include_directories(
     ../../ProcessFramework/include/
     ../../../../../imagingsuite/core/kipl/kipl/include
     ../../../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
-    # ../../../../../imagingsuite/core/algorithms/AdvancedFilters/
     ../../../../../imagingsuite/core/modules/ModuleConfig/include
     ../../../../../imagingsuite/core/modules/ReaderConfig
-    ../../../../../ExternalDependencies/windows/include
-    ../../../../../ExternalDependencies/windows/include/nexus
-    ../../../../../ExternalDependencies/windows/include/cfitsio
-    ../../../../../ExternalDependencies/windows/include/libxml2
     ../../../../../imagingsuite/external/include/
     )
 endif()
 
-link_directories(../../../../../install/lib /opt/local/lib )
+link_directories(../../../../../install/lib  )
 
 set(INC_FILES
     src/ImagingModules_global.h
@@ -72,38 +67,22 @@ target_compile_definitions(${TARGET_NAME} PRIVATE IMAGINGMODULES_LIBRARY NOMINMA
 
   if (WIN32)
   target_link_directories(${TARGET_NAME} PRIVATE
-  ../../../../../build-imagingsuite/lib/Release
-  ../../../../../install/lib
-  ../../../../../ExternalDependencies/windows/lib
   ../../../../../imagingsuite/external/lib64
-  ../../../../../imagingsuite/external/lib64/nexus
   )
   
   target_link_libraries(${TARGET_NAME}
-  PRIVATE
+  PUBLIC
       kipl
       ImagingAlgorithms
       ModuleConfig
       ProcessFramework
       ReaderConfig
-      libxml2
-      # fftw3
-      # fftw3f
-      # cfitsio
-      libtiff
-      # armadillo
-      # lapack
-      # blas
-      # NeXus.1.0.0
-      # NeXusCPP.1.0.0
-      # liblapack
-      # libopenblas
-      # libfftw3-3
-      # libfftw3f-3
-      # NeXus
-      # NeXusCPP
-      # Iphlpapi
 
+      LibXml2::LibXml2
+      TIFF::TIFF
+
+      libfftw3-3
+      libfftw3f-3
       )
 endif()
 

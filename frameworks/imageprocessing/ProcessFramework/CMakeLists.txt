@@ -21,12 +21,6 @@ include_directories(
     ../../../../imagingsuite/core/kipl/kipl/include
     ../../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
     ../../../../imagingsuite/core/modules/ModuleConfig/include
-    ../../../../ExternalDependencies/windows/include
-    ../../../../ExternalDependencies/windows/include/nexus
-    ../../../../ExternalDependencies/windows/include
-    ../../../../ExternalDependencies/windows/include/nexus
-    ../../../../ExternalDependencies/windows/include/cfitsio
-    ../../../../ExternalDependencies/windows/include/libxml2
     ../../../../imagingsuite/external/include/
     )
 endif()
@@ -72,30 +66,15 @@ add_definitions(-DHAVE_NEXUS)
 message(${CMAKE_HOST_SYSTEM_PROCESSOR})
 
 if (WIN32)
-    target_link_directories(${TARGET_NAME} PRIVATE
-    ../../../../build-imagingsuite/lib/Release
-    ../../../../install/lib
-    ../../../../ExternalDependencies/windows/lib
-    ../../../../imagingsuite/external/lib64
-    ../../../../imagingsuite/external/lib64/nexus
-    )
     
     target_link_libraries(${TARGET_NAME}
     PRIVATE
         kipl
         ModuleConfig
         ImagingAlgorithms
-        libxml2
-        cfitsio
-        libtiff
-        # liblapack
-        # libopenblas
-        # libfftw3-3
-        # libfftw3f-3
-        # NeXus
-        # NeXusCPP
-        # Iphlpapi
-
+        LibXml2::LibXml2
+        TIFF::TIFF
+        cfitsio::cfitsio
         )
 endif()
 
@@ -108,13 +87,6 @@ if (APPLE)
             ReaderConfig
             LibXml2::LibXml2
             TIFF::TIFF
-            # ${LAPACK_LIBRARIES}
-            # # LAPACK::LAPACK
-            # ${BLAS_LIBRARIES}
-            # # BLAS::BLAS
-            # ${ARMADILLO_LIBRARIES}
-            #FFTW::Double
-            #FFTW::Float
     )
 endif()
 

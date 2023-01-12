@@ -37,12 +37,12 @@ copy %REPOS%\install\lib\libgfortran_64-3.dll .
 copy %REPOS%\install\lib\libquadmath-0.dll .
 copy %REPOS%\install\lib\libwinpthread-1.dll .
 copy %REPOS%\install\lib\libblas.dll .
-copy %REPOS%\install\lib\nexus\NeXus.dll .
-copy %REPOS%\install\lib\nexus\NexusCPP.dll .
-copy %REPOS%\install\lib\hdf5\hdf5.dll .
-copy %REPOS%\install\lib\hdf5\hdf5_cpp.dll .
-copy %REPOS%\install\lib\hdf5\zlib.dll .
-copy %REPOS%\install\lib\hdf5\szip.dll .
+copy %REPOS%\install\lib\NeXus.dll .
+copy %REPOS%\install\lib\NexusCPP.dll .
+copy %REPOS%\install\lib\hdf5.dll .
+copy %REPOS%\install\lib\hdf5_cpp.dll .
+copy %REPOS%\install\lib\zlib.dll .
+copy %REPOS%\install\lib\szip.dll .
 
 @REM copy %REPOS%\install\lib\libgcc_s_seh_64-1.dll .
 @REM copy %REPOS%\install\lib\libgcc_s_seh-1.dll .
@@ -52,7 +52,8 @@ copy %REPOS%\install\lib\hdf5\szip.dll .
 copy %REPOS%\install\lib\libxml2.dll .
 copy %REPOS%\install\lib\cfitsio.dll .
 
-copy %REPOS%\KipTool\applications\kiptool\Resources resources
+mkdir resources
+copy %REPOS%\KipTool\applications\kiptool\resources resources
 cd %QTBINPATH%
 
 windeployqt %DEST%\KipTool.exe

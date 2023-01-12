@@ -38,15 +38,15 @@ include_directories(
     ../../../../../imagingsuite/GUI/qt/QtModuleConfigure/
     ../../../../../imagingsuite/core/kipl/kipl/include
     ../../../../../imagingsuite/core/modules/ModuleConfig/include
-    ../../../../../ExternalDependencies/macos/include
 
-    ../../../../../ExternalDependencies/windows/include
-    ../../../../../ExternalDependencies/windows/include/nexus
-    ../../../../../ExternalDependencies/windows/include
-    ../../../../../ExternalDependencies/windows/include/nexus
-    ../../../../../ExternalDependencies/windows/include/cfitsio
-    ../../../../../ExternalDependencies/windows/include/libxml2
-    ../../../../../imagingsuite/external/include/
+
+    # ../../../../../ExternalDependencies/windows/include
+    # ../../../../../ExternalDependencies/windows/include/nexus
+    # ../../../../../ExternalDependencies/windows/include
+    # ../../../../../ExternalDependencies/windows/include/nexus
+    # ../../../../../ExternalDependencies/windows/include/cfitsio
+    # ../../../../../ExternalDependencies/windows/include/libxml2
+    # ../../../../../imagingsuite/external/include/
     )
 endif()
 
@@ -93,7 +93,8 @@ target_link_directories(${TARGET_NAME} PRIVATE
     ../../../../../imagingsuite/external/lib64
 )
 
-target_link_libraries(${TARGET_NAME} PRIVATE
+target_link_libraries(${TARGET_NAME} 
+PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Charts
@@ -104,20 +105,12 @@ target_link_libraries(${TARGET_NAME} PRIVATE
   ModuleConfig
   QtAddons
   QtModuleConfigure
-  libxml2
-  libfftw3-3
-  libfftw3f-3
-  cfitsio
-  libtiff
- # armadillo
- # lapack
-  libopenblas
 )
 endif()
 
 if (UNIX)
     target_link_libraries(${TARGET_NAME}
-        PRIVATE
+        PUBLIC
         Qt${QT_VERSION_MAJOR}::Core
         Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::Charts

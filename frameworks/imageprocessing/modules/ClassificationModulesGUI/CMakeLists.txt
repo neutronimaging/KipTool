@@ -39,15 +39,6 @@ include_directories(
     ../../../../../imagingsuite/GUI/qt/QtModuleConfigure/
     ../../../../../imagingsuite/core/kipl/kipl/include
     ../../../../../imagingsuite/core/modules/ModuleConfig/include
-    ../../../../../ExternalDependencies/macos/include
-
-    ../../../../../ExternalDependencies/windows/include
-    ../../../../../ExternalDependencies/windows/include/nexus
-    ../../../../../ExternalDependencies/windows/include
-    ../../../../../ExternalDependencies/windows/include/nexus
-    ../../../../../ExternalDependencies/windows/include/cfitsio
-    ../../../../../ExternalDependencies/windows/include/libxml2
-    ../../../../../imagingsuite/external/include/
     )
 endif()
 
@@ -93,12 +84,11 @@ message(${CMAKE_HOST_SYSTEM_PROCESSOR})
 
 if (WIN32)
 target_link_directories(${TARGET_NAME} PRIVATE
-    ../../../../../build-imagingsuite/lib/Release
-    ../../../../../ExternalDependencies/windows/lib
-    ../../../../../imagingsuite/external/lib64
+../../../../../imagingsuite/external/lib64
 )
 
-target_link_libraries(${TARGET_NAME} PRIVATE
+target_link_libraries(${TARGET_NAME} 
+PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Charts
@@ -111,6 +101,11 @@ target_link_libraries(${TARGET_NAME} PRIVATE
   ModuleConfig
   QtAddons
   QtModuleConfigure
+  LibXml2::LibXml2
+
+  libfftw3-3
+  libfftw3f-3
+
 )
 endif()
 
@@ -129,6 +124,8 @@ if (UNIX)
         ProcessFramework
         QtAddons
         QtModuleConfigure
+
+  
 
     )
 endif()

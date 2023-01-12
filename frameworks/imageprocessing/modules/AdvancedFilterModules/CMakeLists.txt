@@ -67,10 +67,7 @@ message("AdvancedFilterModules ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
 if (WIN32)
     target_link_directories(${TARGET_NAME} PRIVATE
-    ../../../../../install/lib
-    # ../../../../../ExternalDependencies/windows/lib
     ../../../../../imagingsuite/external/lib64
-    # ../../../../../imagingsuite/external/lib64/nexus
     )
     
     target_link_libraries(${TARGET_NAME}
@@ -80,26 +77,9 @@ if (WIN32)
         ImagingAlgorithms
         AdvancedFilters
         ProcessFramework
-        # LibXml2::LibXml2
         TIFF::TIFF
-        # ${LAPACK_LIBRARIES}
-        # # LAPACK::LAPACK
-        # ${BLAS_LIBRARIES}
-        # # BLAS::BLAS
-        # ${ARMADILLO_LIBRARIES}
-        # FFTW::Double
-        # FFTW::Float
-        # libxml2
-        # cfitsio
-        # libtiff
-        # liblapack
-        # libopenblas
         libfftw3-3
         libfftw3f-3
-        # NeXus
-        # NeXusCPP
-        # Iphlpapi
-
         )
 endif()
 

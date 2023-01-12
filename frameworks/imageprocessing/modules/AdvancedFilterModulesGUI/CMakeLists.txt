@@ -39,13 +39,6 @@ include_directories(
     ../../../../../imagingsuite/GUI/qt/QtModuleConfigure/
     ../../../../../imagingsuite/core/kipl/kipl/include
     ../../../../../imagingsuite/core/modules/ModuleConfig/include
-    ../../../../../ExternalDependencies/macos/include
-
-    ../../../../../ExternalDependencies/windows/include
-    ../../../../../ExternalDependencies/windows/include/nexus
-    ../../../../../ExternalDependencies/windows/include/cfitsio
-    ../../../../../ExternalDependencies/windows/include/libxml2
-    ../../../../../imagingsuite/external/include/
     )
 endif()
 
@@ -86,7 +79,7 @@ message(${CMAKE_HOST_SYSTEM_PROCESSOR})
 
 if (WIN32)
 target_link_directories(${TARGET_NAME} PRIVATE
-    ../../../../../build-imagingsuite/lib/Release
+    ../../../../../install/lib
     ../../../../../ExternalDependencies/windows/lib
     ../../../../../imagingsuite/external/lib64
 )
@@ -104,14 +97,7 @@ target_link_libraries(${TARGET_NAME} PRIVATE
   ModuleConfig
   QtAddons
   QtModuleConfigure
-  libxml2
-  libfftw3-3
-  libfftw3f-3
-  cfitsio
-  libtiff
- # armadillo
- # lapack
-  libopenblas
+  LibXml2::LibXml2
 )
 endif()
 

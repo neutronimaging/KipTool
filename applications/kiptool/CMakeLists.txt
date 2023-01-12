@@ -43,10 +43,10 @@ if (WIN32)
         ../../../imagingsuite/core/modules/ReaderGUI
         ../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
         ../../frameworks/imageprocessing/ProcessFramework/include
-        ../../../ExternalDependencies/windows/include
-        ../../../ExternalDependencies/windows/include/libxml2
-        ../../../ExternalDependencies/windows/include/cfitsio
-        ../../../ExternalDependencies/windows/include/nexus
+        # ../../../ExternalDependencies/windows/include
+        # ../../../ExternalDependencies/windows/include/libxml2
+        # ../../../ExternalDependencies/windows/include/cfitsio
+        # ../../../ExternalDependencies/windows/include/nexus
         ../../../imagingsuite/external/include
         Qt6Widgets_INCLUDE_DIRS/QtCharts
     )
@@ -131,12 +131,12 @@ target_link_directories(${TARGET_NAME} PUBLIC
     )
 
 if (WIN32)
-target_link_directories(${TARGET_NAME} PRIVATE
-    ../../../build-imagingsuite/lib/Release
-    ../../../install/lib
-    ../../../ExternalDependencies/windows/lib
-    ../../../imagingsuite/external/lib64/
-    )
+# target_link_directories(${TARGET_NAME} PRIVATE
+#     ../../../build-imagingsuite/lib/Release
+#     ../../../install/lib
+#     ../../../ExternalDependencies/windows/lib
+#     ../../../imagingsuite/external/lib64/
+#     )
 
 target_link_libraries(${TARGET_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
@@ -152,12 +152,10 @@ target_link_libraries(${TARGET_NAME} PRIVATE
     QtModuleConfigure
     ProcessFramework
     QtImaging
-    libtiff
-    cfitsio
-    libxml2
-    # armadillo
-    # lapack
-    libopenblas
+    LibXml2::LibXml2
+    TIFF::TIFF
+    cfitsio::cfitsio
+
 )
 endif()
 
