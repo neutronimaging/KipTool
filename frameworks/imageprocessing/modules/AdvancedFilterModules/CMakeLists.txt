@@ -67,11 +67,10 @@ message("AdvancedFilterModules ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
 if (WIN32)
     target_link_directories(${TARGET_NAME} PRIVATE
-    ../../../../../build-imagingsuite/lib/Release
     ../../../../../install/lib
-    ../../../../../ExternalDependencies/windows/lib
+    # ../../../../../ExternalDependencies/windows/lib
     ../../../../../imagingsuite/external/lib64
-    ../../../../../imagingsuite/external/lib64/nexus
+    # ../../../../../imagingsuite/external/lib64/nexus
     )
     
     target_link_libraries(${TARGET_NAME}
@@ -88,15 +87,15 @@ if (WIN32)
         # ${BLAS_LIBRARIES}
         # # BLAS::BLAS
         # ${ARMADILLO_LIBRARIES}
-        FFTW::Double
-        FFTW::Float
+        # FFTW::Double
+        # FFTW::Float
         # libxml2
         # cfitsio
         # libtiff
         # liblapack
         # libopenblas
-        # libfftw3-3
-        # libfftw3f-3
+        libfftw3-3
+        libfftw3f-3
         # NeXus
         # NeXusCPP
         # Iphlpapi

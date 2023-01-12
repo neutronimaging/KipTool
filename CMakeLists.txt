@@ -50,6 +50,8 @@ if("${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}" VERSION_LESS "3.5")
 endif()
 
 if (WIN32)
+  set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../build-kiptool) # needs to be fixed 
+
   find_package(PythonInterp REQUIRED)
   find_package(LibXml2 REQUIRED)
   find_package(armadillo REQUIRED)
@@ -60,9 +62,6 @@ if (WIN32)
   find_package(pybind11 REQUIRED)
   # find_package(cfitsio REQUIRED)
   # find_package(Nexus REQUIRED)
-
-  set(PC_LIBXML_INCLUDEDIR ${PROJECT_SOURCE_DIR}/../ExternalDependencies/windows/include)
-  set(PC_LIBXML_LIBDIR  ${PROJECT_SOURCE_DIR}/../ExternalDependencies/windows/lib)
 else()
   set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
   
