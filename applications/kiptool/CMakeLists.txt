@@ -12,7 +12,7 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-find_package(Qt6 REQUIRED COMPONENTS Widgets Charts Concurrent ) #PrintSupport
+find_package(Qt6 REQUIRED COMPONENTS Widgets Charts) # Concurrent ) #PrintSupport
 
 if (APPLE)
 include_directories(
@@ -164,7 +164,7 @@ if (UNIX)
     PUBLIC
         Qt${QT_VERSION_MAJOR}::Core
         Qt${QT_VERSION_MAJOR}::Widgets
-        Qt${QT_VERSION_MAJOR}::Concurrent
+        # Qt${QT_VERSION_MAJOR}::Concurrent
     #    Qt${QT_VERSION_MAJOR}::PrintSupport
         kipl
         ModuleConfig

@@ -4,12 +4,13 @@
 #include <map>
 #include <string>
 #include <iostream>
+#include <thread>
+#include <chrono>
 
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QFile>
 #include <QSignalBlocker>
-#include <QtConcurrent>
 #include <QMessageBox>
 
 #include <findskiplistdialog.h>
@@ -153,11 +154,11 @@ void FileConversionDialog::on_pushButton_StartConversion_clicked()
     msg<<"The input data has ext="<<ext1<<", and will be saved as ext="<<ext2;
     logger(logger.LogDebug,msg.str());
 
-    QFuture<int> progress_thread = QtConcurrent::run(&FileConversionDialog::Progress,this);
-    QFuture<int> proc_thread     = QtConcurrent::run(&FileConversionDialog::Process,this, ext1==ext2);
+    auto process_thread  = std::thread([=]{ Process(ext1==ext2); });
+    auto progress_thread = std::thread([=]{ Progress();} );
 
-    progress_thread.waitForFinished();
-    proc_thread.waitForFinished();
+    process_thread.join();
+    progress_thread.join();
 
     ui->progressBar->setValue(0);
     logger(logger.LogVerbose,"Threads are joined");
@@ -362,17 +363,17 @@ int FileConversionDialog::ConvertImages()
 
 int FileConversionDialog::Progress()
 {
-    logger(kipl::logging::Logger::LogMessage,"Progress thread is started");
+    logger.message("Progress thread is started");
 
-  //  while (filecnt<ui->progressBar->maximum() && !proc_thread.isFinished()){
+    std::this_thread::sleep_for(std::chrono::milliseconds(250));
     while (filecnt<ui->progressBar->maximum())
     {
         ui->progressBar->setValue(filecnt);
 
-        QThread::msleep(50);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
-    logger(kipl::logging::Logger::LogMessage,"Progress thread end");
+    logger.message("Progress thread end");
 
     return 0;
 
