@@ -37,6 +37,8 @@ private slots:
 
     void on_ImageLoaderConfig_readerListModified();
 
+    void on_processDone();
+
 private:
     int CopyImages();
     int ConvertImages();
@@ -46,6 +48,10 @@ private:
 
     std::list<std::string> flist;
     int filecnt;
+
+signals:
+    void updateProgress(float progress, float overallProgress, QString msg);
+    void processDone();
 };
 
 #endif // FILECONVERSIONDIALOG_H

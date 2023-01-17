@@ -46,6 +46,8 @@ FileConversionDialog::FileConversionDialog(QWidget *parent) :
     ui->widgetROI->setCheckable(true);
     ui->widgetROI->useROIDialog(true);
     ui->widgetROI->setROIColor("green");
+
+
 }
 
 FileConversionDialog::~FileConversionDialog()
@@ -419,13 +421,15 @@ void FileConversionDialog::on_spinCollationSize_editingFinished()
 
 void FileConversionDialog::on_comboBox_ScanOrder_currentIndexChanged(int index)
 {
-    if (0<index) {
+    if (0<index) 
+    {
         ui->label_scanlength->show();
         ui->comboBox_ScanLength->show();
 
 
     }
-    else {
+    else 
+    {
         ui->label_scanlength->hide();
         ui->comboBox_ScanLength->hide();
     }
@@ -453,4 +457,9 @@ void FileConversionDialog::on_ImageLoaderConfig_readerListModified()
     img=reader.Read(fname);
 
     ui->widgetROI->setSelectionImage(img);
+}
+
+void FileConversionDialog::on_processDone()
+{
+    accept();
 }

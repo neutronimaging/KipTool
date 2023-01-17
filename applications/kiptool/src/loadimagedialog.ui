@@ -19,7 +19,7 @@
      <item>
       <widget class="QLabel" name="label_message">
        <property name="text">
-        <string>TextLabel</string>
+        <string>Progress</string>
        </property>
       </widget>
      </item>
@@ -38,7 +38,10 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Cancel</set>
+     </property>
+     <property name="centerButtons">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

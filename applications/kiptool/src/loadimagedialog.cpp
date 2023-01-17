@@ -24,6 +24,7 @@ LoadImageDialog::LoadImageDialog(kipl::interactors::InteractionBase *interactor,
 
     connect(this,&LoadImageDialog::updateProgress,this,&LoadImageDialog::changedProgress);
     connect(this,&LoadImageDialog::processFailure,this,&LoadImageDialog::on_processFailure);
+    connect(this,&LoadImageDialog::processDone,this,&LoadImageDialog::on_processDone);
 }
 
 LoadImageDialog::~LoadImageDialog()
@@ -62,19 +63,23 @@ int LoadImageDialog::exec(KiplProcessConfig *config, kipl::base::TImage<float,3>
     auto process_thread  = std::thread([=]{process();});
     auto progress_thread = std::thread([=]{progress();});
 
-
-    int res=exec();
-
+    auto res = QDialog::exec();
     finish=true;
-    if (res==QDialog::Rejected) {
-        logger(kipl::logging::Logger::LogVerbose,"Cancel requested by user");
-        Abort();
-    }
-
     progress_thread.join();
     process_thread.join();
 
-    logger(kipl::logging::Logger::LogVerbose,"Threads are joined");
+    if (res==QDialog::Rejected) 
+    {
+        logger.verbose("Cancel requested by user");
+        Abort();
+    }
+
+    if (res==QDialog::Accepted) 
+    {
+        logger.message("Loading finished well");
+    }
+
+    logger.message("Threads are joined");
     return res;
 
 }
@@ -138,19 +143,19 @@ int LoadImageDialog::process()
 
     if (failed==true)
     {
-        logger(kipl::logging::Logger::LogMessage,msg.str());
+        logger.message(msg.str());
         finish=false;
         emit processFailure(QString::fromStdString(msg.str()));
         return 0;
     }
-    logger(kipl::logging::Logger::LogMessage,"Loading done");
+    logger.message("Loading done");
 
     finish=true;
 
     try 
     {
-    m_Interactor->Done();
-    this->accept();
+        Done();
+        emit processDone();
     } 
     catch (std::exception &e)
     {
@@ -159,12 +164,14 @@ int LoadImageDialog::process()
         logger.error(msg.str());
     }
 
+    logger.message("Loading thread done");
     return 0;
 }
 
 void LoadImageDialog::Abort()
 {
-    if (m_Interactor!=nullptr) {
+    if (m_Interactor!=nullptr) 
+    {
         m_Interactor->Abort();
     }
     this->reject();
@@ -172,11 +179,20 @@ void LoadImageDialog::Abort()
 
 bool LoadImageDialog::Finished()
 {
-    if (m_Interactor!=nullptr) {
+    if (m_Interactor!=nullptr) 
+    {
         return m_Interactor->Finished();
     }
 
     return true;
+}
+
+void LoadImageDialog::Done()
+{
+    if (m_Interactor!=nullptr) 
+    {
+        m_Interactor->Done();
+    }
 }
 
 void LoadImageDialog::on_processFailure(QString msg)
@@ -188,6 +204,13 @@ void LoadImageDialog::on_processFailure(QString msg)
     dlg.setDetailedText(msg);
     dlg.exec();
     Abort();
+}
+
+void LoadImageDialog::on_processDone()
+{
+    logger.message("process done");
+    accept();
+    logger.message("process done, accept");
 }
 
 void LoadImageDialog::on_buttonBox_rejected()

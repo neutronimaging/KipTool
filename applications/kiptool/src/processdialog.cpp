@@ -26,6 +26,7 @@ ProcessDialog::ProcessDialog(kipl::interactors::InteractionBase *interactor, QWi
 
     connect(this,&ProcessDialog::updateProgress,this,&ProcessDialog::changedProgress);
     connect(this,&ProcessDialog::processFailure,this,&ProcessDialog::on_processFailure);
+    connect(this,&ProcessDialog::processDone,this,&ProcessDialog::on_processDone);
 }
 
 ProcessDialog::~ProcessDialog()
@@ -63,18 +64,25 @@ int ProcessDialog::exec(KiplEngine * engine, kipl::base::TImage<float,3> *img)
 
     auto process_thread  = std::thread([=]{ process(); } );
     auto progress_thread = std::thread([=]{ progress();} );
-
-    int res=exec();
-
+    
+    auto res = QDialog::exec();
+    
     finish=true;
+    
+    process_thread.join();
+    progress_thread.join();
+    
     if (res==QDialog::Rejected) 
     {
         logger.verbose("Cancel requested by user");
         Abort();
     }
 
-    process_thread.join();
-    progress_thread.join();
+    if (res==QDialog::Accepted) 
+    {
+        logger.message("Loading finished well");
+    }
+    
     logger.verbose("Threads are joined");
     return res;
 
@@ -155,8 +163,8 @@ int ProcessDialog::process()
 
     finish=true;
     try {
-    m_Interactor->Done();
-    this->accept();
+        Done();
+        emit processDone();
     }
     catch (std::exception &e) 
     {
@@ -165,12 +173,14 @@ int ProcessDialog::process()
         logger.error(msg.str());
     }
 
+    logger.message("Process thread done");
     return 0;
 }
 
 void ProcessDialog::Abort()
 {
-    if (m_Interactor!=nullptr) {
+    if (m_Interactor!=nullptr) 
+    {
         m_Interactor->Abort();
     }
     this->reject();
@@ -178,11 +188,20 @@ void ProcessDialog::Abort()
 
 bool ProcessDialog::Finished()
 {
-    if (m_Interactor!=nullptr) {
+    if (m_Interactor!=nullptr) 
+    {
         return m_Interactor->Finished();
     }
 
     return true;
+}
+
+void ProcessDialog::Done()
+{
+    if (m_Interactor!=nullptr) 
+    {
+        m_Interactor->Done();
+    }
 }
 
 void ProcessDialog::on_processFailure(QString msg)
@@ -196,6 +215,10 @@ void ProcessDialog::on_processFailure(QString msg)
     Abort();
 }
 
+void ProcessDialog::on_processDone()
+{
+    accept();
+}
 void ProcessDialog::on_buttonBox_rejected()
 {
     Abort();
