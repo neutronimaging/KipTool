@@ -107,6 +107,7 @@ void KiplProcessConfig::ParseArgv(std::vector<std::string> &args)
             if (var=="dstpath")         mOutImageInformation.sDestinationPath     = value;
             if (var=="dstfilemask")     mOutImageInformation.sDestinationFileMask = value;
             if (var=="imagetype")       string2enum(value,mOutImageInformation.eResultImageType);
+            if (var=="savevertical")    kipl::strings::bool2string(mOutImageInformation.bSaveVerticalSlices);
         }
 
     }
@@ -427,10 +428,10 @@ std::string KiplProcessConfig::cOutImageInformation::WriteXML(int indent)
 	str<<setw(indent+4)<<"  "<<"<dstfilemask>"<<sDestinationFileMask<<"</dstfilemask>"<<std::endl;
 	str<<setw(indent+4)<<"  "<<"<rescaleresult>"<<kipl::strings::bool2string(bRescaleResult)<<"</rescaleresult>\n";
 	str<<setw(indent+4)<<"  "<<"<imagetype>"<<eResultImageType<<"</imagetype>\n";
+    str<<setw(indent+4)<<"  "<<"<savevertical>"<<kipl::strings::bool2string(bSaveVerticalSlices)<<"</savevertical>\n";
 	str<<setw(indent)  <<"  "<<"</outimage>"<<std::endl;
 
 	return str.str();
-
 }
 
 void KiplProcessConfig::cOutImageInformation::ParseXML(xmlTextReaderPtr reader)
@@ -470,6 +471,9 @@ void KiplProcessConfig::cOutImageInformation::ParseXML(xmlTextReaderPtr reader)
 			if (sName=="imagetype") {
                 string2enum(sValue,eResultImageType);
 			}
+            if (sName=="savevertical") {
+                bSaveVerticalSlices = kipl::strings::string2bool(sValue);
+            }
 		}
         ret = xmlTextReaderRead(reader);
         if (xmlTextReaderDepth(reader)<depth)
