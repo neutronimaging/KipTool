@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1088</width>
-    <height>1022</height>
+    <height>1030</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -131,15 +131,12 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_19">
+              <item row="0" column="2">
+               <widget class="QPushButton" name="button_browsedestination">
                 <property name="text">
-                 <string>Destination mask</string>
+                 <string>Browse</string>
                 </property>
                </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLineEdit" name="edit_destinationmask"/>
               </item>
               <item row="0" column="1">
                <widget class="QLineEdit" name="edit_destinationpath">
@@ -187,10 +184,20 @@
                 </item>
                </widget>
               </item>
-              <item row="0" column="2">
-               <widget class="QPushButton" name="button_browsedestination">
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="edit_destinationmask"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_19">
                 <property name="text">
-                 <string>Browse</string>
+                 <string>Destination mask</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QCheckBox" name="checkBox_saveVertical">
+                <property name="text">
+                 <string>Save vertical slices</string>
                 </property>
                </widget>
               </item>
@@ -478,7 +485,7 @@
      <x>0</x>
      <y>0</y>
      <width>1088</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
