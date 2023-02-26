@@ -79,7 +79,12 @@ else()
   find_package(Nexus REQUIRED)
 endif()
 
-if(NOT WIN32)
+if (WIN32)
+    add_compile_options(
+      /openmp
+      /O2
+      )
+else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer")
   add_compile_options(
     -Wall
@@ -98,7 +103,7 @@ if(NOT WIN32)
     $<$<COMPILE_LANGUAGE:CXX>:-Woverloaded-virtual>
     $<$<COMPILE_LANGUAGE:CXX>:-fno-operator-names>
   )
-endif(NOT WIN32)
+endif(WIN32)
 
 set(PYTHONDIR kipl)
 set(INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR})
@@ -132,7 +137,9 @@ add_subdirectory(frameworks/imageprocessing/modules/ImagingModulesGui)
 
 ## applications
 add_subdirectory(applications/kiptool)
-#add_subdirectory(applications/kiptoolCLI)
+if (WIN32)
+    add_subdirectory(applications/kiptoolCLI)
+endif()
 #add_subdirectory(applications/kiptool/UnitTests)
 
 ## Binder modules
