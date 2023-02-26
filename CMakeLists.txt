@@ -137,9 +137,9 @@ add_subdirectory(frameworks/imageprocessing/modules/ImagingModulesGui)
 
 ## applications
 add_subdirectory(applications/kiptool)
-if (WIN32)
-    add_subdirectory(applications/kiptoolCLI)
-endif()
+#if (WIN32)
+#    add_subdirectory(applications/kiptoolCLI)
+#endif()
 #add_subdirectory(applications/kiptool/UnitTests)
 
 ## Binder modules
