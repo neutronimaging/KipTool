@@ -2,6 +2,7 @@
 
 #include <filesystem>
 namespace fs = std::filesystem;
+#include <algorithm>
 
 #include "ImagingModules_global.h"
 #include <strings/miscstring.h>
@@ -592,29 +593,29 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::LoadExternalBBData(const std::vecto
         throw ImagingException("The pre-processed sample with BB image mask is empty", __FILE__, __LINE__);
 
     kipl::base::TImage<float,2> bb_ext;
-    kipl::base::TImage<float,3> bb_sample_ext;
+    // kipl::base::TImage<float,3> bb_sample_ext;
     float dose;
 
     bb_ext = BBExternalLoader(blackbodyexternalname, roi, dose);
 
     if (bExtSingleFile)
     {
-        kipl::base::TImage<float,2> bb_sample_ext;
+        kipl::base::TImage<float,2> bb_sample_ext2;
         float dose_s;
-        bb_sample_ext = BBExternalLoader(blackbodysampleexternalname, roi, dose_s);
-        m_corrector.SetExternalBBimages(bb_ext, bb_sample_ext, dose, dose_s);
+        bb_sample_ext2 = BBExternalLoader(blackbodysampleexternalname, roi, dose_s);
+        m_corrector.SetExternalBBimages(bb_ext, bb_sample_ext2, dose, dose_s);
 
     }
     else
     {
-        kipl::base::TImage<float,3> bb_sample_ext;
+        kipl::base::TImage<float,3> bb_sample_ext3;
         std::vector<float> doselist;
-        bb_sample_ext = BBExternalLoader(blackbodysampleexternalname,
+        bb_sample_ext3 = BBExternalLoader(blackbodysampleexternalname,
                                          nBBextCount,
                                          roi,
                                          nBBextFirstIndex,
                                          doselist);
-        m_corrector.SetExternalBBimages(bb_ext, bb_sample_ext, dose, doselist);
+        m_corrector.SetExternalBBimages(bb_ext, bb_sample_ext3, dose, doselist);
     }
 
 
@@ -687,8 +688,8 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
 {
 
     kipl::base::TImage<float,2> flat, dark, bb, sample, samplebb;
-    float *bb_ob_param = new float[6];
-    float *bb_sample_parameters;
+    std::vector<float> bb_ob_param(6);
+    std::vector<float> bb_sample_parameters;
 
     std::string flatmask=flatname;
     std::string darkmask=darkname;
@@ -769,11 +770,12 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
      }
     }
 
-    ob_bb_param = new float[6];
-    memcpy(ob_bb_param, bb_ob_param, sizeof(float)*6);
+    // ob_bb_param.resize(6)
+    ob_bb_param = bb_ob_param;
+    // memcpy(ob_bb_param, bb_ob_param, sizeof(float)*6);
 
     // load sample images with BBs and sample images
-    float *temp_parameters;
+    std::vector<float> temp_parameters;
     size_t nProj=(m_Config.mImageInformation.nLastFileIndex-m_Config.mImageInformation.nFirstFileIndex+1);
     float angles[4] = {fScanArc[0], fScanArc[1], ffirstAngle, flastAngle};
     m_corrector.SetAngles(angles, nProj, nBBSampleCount);
@@ -786,13 +788,15 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
 
     m_corrector.SetDoseList(doselist);
 
-     switch (m_BBOptions) {
+     switch (m_BBOptions)
+     {
 
-         case (ImagingAlgorithms::ReferenceImageCorrection::Interpolate): {
+         case (ImagingAlgorithms::ReferenceImageCorrection::Interpolate): 
+         {
 
-         bb_sample_parameters = new float[6*nBBSampleCount];
-         sample_bb_param = new float[6*nBBSampleCount];
-         temp_parameters = new float[6];
+         //bb_sample_parameters = new float[6*nBBSampleCount];
+         //sample_bb_param = new float[6*nBBSampleCount];
+        //  temp_parameters = new float[6];
 
          if (nBBSampleCount!=0) {
 
@@ -855,7 +859,8 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
                          }
                      }
 
-                     memcpy(bb_sample_parameters, temp_parameters, sizeof(float)*6);
+                     bb_sample_parameters = temp_parameters;
+                    //  memcpy(bb_sample_parameters, temp_parameters, sizeof(float)*6);
                  }
                  else
                  {
@@ -870,24 +875,29 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
 
                      current_dose = current_dose<1 ? 1.0f : current_dose;
 
-                     for(size_t j=0; j<6; j++) {
+                     for(size_t j=0; j<6; j++) 
+                     {
                       temp_parameters[j]/=(current_dose);
                      }
-                     memcpy(bb_sample_parameters+i*6, temp_parameters, sizeof(float)*6);
+
+                     std::copy_n(temp_parameters.begin(),6,bb_sample_parameters.begin()+i*6);
+                    //  memcpy(bb_sample_parameters+i*6, temp_parameters, sizeof(float)*6);
                  }
          }
          }
 
-         memcpy(sample_bb_param, bb_sample_parameters, sizeof(float)*6*nBBSampleCount);
-         break;
-         }
+        sample_bb_param = bb_sample_parameters;
+        // memcpy(sample_bb_param, bb_sample_parameters, sizeof(float)*6*nBBSampleCount);
+        break;
+        }
 
          case (ImagingAlgorithms::ReferenceImageCorrection::Average): {
 
-         bb_sample_parameters = new float[6];
-         sample_bb_param = new float[6];
-         temp_parameters = new float[6];
-         float * mask_parameters = new float[6];
+        //  bb_sample_parameters = new float[6];
+        //  sample_bb_param = new float[6];
+        //  temp_parameters = new float[6];
+         std::vector<float> mask_parameters(6);
+
          kipl::base::TImage<float,2> samplebb_temp;
          float dose_temp;
          float dosesample; // used for the correct dose roi computation (doseBBroi)
@@ -934,16 +944,19 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
              }
          }
 
-         memcpy(sample_bb_param, temp_parameters, sizeof(float)*6);
-         delete [] mask_parameters;
+        sample_bb_param = temp_parameters;
+        // memcpy(sample_bb_param, temp_parameters, sizeof(float)*6);
+        //  delete [] mask_parameters;
          break;
          }
 
         case (ImagingAlgorithms::ReferenceImageCorrection::OneToOne): {
 
-        bb_sample_parameters = new float[6*nBBSampleCount];
-        sample_bb_param = new float[6*nBBSampleCount];
-        temp_parameters = new float[6];
+        bb_sample_parameters.resize(6*nBBSampleCount);
+        sample_bb_param.resize(6*nBBSampleCount);
+        // bb_sample_parameters = new float[6*nBBSampleCount];
+        // sample_bb_param = new float[6*nBBSampleCount];
+        // temp_parameters = new float[6];
         float dosesample;
         float current_dose;
 
@@ -969,24 +982,26 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
                     temp_parameters = m_corrector.PrepareBlackBodyImagewithMask(dark,samplebb, mMaskBB);
                 }
 
-            if (bUseNormROIBB && bUseNormROI)
-            {
-//                     prenormalize interpolation parameters with dose
-                current_dose= fBlackDoseSample;
-                if (bPBvariante)
+                if (bUseNormROIBB && bUseNormROI)
                 {
-                    kipl::base::TImage<float,2> mybb = m_corrector.InterpolateBlackBodyImage(temp_parameters,doseBBroi); // previously doseBBroi
-                    float mydose = computedose(mybb);
-                    current_dose += ((1.0/tau-1.0)*mydose);
-                }
-                current_dose = current_dose<1 ? 1.0f : current_dose;
+    //                     prenormalize interpolation parameters with dose
+                    current_dose= fBlackDoseSample;
+                    if (bPBvariante)
+                    {
+                        kipl::base::TImage<float,2> mybb = m_corrector.InterpolateBlackBodyImage(temp_parameters,doseBBroi); // previously doseBBroi
+                        float mydose = computedose(mybb);
+                        current_dose += ((1.0/tau-1.0)*mydose);
+                    }
+                    current_dose = current_dose<1 ? 1.0f : current_dose;
 
-                for(size_t j=0; j<6; j++)
-                {
-                    temp_parameters[j]/=current_dose;
+                    for(size_t j=0; j<6; j++)
+                    {
+                        temp_parameters[j]/=current_dose;
+                    }
                 }
-            }
-            memcpy(bb_sample_parameters, temp_parameters, sizeof(float)*6);
+
+                bb_sample_parameters=temp_parameters;
+                // memcpy(bb_sample_parameters, temp_parameters, sizeof(float)*6);
             }
             else
             {
@@ -1006,25 +1021,30 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
                      temp_parameters[j]/=current_dose;
                 }
 
-                memcpy(bb_sample_parameters+i*6, temp_parameters, sizeof(float)*6);
+                std::copy_n(temp_parameters.begin(),6,bb_sample_parameters.begin()+i*6);
+                // memcpy(bb_sample_parameters+i*6, temp_parameters, sizeof(float)*6);
             }
         }
 
-        memcpy(sample_bb_param, bb_sample_parameters, sizeof(float)*6*nBBSampleCount);
+        sample_bb_param=bb_sample_parameters;
+        // memcpy(sample_bb_param, bb_sample_parameters, sizeof(float)*6*nBBSampleCount);
         break;
         }
 
-         case (ImagingAlgorithms::ReferenceImageCorrection::noBB): {
+         case (ImagingAlgorithms::ReferenceImageCorrection::noBB): 
+         {
                throw ImagingException("trying to switch to case ImagingAlgorithms::ReferenceImageCorrection::noBB in PrepareBBdata",__FILE__,__LINE__);
                break;
          }
-         case (ImagingAlgorithms::ReferenceImageCorrection::ExternalBB) : {
+         case (ImagingAlgorithms::ReferenceImageCorrection::ExternalBB) : 
+         {
              throw ImagingException("trying to switch to case ImagingAlgorithms::ReferenceImageCorrection::ExternalBB in PrepareBBdata",__FILE__,__LINE__);
          }
 
-         default: throw ImagingException("trying to switch to unknown BBOption in PrepareBBdata",__FILE__,__LINE__);
+         default: 
+            throw ImagingException("trying to switch to unknown BBOption in PrepareBBdata",__FILE__,__LINE__);
 
-         }
+    }
 }
 
 int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameters()
@@ -1043,8 +1063,9 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
 
     kipl::base::TImage<float,2> obmask(bb.dims());
 
-    float *bb_ob_param = new float[100]; // not 6 as in polynomial interpolation
-    float *bb_sample_parameters;
+    std::vector<float> bb_ob_param;
+    std::vector<float> bb_sample_parameters;
+
     std::map<std::pair<int, int>, float> values;
     std::map<std::pair<int, int>, float> values_bb;
 
@@ -1110,11 +1131,13 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
       }
      }
 
-     ob_bb_param = new float[values.size()+3];
-     memcpy(ob_bb_param, bb_ob_param, sizeof(float)*(values.size()+3));
+    //  ob_bb_param = new float[values.size()+3];
+
+    //  memcpy(ob_bb_param, bb_ob_param, sizeof(float)*(values.size()+3));
+     ob_bb_param=bb_ob_param;
 
 
-     float *temp_parameters;
+     std::vector<float> temp_parameters;
      size_t nProj=(m_Config.mImageInformation.nLastFileIndex-m_Config.mImageInformation.nFirstFileIndex+1);
      size_t step = (nProj)/(nBBSampleCount);
 
@@ -1135,9 +1158,9 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
 
     case (ImagingAlgorithms::ReferenceImageCorrection::Interpolate): {
 
-          bb_sample_parameters = new float[(values.size()+3)*nBBSampleCount];
-          sample_bb_param = new float[(values.size()+3)*nBBSampleCount];
-          temp_parameters = new float[(values.size()+3)];
+        //   bb_sample_parameters = new float[(values.size()+3)*nBBSampleCount];
+        //   sample_bb_param = new float[(values.size()+3)*nBBSampleCount];
+        //   temp_parameters = new float[(values.size()+3)];
 
           if (nBBSampleCount!=0)
           {
@@ -1192,7 +1215,8 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
                           }
                       }
 
-                      memcpy(bb_sample_parameters, temp_parameters, sizeof(float)*(values_bb.size()+3));
+                        bb_sample_parameters=temp_parameters;
+                    //   memcpy(bb_sample_parameters, temp_parameters, sizeof(float)*(values_bb.size()+3));
                   }
                   else
                   {
@@ -1213,21 +1237,23 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
                         temp_parameters[j]/=(current_dose);
                       }
 
-                      memcpy(bb_sample_parameters+i*(values_bb.size()+3), temp_parameters, sizeof(float)*(values_bb.size()+3));
+                      std::copy_n(temp_parameters.begin(),values_bb.size()+3,bb_sample_parameters.begin()+i*(values_bb.size()+3))  ;    
+                    //   memcpy(bb_sample_parameters+i*(values_bb.size()+3), temp_parameters, sizeof(float)*(values_bb.size()+3));
                   }
               }
           }
 
-        memcpy(sample_bb_param, bb_sample_parameters, sizeof(float)*(values.size()+3)*nBBSampleCount);
+        sample_bb_param = bb_sample_parameters;
+        // memcpy(sample_bb_param, bb_sample_parameters, sizeof(float)*(values.size()+3)*nBBSampleCount);
         break;
     }
 
     case (ImagingAlgorithms::ReferenceImageCorrection::Average): {
 
-        bb_sample_parameters = new float[values.size()+3]; // i am assuming there is the same number of BBs
-        sample_bb_param = new float[values.size()+3];
-        temp_parameters = new float[values.size()+3];
-        float * mask_parameters = new float[values.size()+3];
+        // bb_sample_parameters = new float[values.size()+3]; // i am assuming there is the same number of BBs
+        // sample_bb_param = new float[values.size()+3];
+        // temp_parameters = new float[values.size()+3];
+        std::vector<float> mask_parameters(values.size()+3);
 
         kipl::base::TImage<float,2> samplebb_temp;
         float dose_temp;
@@ -1280,16 +1306,20 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
 
         }
 
-        memcpy(sample_bb_param, temp_parameters, sizeof(float)*(values.size()+3));
-        delete [] mask_parameters;
+        sample_bb_param = temp_parameters;
+        // memcpy(sample_bb_param, temp_parameters, sizeof(float)*(values.size()+3));
+        // delete [] mask_parameters;
         break;
     }
 
     case (ImagingAlgorithms::ReferenceImageCorrection::OneToOne): {
 
-         bb_sample_parameters = new float[(values.size()+3)*nBBSampleCount];
-         sample_bb_param = new float[(values.size()+3)*nBBSampleCount];
-         temp_parameters = new float[values.size()+3];
+         bb_sample_parameters.resize((values.size()+3)*nBBSampleCount);
+         sample_bb_param.resize((values.size()+3)*nBBSampleCount);
+        //  temp_parameters = new float[values.size()+3];
+        //  bb_sample_parameters = new float[(values.size()+3)*nBBSampleCount];
+        //  sample_bb_param = new float[(values.size()+3)*nBBSampleCount];
+        //  temp_parameters = new float[values.size()+3];
 
          float dosesample;
          float current_dose;
@@ -1340,7 +1370,8 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
                      }
                  }
 
-                 memcpy(bb_sample_parameters, temp_parameters, sizeof(float)*(values.size()+3));
+                bb_sample_parameters = temp_parameters;
+                //  memcpy(bb_sample_parameters, temp_parameters, sizeof(float)*(values.size()+3));
              }
              else
              {
@@ -1360,12 +1391,14 @@ int IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PrepareSplinesInterpolationParameter
                  {
                       temp_parameters[j]/=current_dose;
                  }
-                 memcpy(bb_sample_parameters+i*(values.size()+3), temp_parameters, sizeof(float)*(values.size()+3));
+                 std::copy_n(temp_parameters.begin(),values.size()+3,bb_sample_parameters.begin()+i*(values.size()+3));
+                //  memcpy(bb_sample_parameters+i*(values.size()+3), temp_parameters, sizeof(float)*(values.size()+3));
              }
              float dose = dosesample/(current_dose*tau);
          }
 
-        memcpy(sample_bb_param, bb_sample_parameters, sizeof(float)*(values.size()+3)*nBBSampleCount);
+        sample_bb_param = bb_sample_parameters;
+        // memcpy(sample_bb_param, bb_sample_parameters, sizeof(float)*(values.size()+3)*nBBSampleCount);
         break;
       }
 
@@ -1389,7 +1422,7 @@ int BBLogNorm::GetnProjwithAngle(float angle)
 {
 
     // range of projection angles
-    double nProj=((double)m_Config.mImageInformation.nLastFileIndex-(double)m_Config.mImageInformation.nFirstFileIndex+1);
+    double nProj=(static_cast<double>(m_Config.mImageInformation.nLastFileIndex)-static_cast<double>(m_Config.mImageInformation.nFirstFileIndex)+1.0);
 
     int index =0;
     float curr_angle;
@@ -1434,7 +1467,8 @@ float BBLogNorm::GetInterpolationError(kipl::base::TImage<float,2> &mask)
 
     // load OB image with BBs
 
-    float *bb_ob_param = new float[6];
+    // float *bb_ob_param = new float[6];
+    std::vector<float> bb_ob_param;
     bb = BBLoader(blackbodyname,nBBFirstIndex,nBBCount,1.0f,0.0f,blackdose);
     std::vector<int> diffroi(BBroi.begin(),BBroi.end()); // it is now just the BBroi position, makes more sense
 
@@ -1470,7 +1504,7 @@ float BBLogNorm::GetInterpolationError(kipl::base::TImage<float,2> &mask)
     }
 
     mask = obmask;
-    delete [] bb_ob_param;
+    // delete [] bb_ob_param;
     return error;
 }
 
@@ -1498,7 +1532,8 @@ float BBLogNorm::GetInterpolationErrorFromMask(kipl::base::TImage<float, 2> &mas
     dark = BBLoader(darkmask,nDCFirstIndex,nDCCount,0.0f,0.0f,darkdose);
 
     // load OB image with BBs
-    float *bb_ob_param = new float[6];
+    // float *bb_ob_param = new float[6];
+    std::vector<float> bb_ob_param;
     bb = BBLoader(blackbodyname,nBBFirstIndex,nBBCount,1.0f,0.0f,blackdose);
     std::vector<int> diffroi(4,0); // diffroi is not relevant for external mask option
 
@@ -1532,7 +1567,7 @@ float BBLogNorm::GetInterpolationErrorFromMask(kipl::base::TImage<float, 2> &mas
         throw kipl::base::KiplException("Failed to compute bb_ob_parameters. Try to change thresholding method or value. ", __FILE__,__LINE__);
     }
 
-    delete [] bb_ob_param;
+    // delete [] bb_ob_param;
     return error;
 
 }
@@ -1544,21 +1579,23 @@ kipl::base::TImage<float,2> BBLogNorm::GetMaskImage(){
 float BBLogNorm::computedose(kipl::base::TImage<float,2>&img){
 
     float *pImg=img.GetDataPtr();
-    float *means=new float[img.Size(1)];
-    memset(means,0,img.Size(1)*sizeof(float));
+    std::vector<float> means(img.Size(1),0.0f);
+    // memset(means,0,img.Size(1)*sizeof(float));
 
-    for (size_t y=0; y<img.Size(1); y++) {
+    for (size_t y=0; y<img.Size(1); y++) 
+    {
         pImg=img.GetLinePtr(y);
 
-        for (size_t x=0; x<img.Size(0); x++) {
+        for (size_t x=0; x<img.Size(0); x++) 
+        {
             means[y]+=pImg[x];
         }
         means[y]=means[y]/static_cast<float>(img.Size(0));
     }
 
-    float dose;
-    kipl::math::median(means,img.Size(1),&dose);
-    delete [] means;
+    float dose=0.0f;
+    kipl::math::median(means,&dose);
+    // delete [] means;
     return dose;
 
 

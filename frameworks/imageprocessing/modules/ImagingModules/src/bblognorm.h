@@ -90,8 +90,8 @@ protected:
     float flastAngle; /// last angle for BB sample image, used for BB interpolation option
     std::vector<float> fScanArc; /// first and last angle of projections (to be used for tomo)
 
-    float *ob_bb_param;
-    float *sample_bb_param;
+    std::vector<float> ob_bb_param;
+    std::vector<float> sample_bb_param;
 
     kipl::base::TImage<float,2> mMaskBB;
     kipl::base::TImage<float,2> mdark;
