@@ -263,7 +263,7 @@ int IMAGINGMODULESSHARED_EXPORT BBLogNorm::Configure(KiplProcessConfig config, s
     }
     case(ImagingAlgorithms::ReferenceImageCorrection::manuallyThresholdedMask): {
         bUseManualThresh = true;
-        m_corrector.SetManualThreshold(bUseManualThresh,thresh);
+        m_corrector.SetManualThreshold(thresh);
         break;
     }
     case(ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask): {
@@ -437,7 +437,7 @@ int IMAGINGMODULESSHARED_EXPORT BBLogNorm::ConfigureDLG(KiplProcessConfig config
     default: throw ImagingException("Unknown m_maskCreationMethod method in BBLogNorm::Configure",__FILE__,__LINE__);
     }
 
-    m_corrector.SetManualThreshold(bUseManualThresh,thresh);
+    m_corrector.SetManualThreshold(thresh);
 
     return 1;
 }
@@ -939,7 +939,7 @@ void IMAGINGMODULESSHARED_EXPORT  BBLogNorm::PreparePolynomialInterpolationParam
          break;
          }
 
-         case (ImagingAlgorithms::ReferenceImageCorrection::OneToOne): {
+        case (ImagingAlgorithms::ReferenceImageCorrection::OneToOne): {
 
         bb_sample_parameters = new float[6*nBBSampleCount];
         sample_bb_param = new float[6*nBBSampleCount];
