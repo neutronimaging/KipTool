@@ -1,8 +1,10 @@
 //<LICENSE>
 
+#include <thread>
+#include <chrono>
+
 #include <QMessageBox>
-#include <QtConcurrent>
-#include <QFuture>
+
 
 #include "processdialog.h"
 #include "ui_processdialog.h"
@@ -24,6 +26,7 @@ ProcessDialog::ProcessDialog(kipl::interactors::InteractionBase *interactor, QWi
 
     connect(this,&ProcessDialog::updateProgress,this,&ProcessDialog::changedProgress);
     connect(this,&ProcessDialog::processFailure,this,&ProcessDialog::on_processFailure);
+    connect(this,&ProcessDialog::processDone,this,&ProcessDialog::on_processDone);
 }
 
 ProcessDialog::~ProcessDialog()
@@ -36,7 +39,7 @@ int ProcessDialog::exec(KiplEngine * engine, kipl::base::TImage<float,3> *img)
 {
     if (img==nullptr)
     {
-        logger(logger.LogError,"Called recon dialog with uninitialized image");
+        logger.error("Called recon dialog with uninitialized image");
         return Rejected;
     }
 
@@ -44,51 +47,60 @@ int ProcessDialog::exec(KiplEngine * engine, kipl::base::TImage<float,3> *img)
 
     if (engine==nullptr)
     {
-        logger(logger.LogError,"Called recon dialog with unallocated engine");
+        logger.error("Called recon dialog with unallocated engine");
         return Rejected;
     }
 
     m_Engine=engine;
 
     finish=false;
-    logger(kipl::logging::Logger::LogMessage,"Start");
+    logger.message("Start");
 
     m_Interactor->Reset();
 
-    logger(logger.LogMessage,"Starting with threads");
+    logger.message("Starting with threads");
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(100);
 
-    QFuture<int> proc_thread=QtConcurrent::run(this,&ProcessDialog::process);
-    QFuture<int> progress_thread=QtConcurrent::run(this,&ProcessDialog::progress);
-
-    int res=exec();
-
+    auto process_thread  = std::thread([=]{ process(); } );
+    auto progress_thread = std::thread([=]{ progress();} );
+    
+    auto res = QDialog::exec();
+    
     finish=true;
-    if (res==QDialog::Rejected) {
-        logger(kipl::logging::Logger::LogVerbose,"Cancel requested by user");
+    
+    process_thread.join();
+    progress_thread.join();
+    
+    if (res==QDialog::Rejected) 
+    {
+        logger.verbose("Cancel requested by user");
         Abort();
     }
 
-    proc_thread.waitForFinished();
-    progress_thread.waitForFinished();
-    logger(kipl::logging::Logger::LogVerbose,"Threads are joined");
+    if (res==QDialog::Accepted) 
+    {
+        logger.message("Loading finished well");
+    }
+    
+    logger.verbose("Threads are joined");
     return res;
 
 }
 
 int ProcessDialog::progress()
 {
-    logger(kipl::logging::Logger::LogMessage,"Progress thread is started");
-    QThread::msleep(250);
+    logger.message("Progress thread is started");
+    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+
     while (!m_Interactor->Finished() && !m_Interactor->Aborted() ){
         emit updateProgress(m_Interactor->CurrentProgress(),
                             m_Interactor->CurrentOverallProgress(),
                             QString::fromStdString(m_Interactor->CurrentMessage()));
 
-        QThread::msleep(50);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
-    logger(kipl::logging::Logger::LogMessage,"Progress thread end");
+    logger.message("Progress thread end");
 
     return 0;
 }
@@ -150,15 +162,25 @@ int ProcessDialog::process()
     logger(kipl::logging::Logger::LogMessage,"Processing done");
 
     finish=true;
-    m_Interactor->Done();
-    this->accept();
+    try {
+        Done();
+        emit processDone();
+    }
+    catch (std::exception &e) 
+    {
+        msg.str("");
+        msg<<"Caught an exception the closing the dialog \n"<<e.what();
+        logger.error(msg.str());
+    }
 
+    logger.message("Process thread done");
     return 0;
 }
 
 void ProcessDialog::Abort()
 {
-    if (m_Interactor!=nullptr) {
+    if (m_Interactor!=nullptr) 
+    {
         m_Interactor->Abort();
     }
     this->reject();
@@ -166,11 +188,20 @@ void ProcessDialog::Abort()
 
 bool ProcessDialog::Finished()
 {
-    if (m_Interactor!=nullptr) {
+    if (m_Interactor!=nullptr) 
+    {
         return m_Interactor->Finished();
     }
 
     return true;
+}
+
+void ProcessDialog::Done()
+{
+    if (m_Interactor!=nullptr) 
+    {
+        m_Interactor->Done();
+    }
 }
 
 void ProcessDialog::on_processFailure(QString msg)
@@ -184,6 +215,10 @@ void ProcessDialog::on_processFailure(QString msg)
     Abort();
 }
 
+void ProcessDialog::on_processDone()
+{
+    accept();
+}
 void ProcessDialog::on_buttonBox_rejected()
 {
     Abort();

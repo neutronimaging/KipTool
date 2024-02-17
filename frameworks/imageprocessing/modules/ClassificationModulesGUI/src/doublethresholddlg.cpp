@@ -129,9 +129,9 @@ int DoubleThresholdDlg::exec(ConfigBase *config, std::map<string, string> &param
 
 void DoubleThresholdDlg::on_doubleSpinBox_upper_valueChanged(double arg1)
 {
-    QtCharts::QLineSeries *series=nullptr;
+    QLineSeries *series=nullptr;
     try {
-        series=new QtCharts::QLineSeries();
+        series=new QLineSeries();
     }
     catch (std::bad_alloc & e) {
         QString msg="Failed to allocate series: ";
@@ -150,9 +150,9 @@ void DoubleThresholdDlg::on_doubleSpinBox_upper_valueChanged(double arg1)
 
 void DoubleThresholdDlg::on_doubleSpinBox_lower_valueChanged(double arg1)
 {
-    QtCharts::QLineSeries *series=nullptr;
+    QLineSeries *series=nullptr;
     try {
-        series=new QtCharts::QLineSeries();
+        series=new QLineSeries();
     }
     catch (std::bad_alloc & e) {
         QString msg="Failed to allocate series: ";

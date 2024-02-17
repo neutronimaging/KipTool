@@ -4,8 +4,8 @@
 #include "ui_loadimagedialog.h"
 
 #include <QMessageBox>
-#include <QtConcurrent>
-#include <QFuture>
+#include <thread>
+#include <chrono>
 
 #include <KiplFrameworkException.h>
 #include <ModuleException.h>
@@ -24,6 +24,7 @@ LoadImageDialog::LoadImageDialog(kipl::interactors::InteractionBase *interactor,
 
     connect(this,&LoadImageDialog::updateProgress,this,&LoadImageDialog::changedProgress);
     connect(this,&LoadImageDialog::processFailure,this,&LoadImageDialog::on_processFailure);
+    connect(this,&LoadImageDialog::processDone,this,&LoadImageDialog::on_processDone);
 }
 
 LoadImageDialog::~LoadImageDialog()
@@ -59,20 +60,26 @@ int LoadImageDialog::exec(KiplProcessConfig *config, kipl::base::TImage<float,3>
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(100);
 
-    QFuture<int> proc_thread=QtConcurrent::run(this,&LoadImageDialog::process);
-    QFuture<int> progress_thread=QtConcurrent::run(this,&LoadImageDialog::progress);
+    auto process_thread  = std::thread([=]{process();});
+    auto progress_thread = std::thread([=]{progress();});
 
-    int res=exec();
-
+    auto res = QDialog::exec();
     finish=true;
-    if (res==QDialog::Rejected) {
-        logger(kipl::logging::Logger::LogVerbose,"Cancel requested by user");
+    progress_thread.join();
+    process_thread.join();
+
+    if (res==QDialog::Rejected) 
+    {
+        logger.verbose("Cancel requested by user");
         Abort();
     }
 
-    proc_thread.waitForFinished();
-    progress_thread.waitForFinished();
-    logger(kipl::logging::Logger::LogVerbose,"Threads are joined");
+    if (res==QDialog::Accepted) 
+    {
+        logger.message("Loading finished well");
+    }
+
+    logger.message("Threads are joined");
     return res;
 
 }
@@ -80,13 +87,13 @@ int LoadImageDialog::exec(KiplProcessConfig *config, kipl::base::TImage<float,3>
 int LoadImageDialog::progress()
 {
     logger(kipl::logging::Logger::LogMessage,"Progress thread is started");
-    QThread::msleep(250);
+    std::this_thread::sleep_for(std::chrono::milliseconds(250));
     while (!m_Interactor->Finished() && !m_Interactor->Aborted() ){
         emit updateProgress(m_Interactor->CurrentProgress(),
                             m_Interactor->CurrentOverallProgress(),
                             QString::fromStdString(m_Interactor->CurrentMessage()));
 
-        QThread::msleep(50);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     logger(kipl::logging::Logger::LogMessage,"Progress thread end");
 
@@ -136,23 +143,35 @@ int LoadImageDialog::process()
 
     if (failed==true)
     {
-        logger(kipl::logging::Logger::LogMessage,msg.str());
+        logger.message(msg.str());
         finish=false;
         emit processFailure(QString::fromStdString(msg.str()));
         return 0;
     }
-    logger(kipl::logging::Logger::LogMessage,"Loading done");
+    logger.message("Loading done");
 
     finish=true;
-    m_Interactor->Done();
-    this->accept();
 
+    try 
+    {
+        Done();
+        emit processDone();
+    } 
+    catch (std::exception &e)
+    {
+        msg.str("");
+        msg<<"Caught an exception the closing the dialog \n"<<e.what();
+        logger.error(msg.str());
+    }
+
+    logger.message("Loading thread done");
     return 0;
 }
 
 void LoadImageDialog::Abort()
 {
-    if (m_Interactor!=nullptr) {
+    if (m_Interactor!=nullptr) 
+    {
         m_Interactor->Abort();
     }
     this->reject();
@@ -160,11 +179,20 @@ void LoadImageDialog::Abort()
 
 bool LoadImageDialog::Finished()
 {
-    if (m_Interactor!=nullptr) {
+    if (m_Interactor!=nullptr) 
+    {
         return m_Interactor->Finished();
     }
 
     return true;
+}
+
+void LoadImageDialog::Done()
+{
+    if (m_Interactor!=nullptr) 
+    {
+        m_Interactor->Done();
+    }
 }
 
 void LoadImageDialog::on_processFailure(QString msg)
@@ -176,6 +204,13 @@ void LoadImageDialog::on_processFailure(QString msg)
     dlg.setDetailedText(msg);
     dlg.exec();
     Abort();
+}
+
+void LoadImageDialog::on_processDone()
+{
+    logger.message("process done");
+    accept();
+    logger.message("process done, accept");
 }
 
 void LoadImageDialog::on_buttonBox_rejected()

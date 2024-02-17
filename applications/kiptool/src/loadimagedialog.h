@@ -27,10 +27,12 @@ public:
 private:
     Ui::LoadImageDialog *ui;
 
-    virtual int exec() { return QDialog::exec(); }
+    virtual int exec() override { return QDialog::exec(); }
 protected:
     void Abort();
     bool Finished();
+    void Done();
+
 
     float fraction;
     bool finish;
@@ -41,6 +43,7 @@ protected:
 
 private slots:
     void on_processFailure(QString msg);
+    void on_processDone();
     void changedProgress(float progress, float overallProgress, QString msg);
 
     void on_buttonBox_rejected();
@@ -48,6 +51,7 @@ private slots:
 signals:
     void updateProgress(float progress, float overallProgress, QString msg);
     void processFailure(QString msg);
+    void processDone();
 };
 
 #endif // LOADIMAGEDIALOG_H

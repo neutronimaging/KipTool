@@ -5,52 +5,64 @@ IF NOT EXIST %DEST% mkdir %DEST%
 pushd .
 cd %DEST%
 
-copy %REPOS%\Applications\KipTool.exe .
-copy %REPOS%\Applications\KipToolCLI.exe .
-copy %REPOS%\lib\ImagingAlgorithms.dll .
-copy %REPOS%\lib\ModuleConfig.dll .
-copy %REPOS%\lib\ReaderConfig.dll .
-copy %REPOS%\lib\ReaderGUI.dll .
-copy %REPOS%\lib\QtAddons.dll .
-copy %REPOS%\lib\QtModuleConfigure.dll .
-copy %REPOS%\lib\kipl.dll .
-copy %REPOS%\lib\ProcessFramework.dll .
-copy %REPOS%\lib\AdvancedFilterModules.dll .
-copy %REPOS%\lib\AdvancedFilterModulesGUI.dll .
-copy %REPOS%\lib\AdvancedFilters.dll .
-copy %REPOS%\lib\BaseModules.dll .
-copy %REPOS%\lib\BaseModulesGUI.dll .
-copy %REPOS%\lib\ClassificationModules.dll .
-copy %REPOS%\lib\ClassificationModulesGUI.dll . 
-copy %REPOS%\lib\ImagingModules.dll .
-copy %REPOS%\lib\ImagingModulesGUI.dll .
+copy %REPOS%\install\applications\KipTool.exe .
+@REM copy %REPOS%\Applications\KipToolCLI.exe .
+copy %REPOS%\install\lib\ImagingAlgorithms.dll .
+copy %REPOS%\install\lib\ModuleConfig.dll .
+copy %REPOS%\install\lib\ReaderConfig.dll .
+copy %REPOS%\install\lib\ReaderGUI.dll .
+copy %REPOS%\install\lib\QtAddons.dll .
+copy %REPOS%\install\lib\QtModuleConfigure.dll .
+copy %REPOS%\install\lib\kipl.dll .
+copy %REPOS%\install\lib\ProcessFramework.dll .
+copy %REPOS%\install\lib\AdvancedFilterModules.dll .
+copy %REPOS%\install\lib\AdvancedFilterModulesGUI.dll .
+copy %REPOS%\install\lib\AdvancedFilters.dll .
+copy %REPOS%\install\lib\BaseModules.dll .
+copy %REPOS%\install\lib\BaseModulesGUI.dll .
+copy %REPOS%\install\lib\ClassificationModules.dll .
+copy %REPOS%\install\lib\ClassificationModulesGUI.dll . 
+copy %REPOS%\install\lib\ImagingModules.dll .
+copy %REPOS%\install\lib\ImagingModulesGUI.dll .
 
-copy %REPOS%\imagingsuite\external\lib64\libtiff.dll .
-copy %REPOS%\imagingsuite\external\lib64\libjpeg-62.dll .
-copy %REPOS%\imagingsuite\external\lib64\zlib1.dll .
-copy %REPOS%\imagingsuite\external\lib64\libfftw3-3.dll .
-copy %REPOS%\imagingsuite\external\lib64\libfftw3f-3.dll .
-copy %REPOS%\imagingsuite\external\lib64\nexus\NeXus.dll .
-copy %REPOS%\imagingsuite\external\lib64\nexus\NexusCPP.dll .
-copy %REPOS%\imagingsuite\external\lib64\hdf5\hdf5.dll .
-copy %REPOS%\imagingsuite\external\lib64\hdf5\hdf5_cpp.dll .
-copy %REPOS%\imagingsuite\external\lib64\hdf5\zlib.dll .
-copy %REPOS%\imagingsuite\external\lib64\hdf5\szip.dll .
+copy %REPOS%\\install\lib\libtiff.dll .
+copy %REPOS%\install\lib\libjpeg-62.dll .
+copy %REPOS%\install\lib\zlib1.dll .
+copy %REPOS%\install\lib\libfftw3-3.dll .
+copy %REPOS%\install\lib\libfftw3f-3.dll .
+copy %REPOS%\install\lib\liblapack.dll .
+copy %REPOS%\install\lib\libgcc_s_seh_64-1.dll .
+copy %REPOS%\install\lib\libgcc_s_seh-1.dll .
+copy %REPOS%\install\lib\libgfortran_64-3.dll .
+copy %REPOS%\install\lib\libquadmath-0.dll .
+copy %REPOS%\install\lib\libwinpthread-1.dll .
+copy %REPOS%\install\lib\libblas.dll .
+copy %REPOS%\install\lib\NeXus.dll .
+copy %REPOS%\install\lib\NexusCPP.dll .
+copy %REPOS%\install\lib\hdf5.dll .
+copy %REPOS%\install\lib\hdf5_cpp.dll .
+copy %REPOS%\install\lib\zlib.dll .
+copy %REPOS%\install\lib\szip.dll .
 
-copy %REPOS%\imagingsuite\external\lib64\libgcc_s_seh_64-1.dll .
-copy %REPOS%\imagingsuite\external\lib64\libgcc_s_seh-1.dll .
-copy %REPOS%\imagingsuite\external\lib64\libwinpthread-1.dll .
+@REM copy %REPOS%\install\lib\libgcc_s_seh_64-1.dll .
+@REM copy %REPOS%\install\lib\libgcc_s_seh-1.dll .
+@REM copy %REPOS%\install\lib\libwinpthread-1.dll .
 
-copy %REPOS%\ExternalDependencies\windows\bin\libopenblas.dll .
-copy %REPOS%\ExternalDependencies\windows\bin\libxml2.dll .
-copy %REPOS%\ExternalDependencies\windows\bin\cfitsio.dll .
+@REM copy %REPOS%\install\lib\libopenblas.dll .
+copy %REPOS%\install\lib\libxml2.dll .
+copy %REPOS%\install\lib\cfitsio.dll .
 
+mkdir resources
+copy %REPOS%\KipTool\applications\kiptool\resources resources
 cd %QTBINPATH%
 
 windeployqt %DEST%\KipTool.exe
 windeployqt %DEST%\KipToolCLI.exe
-copy Qt5PrintSupport.dll %DEST%
-copy Qt5Charts.dll %DEST%
+copy Qt6PrintSupport.dll %DEST%
+copy Qt6Charts.dll %DEST%
+copy Qt6OpenGLWidgets.dll %DEST%
+copy Qt6OpenGl.dll %DEST%
+
 
 popd
 for /F "usebackq tokens=1,2 delims==" %%i in (`wmic os get LocalDateTime /VALUE 2^>NUL`) do if '.%%i.'=='.LocalDateTime.' set ldt=%%j

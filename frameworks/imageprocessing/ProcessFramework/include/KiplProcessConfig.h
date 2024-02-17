@@ -61,6 +61,7 @@ public:
 
 		std::string sDestinationPath;
 		std::string sDestinationFileMask;
+        bool bSaveVerticalSlices;
 	};
 
     KiplProcessConfig(const std::string &appPath);

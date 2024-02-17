@@ -126,17 +126,17 @@ int IMAGINGMODULESSHARED_EXPORT MorphSpotCleanModule::ProcessCore(kipl::base::TI
                 cleaner.process(slice,m_fThreshold, m_fSigma);
             }
             catch (ImagingException & e) {
-                msg.str();
+                msg.str("");
                 msg<<"Failed to process data with ImagingException : "<<std::endl<<e.what();
                 throw ImagingException(msg.str(),__FILE__,__LINE__);
             }
             catch (kipl::base::KiplException & e) {
-                msg.str();
+                msg.str("");
                 msg<<"Failed to process data with KiplException : "<<std::endl<<e.what();
                 throw ImagingException(msg.str(),__FILE__,__LINE__);
             }
             catch (std::exception & e) {
-                msg.str();
+                msg.str("");
                 msg<<"Failed to process data with STL exception : "<<std::endl<<e.what();
                 throw ImagingException(msg.str(),__FILE__,__LINE__);
             }

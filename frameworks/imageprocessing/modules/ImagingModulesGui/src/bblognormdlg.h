@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <QDialog>
 
 #include <ConfiguratorDialogBase.h>
@@ -16,10 +17,6 @@
 #include <base/timage.h>
 
 #include <bblognorm.h>
-
-//#include <windowsx.h>
-//#include <Windows.h>
-//#include <winnt.h
 
 namespace Ui {
 class BBLogNormDlg;

@@ -51,7 +51,8 @@ KipToolMainWindow::KipToolMainWindow(QApplication *app, QWidget *parent) :
 {
     ui->setupUi(this);
     //logger.AddLogTarget(*(ui->widget_logviewer));
-    logger.AddLogTarget(*logdlg);
+    logger.addLogTarget(logdlg);
+
 
     ui->widget_moduleconfigurator->configure("kiptool",QDir::currentPath().toStdString(),&m_ModuleConfigurator);
     ui->widget_moduleconfigurator->SetApplicationObject(this);
@@ -146,8 +147,9 @@ void KipToolMainWindow::UpdateDialog()
 
     ui->widget_loadForm->setReaderConfig(loadInfo);
 
-    ui->edit_destinationpath->setText(QString::fromStdString(m_config.mOutImageInformation.sDestinationPath));
-    ui->edit_destinationmask->setText(QString::fromStdString(m_config.mOutImageInformation.sDestinationFileMask));
+    ui->edit_destinationpath ->setText(QString::fromStdString(m_config.mOutImageInformation.sDestinationPath));
+    ui->edit_destinationmask ->setText(QString::fromStdString(m_config.mOutImageInformation.sDestinationFileMask));
+    ui->checkBox_saveVertical->setChecked(m_config.mOutImageInformation.bSaveVerticalSlices);
 
     int idx=0;
     switch (m_config.mOutImageInformation.eResultImageType)
@@ -209,13 +211,14 @@ void KipToolMainWindow::UpdateConfig()
             }
             break;
         }
-        case 1: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF8bits; break;
-        case 2: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF16bits; break;
-        case 3: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFFfloat; break;
-        case 4: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF8bitsMultiFrame; break;
+        case 1: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF8bits;            break;
+        case 2: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF16bits;           break;
+        case 3: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFFfloat;            break;
+        case 4: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF8bitsMultiFrame;  break;
         case 5: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFF16bitsMultiFrame; break;
-        case 6: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFFfloatMultiFrame; break;
+        case 6: m_config.mOutImageInformation.eResultImageType = kipl::io::TIFFfloatMultiFrame;  break;
     }
+    m_config.mOutImageInformation.bSaveVerticalSlices = ui->checkBox_saveVertical->isChecked();
 
     m_config.UserInformation.sComment       = ui->text_description->toPlainText().toStdString();
     m_config.UserInformation.sInstrument    = ui->edit_instrument->text().toStdString();
@@ -251,8 +254,8 @@ void KipToolMainWindow::UpdateHistogramView()
     if (!m_HistogramList.empty()) {
 
         for (it=m_HistogramList.begin(); it!=m_HistogramList.end(); it++, idx++) {
-            QString lbl;
-            lbl.sprintf("Hist ",idx);
+            QString lbl="Hist "+QString::number(idx);
+            
             ui->plotter_histogram->setCurveData(idx,it->second.GetX(),it->second.GetY(),static_cast<int>(it->second.Size()),lbl);
         }
 
@@ -319,7 +322,7 @@ void KipToolMainWindow::on_button_loaddata_clicked()
             on_combo_sliceplane_activated(0);
             on_slider_images_sliderMoved(0);
             // Todo: Show histogram...
-            float *axis = new float[m_OriginalHistogram.Size()];
+            float  *axis = new float[m_OriginalHistogram.Size()];
             size_t *bins = new size_t[m_OriginalHistogram.Size()];
             kipl::base::Histogram(m_OriginalImage.GetDataPtr(),m_OriginalImage.Size(),bins,m_OriginalHistogram.Size(),0,0,axis);
 

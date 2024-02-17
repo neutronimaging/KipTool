@@ -421,7 +421,7 @@ void MergeVolume::ParseXML(string fname)
         msg.str(""); msg<<"Found "<<sName<<" expect merge";
         logger(kipl::logging::Logger::LogMessage,msg.str());
         if (sName!="merge") {
-            msg.str();
+            msg.str("");
             msg<<"Unexpected project contents in parameter file ("<<sName<<"!=merge)";
             logger(kipl::logging::Logger::LogMessage,msg.str());
             throw kipl::base::KiplException(msg.str(),__FILE__,__LINE__);

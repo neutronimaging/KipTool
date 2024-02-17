@@ -728,7 +728,9 @@ void BBLogNormDlg::on_errorButton_clicked()
 
     if (m_maskCreationMethod != ImagingAlgorithms::ReferenceImageCorrection::userDefinedMask)
     {
-        QRect rect=ui->ob_bb_Viewer->get_marked_roi();
+//        QRect rect=ui->ob_bb_Viewer->get_marked_roi();
+        QRect rect;
+        ui->roiwidget_BB->getROI(rect);
 
         if (rect.width()*rect.height()!=0)
         {
@@ -736,6 +738,7 @@ void BBLogNormDlg::on_errorButton_clicked()
 
             try
             {
+//                error = 1.0;
                 error = module.GetInterpolationError(mymask);
             }
             catch (KiplFrameworkException &e)

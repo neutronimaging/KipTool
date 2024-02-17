@@ -1,7 +1,5 @@
 //<LICENSE>
 
-#include "stdafx.h"
-#include <QDebug>
 #include "ISSfilterModule.h"
 
 #ifdef _OPENMP
@@ -55,6 +53,7 @@ int ISSfilterModule::Configure(KiplProcessConfig m_Config, std::map<std::string,
     m_sIterationPath  = parameters["iterationpath"];
     string2enum(GetStringParameter(parameters,"regularization"), m_eRegularization);
     string2enum(GetStringParameter(parameters,"initialimage"),   m_eInitialImage);
+    m_bThreading      = kipl::strings::string2bool(GetStringParameter(parameters,"threading"));
 
 	return 0;
 }
@@ -76,6 +75,7 @@ std::map<std::string, std::string> ISSfilterModule::GetParameters()
 	parameters["iterationpath"]  = m_sIterationPath;
     parameters["regularization"] = enum2string(m_eRegularization);
     parameters["initialimage"]   = enum2string(m_eInitialImage);
+    parameters["threading"]      = kipl::strings::bool2string(m_bThreading);
 
 	return parameters;
 }

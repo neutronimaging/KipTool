@@ -159,7 +159,7 @@ void GenericConversion::on_pushButton_Preview_clicked()
     }
 
     if (m_customLevels)
-        ui->viewer_preview->set_image(img.GetDataPtr(),img.dims(),m_levelLo,m_levelHi);
+        ui->viewer_preview->set_image(img.GetDataPtr(),img.dims(),static_cast<float>(m_levelLo),static_cast<float>(m_levelHi));
     else
         ui->viewer_preview->set_image(img.GetDataPtr(),img.dims());
 

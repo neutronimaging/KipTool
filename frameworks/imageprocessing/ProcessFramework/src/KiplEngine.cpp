@@ -7,6 +7,7 @@
 #include <strings/filenames.h>
 #include <io/io_stack.h>
 #include <base/KiplException.h>
+#include <base/textractor.h>
 
 #include "../include/KiplEngine.h"
 #include "../include/KiplFrameworkException.h"
@@ -142,8 +143,6 @@ bool KiplEngine::SaveImage(KiplProcessConfig::cOutImageInformation * info)
     writePublicationList(config->sDestinationPath+"citations.txt");
 
 	try {
-		std::stringstream msg;
-
 		std::stringstream str;
 
 		float maxval=0.0f;
@@ -172,13 +171,13 @@ bool KiplEngine::SaveImage(KiplProcessConfig::cOutImageInformation * info)
 
         msg.str("");
         msg<<"Saving image with the following information header:"<<std::endl<<m_ResultImage.info;
-        logger(logger.LogMessage,msg.str());
+        logger.message(msg.str());
 
 		kipl::base::eImagePlanes plane=kipl::base::ImagePlaneXY;
 		msg.str("");
 		msg<<"Serializing results to "<<fname
 				<<"\nMin="<<minval<<" max="<<maxval;
-		logger(kipl::logging::Logger::LogMessage,msg.str());
+        logger.message(msg.str());
 
 		// Todo Rescaling must be fixed
 		kipl::io::WriteImageStack(m_ResultImage,
@@ -186,6 +185,20 @@ bool KiplEngine::SaveImage(KiplProcessConfig::cOutImageInformation * info)
 				minval,maxval,
                 0,m_ResultImage.Size(2)-1,m_Config.mImageInformation.nFirstFileIndex,
 				config->eResultImageType,plane);
+
+        if (config->bSaveVerticalSlices)
+        {
+            std::string basename=config->sDestinationPath + config->sDestinationFileMask.substr(0,config->sDestinationFileMask.find('#'));
+
+
+            kipl::base::TImage<float,2> vslice;
+
+            vslice = kipl::base::ExtractSlice(m_ResultImage,m_ResultImage.Size(0)/2,kipl::base::ImagePlaneYZ);
+            kipl::io::WriteTIFF(vslice,basename+"YZ.tif",kipl::base::Float32);
+
+            vslice = kipl::base::ExtractSlice(m_ResultImage,m_ResultImage.Size(1)/2,kipl::base::ImagePlaneXZ);
+            kipl::io::WriteTIFF(vslice,basename+"XZ.tif",kipl::base::Float32);
+        }
 
         std::string confname = config->sDestinationPath + "kiplscript.xml";
 

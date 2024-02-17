@@ -19,7 +19,7 @@
      <item>
       <widget class="QLabel" name="label_message">
        <property name="text">
-        <string>TextLabel</string>
+        <string>Progress</string>
        </property>
       </widget>
      </item>
@@ -39,6 +39,9 @@
      </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel</set>
+     </property>
+     <property name="centerButtons">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
