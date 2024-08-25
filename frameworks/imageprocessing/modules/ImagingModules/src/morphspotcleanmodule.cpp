@@ -40,6 +40,8 @@ IMAGINGMODULESSHARED_EXPORT MorphSpotCleanModule::~MorphSpotCleanModule()
 
 int IMAGINGMODULESSHARED_EXPORT MorphSpotCleanModule::Configure(KiplProcessConfig config, std::map<string, string> parameters)
 {
+    std::ignore=config;
+
     string2enum(GetStringParameter(parameters,"connectivity"),m_eConnectivity);
     string2enum(GetStringParameter(parameters,"cleanmethod"),m_eCleanMethod);
     string2enum(GetStringParameter(parameters,"detectionmethod"),m_eDetectionMethod);
@@ -87,6 +89,8 @@ bool IMAGINGMODULESSHARED_EXPORT MorphSpotCleanModule::updateStatus(float val, s
 
 int IMAGINGMODULESSHARED_EXPORT MorphSpotCleanModule::ProcessCore(kipl::base::TImage<float, 3> &img, std::map<string, string> &coeff)
 {
+    std::ignore = coeff;
+    
     logger(logger.LogMessage,"ProcessCore");
 
     size_t Nslices=0;

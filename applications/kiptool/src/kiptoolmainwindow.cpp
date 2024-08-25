@@ -369,6 +369,8 @@ void KipToolMainWindow::on_button_savedata_clicked()
 
 void KipToolMainWindow::on_combo_plotselector_currentIndexChanged(int index)
 {
+    std::ignore = index;
+
     logger(kipl::logging::Logger::LogMessage,"plot selector index changed");
 }
 
@@ -682,9 +684,9 @@ void KipToolMainWindow::on_actionStart_processing_triggered()
 
     if (bExecutionFailed) {
         logger(kipl::logging::Logger::LogError,msg.str());
-        QMessageBox dlg;
-        dlg.setText("The process chain execution failed");
-        dlg.exec();
+        QMessageBox msgdlg;
+        msgdlg.setText("The process chain execution failed");
+        msgdlg.exec();
         return;
     }
 
