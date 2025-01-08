@@ -5,6 +5,7 @@
 #include "ProcessFramework_global.h"
 #include <list>
 #include <string>
+#include <tuple>
 
 #include <logging/logger.h>
 #include <io/analyzefileext.h>
@@ -79,7 +80,7 @@ private:
     /// Sanity check on the number of slices to be reconstruct during Config
     virtual std::string SanitySlicesCheck() override {return "";}
     /// Sanity message that warns about the number of slices that are being configured
-    virtual std::string SanityMessage(bool mess) override {return "";}
+    virtual std::string SanityMessage(bool mess) override {std::ignore = mess; return "";}
 };
 
 #endif
