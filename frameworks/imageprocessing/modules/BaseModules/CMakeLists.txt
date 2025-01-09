@@ -56,7 +56,7 @@ add_library(${TARGET_NAME} SHARED
   ${INC_FILES}
   )
 
-target_compile_definitions(${TARGET_NAME} PRIVATE BASEMODULES_LIBRARY NOMINMAX HAVE_NEXUS)
+target_compile_definitions(${TARGET_NAME} PRIVATE BASEMODULES_LIBRARY NOMINMAX)
 
 
 

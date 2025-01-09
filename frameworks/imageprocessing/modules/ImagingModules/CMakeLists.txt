@@ -35,24 +35,24 @@ link_directories(../../../../../install/lib  )
 set(INC_FILES
     src/ImagingModules_global.h
     src/ringcleanmodule.h
-    src/bblognorm.h
+    # src/bblognorm.h
     src/stdafx.h
     src/imagingmodules.h
     src/stripefiltermodule.h
     src/morphspotcleanmodule.h
     src/targetver.h
-    src/referenceimagecorrectionmodule.h
+    # src/referenceimagecorrectionmodule.h
     src/translateprojectionmodule.h
 )
 
 set(SRC_FILES 
-    src/bblognorm.cpp
+    # src/bblognorm.cpp
     src/ringcleanmodule.cpp
     src/imagingmodules.cpp
     src/stdafx.cpp
     src/morphspotcleanmodule.cpp
     src/stripefiltermodule.cpp
-    src/referenceimagecorrectionmodule.cpp
+    # src/referenceimagecorrectionmodule.cpp
     src/translateprojectionmodule.cpp
 )
 
@@ -61,14 +61,12 @@ add_library(${TARGET_NAME} SHARED
   ${INC_FILES}
   )
 
-target_compile_definitions(${TARGET_NAME} PRIVATE IMAGINGMODULES_LIBRARY NOMINMAX HAVE_NEXUS)
+target_compile_definitions(${TARGET_NAME} PRIVATE IMAGINGMODULES_LIBRARY NOMINMAX)
 
-  message(${CMAKE_HOST_SYSTEM_PROCESSOR})
+message(${CMAKE_HOST_SYSTEM_PROCESSOR})
 
-  if (WIN32)
-  target_link_directories(${TARGET_NAME} PRIVATE
-  ../../../../../imagingsuite/external/lib64
-  )
+if (WIN32)
+
   
   target_link_libraries(${TARGET_NAME}
   PUBLIC
@@ -80,32 +78,31 @@ target_compile_definitions(${TARGET_NAME} PRIVATE IMAGINGMODULES_LIBRARY NOMINMA
 
       LibXml2::LibXml2
       TIFF::TIFF
-
-      libfftw3-3
-      libfftw3f-3
+      fftw::fftw
       )
 endif()
 
 if (APPLE)
   
-      target_link_libraries(${TARGET_NAME}
-          PUBLIC
-          kipl
-          ImagingAlgorithms
-          ModuleConfig
-          ReaderConfig
-          ProcessFramework
-        #   xml2
-        #   fftw3
-        #   fftw3f
-        #   cfitsio
-        #   tiff
-        #   armadillo
-        #   lapack
-        #   blas
-        #   NeXus.1.0.0
-        #   NeXusCPP.1.0.0
-      )
+    target_link_libraries(${TARGET_NAME}
+        PUBLIC
+        kipl
+        ImagingAlgorithms
+        ModuleConfig
+        ReaderConfig
+        ProcessFramework
+        fftw::fftw
+    #   xml2
+    #   fftw3
+    #   fftw3f
+    #   cfitsio
+    #   tiff
+    #   armadillo
+    #   lapack
+    #   blas
+    #   NeXus.1.0.0
+    #   NeXusCPP.1.0.0
+    )
   endif()
 
   install(TARGETS ${TARGET_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

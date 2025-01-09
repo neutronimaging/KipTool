@@ -40,7 +40,7 @@ set(SRC_FILES
     src/stdafx.cpp
 )
 
-# target_compile_definitions(${TARGET_NAME} PRIVATE ADVANCEDFILTERMODULES_LIBRARY HAVE_NEXUS)
+# target_compile_definitions(${TARGET_NAME} PRIVATE ADVANCEDFILTERMODULES_LIBRARY)
 
 add_library(${TARGET_NAME} SHARED
   ${SRC_FILES}

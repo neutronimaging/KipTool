@@ -4,7 +4,7 @@ set(TARGET_NAME "ProcessFramework")
 project(kipltool LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (APPLE)
@@ -12,7 +12,7 @@ include_directories(
     ../../../../imagingsuite/core/kipl/kipl/include
     ../../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
     ../../../../imagingsuite/core/modules/ModuleConfig/include
-    ../../../../ExternalDependencies/macos/include
+    # ../../../../ExternalDependencies/macos/include
     )
 endif()
 
@@ -21,7 +21,7 @@ include_directories(
     ../../../../imagingsuite/core/kipl/kipl/include
     ../../../../imagingsuite/core/algorithms/ImagingAlgorithms/include
     ../../../../imagingsuite/core/modules/ModuleConfig/include
-    ../../../../imagingsuite/external/include/
+    # ../../../../imagingsuite/external/include/
     )
 endif()
 
@@ -59,9 +59,7 @@ add_library(${TARGET_NAME} SHARED
 
 set_target_properties(${TARGET_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
-target_compile_definitions(${TARGET_NAME} PRIVATE PROCESSFRAMEWORK_LIBRARY HAVE_NEXUS)
-
-add_definitions(-DHAVE_NEXUS)
+target_compile_definitions(${TARGET_NAME} PRIVATE PROCESSFRAMEWORK_LIBRARY)
 
 message(${CMAKE_HOST_SYSTEM_PROCESSOR})
 
@@ -87,6 +85,7 @@ if (APPLE)
             ReaderConfig
             LibXml2::LibXml2
             TIFF::TIFF
+            cfitsio::cfitsio
     )
 endif()
 
@@ -96,16 +95,16 @@ if (LINUX)
         kipl
         ImagingAlgorithms
         ModuleConfig
-        xml2
-        fftw3
-        fftw3f
-        cfitsio
-        tiff
-        armadillo
-        lapack
-        blas
-        NeXus
-        NeXusCPP
+        # xml2
+        # fftw3
+        # fftw3f
+        # cfitsio
+        # tiff
+        # armadillo
+        # lapack
+        # blas
+        # NeXus
+        # NeXusCPP
     )
 endif()
 install(TARGETS ${TARGET_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

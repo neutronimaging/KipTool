@@ -61,14 +61,14 @@ add_library(${TARGET_NAME} SHARED
 
 set_target_properties(${TARGET_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
-target_compile_definitions(${TARGET_NAME} PRIVATE ADVANCEDFILTERMODULES_LIBRARY NOMINMAX HAVE_NEXUS)
+target_compile_definitions(${TARGET_NAME} PRIVATE ADVANCEDFILTERMODULES_LIBRARY NOMINMAX)
 
 message("AdvancedFilterModules ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
 if (WIN32)
-    target_link_directories(${TARGET_NAME} PRIVATE
-    ../../../../../imagingsuite/external/lib64
-    )
+    # target_link_directories(${TARGET_NAME} PRIVATE
+    # ../../../../../imagingsuite/external/lib64
+    # )
     
     target_link_libraries(${TARGET_NAME}
     PUBLIC
@@ -77,9 +77,9 @@ if (WIN32)
         ImagingAlgorithms
         AdvancedFilters
         ProcessFramework
-        TIFF::TIFF
-        libfftw3-3
-        libfftw3f-3
+        # TIFF::TIFF
+        # libfftw3-3
+        # libfftw3f-3
         )
 endif()
 
@@ -92,14 +92,14 @@ if (UNIX)
             ModuleConfig
             ProcessFramework
             # LibXml2::LibXml2
-            TIFF::TIFF
+            # TIFF::TIFF
             # ${LAPACK_LIBRARIES}
             # # LAPACK::LAPACK
             # ${BLAS_LIBRARIES}
             # # BLAS::BLAS
             # ${ARMADILLO_LIBRARIES}
-            FFTW::Double
-            FFTW::Float
+            # FFTW::Double
+            # FFTW::Float
       )
   endif()
 
