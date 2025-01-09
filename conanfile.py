@@ -7,7 +7,7 @@ import sys
 import shutil
 from six import StringIO
 
-class MuhrecRecipe(ConanFile):
+class KipToolRecipe(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     default_options = {"*:shared": True}
 
